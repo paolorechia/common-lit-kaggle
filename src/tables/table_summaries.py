@@ -1,7 +1,7 @@
 import pathlib
 
 from framework.table import TableReference
-from schemas.input_summary import InputSummary
+from schemas.schema_input_summary import InputSummary
 from settings import config
 
 INPUT_CSV = "summaries_train.csv"

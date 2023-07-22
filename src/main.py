@@ -1,12 +1,12 @@
 import argparse
 
-import torch
-
-from pipelines.pipeline_split_train_test import SplitTrainTestPipeline
-from settings import config
+import pipelines
+from framework import build_pipeline_registry
 from utils.setup import create_stdout_handler
 
 create_stdout_handler()
+
+pipeline_registry = build_pipeline_registry(pipelines)
 
 
 if __name__ == "__main__":
@@ -17,5 +17,8 @@ if __name__ == "__main__":
 
     pipeline_name: str = args.pipeline_name
 
-    if pipeline_name == "split_train_test":
-        SplitTrainTestPipeline().run()
+    fetched_pipe = pipeline_registry.get(pipeline_name, None)
+    if fetched_pipe is None:
+        raise KeyError(f"Requested pipeline does not exist: {pipeline_name}")
+
+    fetched_pipe.run()
