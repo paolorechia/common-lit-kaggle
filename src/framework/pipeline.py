@@ -12,6 +12,8 @@ class Pipeline:
         self.tasks = tasks
 
     def run(self):
+        context = {}
         for task in self.tasks:
             logger.info("Starting task: %s", task)
-            task.run()
+            result = task.run(context)
+            context.update(result)

@@ -2,5 +2,5 @@ from framework.task import Task
 
 
 class SplitTrainTestTask(Task):
-    def run(self):
+    def run(self, _):
         raise NotImplementedError()

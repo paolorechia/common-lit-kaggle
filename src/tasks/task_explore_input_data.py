@@ -1,13 +1,13 @@
-from typing import Optional
+from typing import Any, Mapping, Optional
 
-from framework import table_io
+import polars as pl
+
 from framework.task import Task
-from tables.table_summaries import InputSummaries
 
 
 class ExploreInputDataTask(Task):
-    def run(self):
-        input_data = table_io.read_table(InputSummaries())
+    def run(self, context):
+        input_data: pl.DataFrame = context["input_data"]
         print(input_data)
 
         print(input_data.describe())

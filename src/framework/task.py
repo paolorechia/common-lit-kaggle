@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Optional
+from typing import Any, Mapping, Optional
 
 
 class Task:
@@ -10,5 +10,5 @@ class Task:
             self.name = self.__class__.__name__
 
     @abstractmethod
-    def run(self):
+    def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         pass
