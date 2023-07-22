@@ -3,7 +3,7 @@ import polars as pl
 from framework.schema import Schema
 
 
-class InputSummary(Schema):
+class InputSummarySchema(Schema):
     student_id = pl.Utf8
     prompt_id = pl.Utf8
     text = pl.Utf8
