@@ -1,5 +1,7 @@
 import argparse
 
+import torch
+
 from settings import config
 
 if __name__ == "__main__":

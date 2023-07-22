@@ -1,0 +1,7 @@
+# These requirements are not installable correctly through poetry
+# Because of the dependency on CUDA 11.8
+-f https://download.pytorch.org/whl/cu118
+torch
+torchvision
+torchaudio
+transformers
