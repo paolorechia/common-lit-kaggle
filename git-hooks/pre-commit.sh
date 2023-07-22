@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # Inits Poetry
-poetry shell
-
-isort --profile black src
-black --check src
-pylint src
-mypy src
+poetry run isort --profile black src
+poetry run black --check src
+poetry run pylint src
+poetry run mypy src
