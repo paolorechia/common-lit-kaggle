@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e
 poetry run build
 COMMIT=$(git log --oneline | head -n 1)
 cd dist/
