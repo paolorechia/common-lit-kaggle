@@ -1,4 +1,4 @@
-from typing import Any, Mapping
+from typing import Any, List, Mapping
 
 import matplotlib.pyplot as plt
 import polars as pl
@@ -31,30 +31,68 @@ class ExploreInputDataTask(Task):
         # Add basic features to input_data
         input_data = add_basic_features(input_data)
 
-        # Generate histograms
+        # Spit dataset per prompt
         prompts = texts_per_prompt.select("prompt_title").unique().to_series().to_list()
 
+        labels = [
+            "content",
+            "wording",
+        ]
+        features = [
+            "text_length",
+            "word_count",
+            "sentence_count",
+            "unique_words",
+        ]
+        # Generate plots for each prompt
         for prompt in prompts:
-            print("prompt:", prompt)
-            text_from_prompt = input_data.filter(pl.col("prompt_title") == prompt)
-            print(text_from_prompt)
-            for attribute in [
-                "content",
-                "wording",
-                "text_length",
-                "word_count",
-                "sentence_count",
-                "unique_words",
-            ]:
-                content = text_from_prompt.select(pl.col(attribute)).to_numpy()
-                fig, axis = plt.subplots()
-                axis.set_ylabel("frequency")
-                axis.set_xlabel(attribute)
-                axis.hist(content, bins=50)
-                normalized_prompt = prompt.replace(" ", "_").lower()
-                plot_path = config.PLOTS_DIR / (
-                    f"{attribute}_distribution_" + normalized_prompt + ".jpg"
-                )
-                fig.savefig(plot_path)
+            self.plots(input_data, prompt, labels, features)
 
         return {}
+
+    def plots(
+        self,
+        input_data: pl.DataFrame,
+        prompt: str,
+        labels: List[str],
+        features: List[str],
+    ):
+        normalized_prompt = prompt.replace(" ", "_").lower()
+        print("prompt:", prompt)
+        text_from_prompt = input_data.filter(pl.col("prompt_title") == prompt)
+        print(text_from_prompt)
+        attributes = labels + features
+
+        self.generate_histogram(text_from_prompt, normalized_prompt, attributes)
+
+        # Scatter plot of labels
+        self.label_scatter(text_from_prompt, normalized_prompt)
+
+    def generate_histogram(
+        self,
+        text_from_prompt: pl.DataFrame,
+        normalized_prompt: str,
+        attributes: List[str],
+    ):
+        # Generate histograms
+        for attribute in attributes:
+            attr_numpy = text_from_prompt.select(pl.col(attribute)).to_numpy()
+            fig, axis = plt.subplots()
+            axis.set_ylabel("frequency")
+            axis.set_xlabel(attribute)
+            axis.hist(attr_numpy, bins=50)
+            plot_path = config.PLOTS_DIR / (
+                f"{attribute}_distribution_" + normalized_prompt + ".jpg"
+            )
+            fig.savefig(plot_path)
+
+    def label_scatter(self, text_from_prompt: pl.DataFrame, normalized_prompt: str):
+        wording = text_from_prompt.select(pl.col("wording")).to_numpy()
+        content = text_from_prompt.select(pl.col("content")).to_numpy()
+        fig, axis = plt.subplots()
+        axis.set_xlabel("wording")
+        axis.set_ylabel("content")
+        axis.scatter(wording, content)
+
+        plot_path = config.PLOTS_DIR / ("labels_scatter_" + normalized_prompt + ".jpg")
+        fig.savefig(plot_path)
