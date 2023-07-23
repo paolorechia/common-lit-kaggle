@@ -1,3 +1,6 @@
+from .table_prediction_input_prompts import InputPredictionPromptsTable
+from .table_prediction_input_summaries import InputPredictionSummariesTable
+from .table_prediction_output import OutputPredictionTable
 from .table_prompts import InputPromptsTable
 from .table_students_per_text import StudentsPerTextTable
 from .table_summaries import InputSummariesTable

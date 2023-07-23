@@ -12,3 +12,5 @@ DATA_TEST_DIR = pathlib.Path(DATA_ROOT_DIR / "test")
 PLOTS_DIR = pathlib.Path(DATA_ROOT_DIR / "plots")
 
 MODELS_ROOT_DIR = pathlib.Path(DATA_ROOT_DIR / "models")
+
+DATA_OUTPUT_DIR = pathlib.Path(DATA_ROOT_DIR / "output")

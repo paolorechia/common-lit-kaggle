@@ -5,7 +5,7 @@ from framework import Pipeline
 class BasicRandomForestPipeline(Pipeline):
     def __init__(self) -> None:
         super().__init__(
-            "basic_random_forest",
+            "basic_train_random_forest",
             [
                 tasks.ReadTrainDataTask(),
                 tasks.AddBasicFeaturesTrainTask(),
