@@ -1,7 +1,7 @@
 import pathlib
 
 from framework.table import TableReference
-from schemas.schema_input_prompts import InputPromptSchema
+from schemas import InputPromptSchema
 from settings import config
 
 

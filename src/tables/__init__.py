@@ -1,0 +1,6 @@
+from .table_prompts import InputPromptsTable
+from .table_students_per_text import StudentsPerTextTable
+from .table_summaries import InputSummariesTable
+from .table_test_split import TestSplitTable
+from .table_texts_per_prompt import TextsPerPromptTable
+from .table_train_split import TrainSplitTable

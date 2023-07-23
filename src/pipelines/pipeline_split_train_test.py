@@ -1,7 +1,20 @@
 from framework import Pipeline
-from tasks import SplitTrainTestTask
+from tasks import (
+    JoinInputTask,
+    ReadInputDataTask,
+    ReadInputPromptDataTask,
+    SplitTrainTestByPromptTask,
+)
 
 
 class SplitTrainTestPipeline(Pipeline):
     def __init__(self) -> None:
-        super().__init__("split_train_test", [SplitTrainTestTask()])
+        super().__init__(
+            "split_train_test",
+            [
+                ReadInputDataTask(),
+                ReadInputPromptDataTask(),
+                JoinInputTask(),
+                SplitTrainTestByPromptTask(),
+            ],
+        )
