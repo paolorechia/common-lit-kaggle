@@ -1,16 +1,37 @@
 import pathlib
 
-DATA_ROOT_DIR = pathlib.Path("/home/paolo/kaggle/common-lit-kaggle/data")
 
-DATA_INPUT_DIR = pathlib.Path(DATA_ROOT_DIR / "input")
-DATA_INTERMEDIATE_DIR = pathlib.Path(DATA_ROOT_DIR / "intermediate")
-DATA_EXPLORATION_DIR = pathlib.Path(DATA_ROOT_DIR / "exploration")
+class Config:
+    _config = None
 
-DATA_TRAIN_DIR = pathlib.Path(DATA_ROOT_DIR / "train")
-DATA_TEST_DIR = pathlib.Path(DATA_ROOT_DIR / "test")
+    @classmethod
+    def get(
+        cls,
+        root_dir="/home/paolo/kaggle/common-lit-kaggle/data",
+        input_dir=None,
+        output_dir=None,
+    ):
+        if cls._config is None:
+            Config._config = cls(root_dir, input_dir, output_dir)
 
-PLOTS_DIR = pathlib.Path(DATA_ROOT_DIR / "plots")
+        return Config._config
 
-MODELS_ROOT_DIR = pathlib.Path(DATA_ROOT_DIR / "models")
+    def __init__(self, root_dir, input_dir, output_dir) -> None:
+        self.data_root_dir = pathlib.Path(root_dir)
 
-DATA_OUTPUT_DIR = pathlib.Path(DATA_ROOT_DIR / "output")
+        if input_dir:
+            self.data_input_dir = input_dir
+        else:
+            self.data_input_dir = pathlib.Path(self.data_root_dir / "input")
+
+        self.data_intermediate_dir = pathlib.Path(self.data_root_dir / "intermediate")
+        self.data_exploration_dir = pathlib.Path(self.data_root_dir / "exploration")
+        self.data_train_dir = pathlib.Path(self.data_root_dir / "train")
+        self.data_test_dir = pathlib.Path(self.data_root_dir / "test")
+        self.plots_dir = pathlib.Path(self.data_root_dir / "plots")
+        self.models_root_dir = pathlib.Path(self.data_root_dir / "models")
+
+        if output_dir:
+            self.data_output_dir = output_dir
+        else:
+            self.data_output_dir = pathlib.Path(self.data_root_dir / "output")

@@ -11,7 +11,7 @@ import polars as pl
 from common_lit_kaggle.features import add_basic_features
 from common_lit_kaggle.framework import table_io
 from common_lit_kaggle.framework.task import Task
-from common_lit_kaggle.settings import config
+from common_lit_kaggle.settings.config import Config
 from common_lit_kaggle.tables import StudentsPerTextTable, TextsPerPromptTable
 
 
@@ -84,6 +84,8 @@ class ExploreInputDataTask(Task):
         normalized_prompt: str,
         attributes: List[str],
     ):
+        config = Config.get()
+
         # Generate histograms
         for attribute in attributes:
             attr_numpy = text_from_prompt.select(pl.col(attribute)).to_numpy()
@@ -91,12 +93,13 @@ class ExploreInputDataTask(Task):
             axis.set_ylabel("frequency")
             axis.set_xlabel(attribute)
             axis.hist(attr_numpy, bins=50)
-            plot_path = config.PLOTS_DIR / (
+            plot_path = config.plots_dir / (
                 f"{attribute}_distribution_" + normalized_prompt + ".jpg"
             )
             fig.savefig(plot_path)
 
     def label_scatter(self, text_from_prompt: pl.DataFrame, normalized_prompt: str):
+        config = Config.get()
         wording = text_from_prompt.select(pl.col("wording")).to_numpy()
         content = text_from_prompt.select(pl.col("content")).to_numpy()
         fig, axis = plt.subplots()
@@ -104,7 +107,7 @@ class ExploreInputDataTask(Task):
         axis.set_ylabel("content")
         axis.scatter(wording, content)
 
-        plot_path = config.PLOTS_DIR / ("labels_scatter_" + normalized_prompt + ".jpg")
+        plot_path = config.plots_dir / ("labels_scatter_" + normalized_prompt + ".jpg")
         fig.savefig(plot_path)
 
     def pair_scatter(
@@ -113,6 +116,8 @@ class ExploreInputDataTask(Task):
         normalized_prompt: str,
         pair: tuple[str, str],
     ):
+        config = Config.get()
+
         pair_x = text_from_prompt.select(pl.col(pair[0])).to_numpy()
         pair_y = text_from_prompt.select(pl.col(pair[1])).to_numpy()
         fig, axis = plt.subplots()
@@ -120,7 +125,7 @@ class ExploreInputDataTask(Task):
         axis.set_ylabel(pair[1])
         axis.scatter(pair_x, pair_y)
 
-        plot_path = config.PLOTS_DIR / (
+        plot_path = config.plots_dir / (
             "pair_scatter_" + f"{pair[0]}_x_{pair[1]}_" + normalized_prompt + ".jpg"
         )
         fig.savefig(plot_path)
