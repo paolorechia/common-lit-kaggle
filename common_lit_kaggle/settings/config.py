@@ -10,13 +10,14 @@ class Config:
         root_dir="/home/paolo/kaggle/common-lit-kaggle/data",
         input_dir=None,
         output_dir=None,
+        sentence_transformer="sentence-transformers/all-MiniLM-L6-v2",
     ):
         if cls._config is None:
-            Config._config = cls(root_dir, input_dir, output_dir)
+            Config._config = cls(root_dir, input_dir, output_dir, sentence_transformer)
 
         return Config._config
 
-    def __init__(self, root_dir, input_dir, output_dir) -> None:
+    def __init__(self, root_dir, input_dir, output_dir, sentence_transformer) -> None:
         self.data_root_dir = pathlib.Path(root_dir)
 
         if input_dir:
@@ -36,5 +37,5 @@ class Config:
         else:
             self.data_output_dir = pathlib.Path(self.data_root_dir / "output")
 
-        self.sentence_transformer = "sentence-transformers/all-MiniLM-L6-v2"
+        self.sentence_transformer = sentence_transformer
         self.device = "cuda:0"
