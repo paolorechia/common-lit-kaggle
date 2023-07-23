@@ -25,10 +25,9 @@ class TestBasicRandomForestTask(Task):
             "text_length", "word_count", "sentence_count", "unique_words"
         ).to_numpy()
 
-
         wording_preds = wording_regressor.predict(x_features)
 
-        content_preds = content_regressor.predict(x_features) 
+        content_preds = content_regressor.predict(x_features)
 
         score = mean_squared_error(wording_preds, y_wording, squared=True)
         print("Wording score", score)
