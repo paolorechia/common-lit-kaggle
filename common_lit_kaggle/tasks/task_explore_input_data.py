@@ -1,7 +1,11 @@
 from itertools import product
 from typing import Any, List, Mapping
 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
+
 import polars as pl
 
 from common_lit_kaggle.features import add_basic_features
