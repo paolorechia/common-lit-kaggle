@@ -37,12 +37,14 @@ class TestBasicRandomForestTask(Task):
 
         content_preds = content_regressor.predict(x_features)
 
-        score = mean_squared_error(wording_preds, y_wording, squared=True)
-        print("Wording score", score)
-        mlflow.log_metric("wording_mean_squared_error", score)
+        wording_score = mean_squared_error(wording_preds, y_wording, squared=True)
+        print("Wording score", wording_score)
+        mlflow.log_metric("wording_mean_squared_error", wording_score)
 
-        score = mean_squared_error(content_preds, y_content, squared=True)
-        print("Content score", score)
-        mlflow.log_metric("content_mean_squared_error", score)
+        content_score = mean_squared_error(content_preds, y_content, squared=True)
+        print("Content score", content_score)
+        mlflow.log_metric("content_mean_squared_error", content_score)
+
+        mlflow.log_metric("avg_mean_squared_error", (content_score + wording_score) / 2)
 
         return {}

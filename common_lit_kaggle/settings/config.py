@@ -11,13 +11,18 @@ class Config:
         input_dir=None,
         output_dir=None,
         sentence_transformer="sentence-transformers/all-MiniLM-L6-v2",
+        zero_shot_model="meta-llama/Llama-2-7b-chat-hf",
     ):
         if cls._config is None:
-            Config._config = cls(root_dir, input_dir, output_dir, sentence_transformer)
+            Config._config = cls(
+                root_dir, input_dir, output_dir, sentence_transformer, zero_shot_model
+            )
 
         return Config._config
 
-    def __init__(self, root_dir, input_dir, output_dir, sentence_transformer) -> None:
+    def __init__(
+        self, root_dir, input_dir, output_dir, sentence_transformer, zero_shot_model
+    ) -> None:
         self.data_root_dir = pathlib.Path(root_dir)
 
         if input_dir:
@@ -38,4 +43,6 @@ class Config:
             self.data_output_dir = pathlib.Path(self.data_root_dir / "output")
 
         self.sentence_transformer = sentence_transformer
+
+        self.zero_shot_model = zero_shot_model
         self.device = "cuda:0"

@@ -16,7 +16,13 @@ class TrainBasicRandomForestTask(Task):
         except KeyError:
             extra_features = None
 
-        features = ["text_length", "word_count", "sentence_count", "unique_words"]
+        features = [
+            "text_length",
+            "word_count",
+            "sentence_count",
+            "unique_words",
+            "word_intersection",
+        ]
 
         if extra_features:
             features.extend(extra_features)
