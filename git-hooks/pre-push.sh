@@ -1,5 +1,6 @@
 #!/bin/bash
 
+rm dist/*.whl
 set -e
 poetry build
 COMMIT=$(git log --oneline | head -n 1)
