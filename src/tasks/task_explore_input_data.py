@@ -1,3 +1,4 @@
+from itertools import product
 from typing import Any, List, Mapping
 
 import matplotlib.pyplot as plt
@@ -68,6 +69,11 @@ class ExploreInputDataTask(Task):
         # Scatter plot of labels
         self.label_scatter(text_from_prompt, normalized_prompt)
 
+        # Scatter label x feature
+        label_feature_pairs = product(labels, features)
+        for pair in label_feature_pairs:
+            self.pair_scatter(text_from_prompt, normalized_prompt, pair)
+
     def generate_histogram(
         self,
         text_from_prompt: pl.DataFrame,
@@ -95,4 +101,22 @@ class ExploreInputDataTask(Task):
         axis.scatter(wording, content)
 
         plot_path = config.PLOTS_DIR / ("labels_scatter_" + normalized_prompt + ".jpg")
+        fig.savefig(plot_path)
+
+    def pair_scatter(
+        self,
+        text_from_prompt: pl.DataFrame,
+        normalized_prompt: str,
+        pair: tuple[str, str],
+    ):
+        pair_x = text_from_prompt.select(pl.col(pair[0])).to_numpy()
+        pair_y = text_from_prompt.select(pl.col(pair[1])).to_numpy()
+        fig, axis = plt.subplots()
+        axis.set_xlabel(pair[0])
+        axis.set_ylabel(pair[1])
+        axis.scatter(pair_x, pair_y)
+
+        plot_path = config.PLOTS_DIR / (
+            "pair_scatter_" + f"{pair[0]}_x_{pair[1]}_" + normalized_prompt + ".jpg"
+        )
         fig.savefig(plot_path)
