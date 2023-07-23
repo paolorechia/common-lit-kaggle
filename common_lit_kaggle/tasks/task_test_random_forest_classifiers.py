@@ -1,6 +1,10 @@
 from typing import Any, Mapping
 
-import mlflow
+try:
+    import mlflow
+except ImportError:
+    pass
+
 import polars as pl
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error

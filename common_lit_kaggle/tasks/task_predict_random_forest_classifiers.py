@@ -1,6 +1,5 @@
 from typing import Any, Mapping
 
-import mlflow
 import polars as pl
 from sklearn.ensemble import RandomForestRegressor
 
@@ -13,7 +12,6 @@ class PredictBasicRandomForestTask(Task):
 
         wording_regressor: RandomForestRegressor = context["wording_regressor"]
         content_regressor: RandomForestRegressor = context["content_regressor"]
-        mlflow.autolog()
 
         x_features = prediction_data.select(
             "text_length", "word_count", "sentence_count", "unique_words"
