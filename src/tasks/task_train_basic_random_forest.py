@@ -1,6 +1,5 @@
 from typing import Any, Mapping
 
-import mlflow
 import polars as pl
 from sklearn.ensemble import RandomForestRegressor
 
@@ -23,11 +22,14 @@ class TrainBasicRandomForestTask(Task):
         # Get content labels
         y_content = train_data.select("content").to_numpy()
 
-        wording_regressor = RandomForestRegressor()
         content_regressor = RandomForestRegressor()
-
-        wording_regressor.fit(x_features, y_wording)
 
         content_regressor.fit(x_features, y_content)
 
-        return {}
+        wording_regressor = RandomForestRegressor()
+        wording_regressor.fit(x_features, y_wording)
+
+        return {
+            "wording_regressor": wording_regressor,
+            "content_regressor": content_regressor,
+        }
