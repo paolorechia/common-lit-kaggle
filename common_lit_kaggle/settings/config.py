@@ -35,3 +35,6 @@ class Config:
             self.data_output_dir = output_dir
         else:
             self.data_output_dir = pathlib.Path(self.data_root_dir / "output")
+
+        self.sentence_transformer = "sentence-transformers/all-MiniLM-L6-v2"
+        self.device = "cuda:0"

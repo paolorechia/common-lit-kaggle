@@ -11,10 +11,17 @@ class TrainBasicRandomForestTask(Task):
         train_data: pl.DataFrame = context["enriched_train_data"]
 
         # Get features
+        try:
+            extra_features = context["extra_features"]
+        except KeyError:
+            extra_features = None
 
-        x_features = train_data.select(
-            "text_length", "word_count", "sentence_count", "unique_words"
-        ).to_numpy()
+        features = ["text_length", "word_count", "sentence_count", "unique_words"]
+
+        if extra_features:
+            features.extend(extra_features)
+
+        x_features = train_data.select(features).to_numpy()
 
         # Get wording labels
         y_wording = train_data.select("wording").to_numpy()
@@ -32,4 +39,5 @@ class TrainBasicRandomForestTask(Task):
         return {
             "wording_regressor": wording_regressor,
             "content_regressor": content_regressor,
+            "features": features,
         }

@@ -18,7 +18,8 @@ class TestBasicRandomForestTask(Task):
         wording_regressor: RandomForestRegressor = context["wording_regressor"]
         content_regressor: RandomForestRegressor = context["content_regressor"]
 
-        used_features = ["text_length", "word_count", "sentence_count", "unique_words"]
+        used_features = context["features"]
+
         mlflow.set_tag("name", "basic random forest")
 
         for idx, feature in enumerate(used_features):
