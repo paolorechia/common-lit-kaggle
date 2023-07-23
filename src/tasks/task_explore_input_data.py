@@ -3,6 +3,7 @@ from typing import Any, Mapping
 import matplotlib.pyplot as plt
 import polars as pl
 
+from features import add_basic_features
 from framework import table_io
 from framework.task import Task
 from settings import config
@@ -27,17 +28,29 @@ class ExploreInputDataTask(Task):
         # Prompt
         table_io.write_table(texts_per_prompt, TextsPerPromptTable())
 
+        # Add basic features to input_data
+        input_data = add_basic_features(input_data)
+
+        # Generate histograms
         prompts = texts_per_prompt.select("prompt_title").unique().to_series().to_list()
 
         for prompt in prompts:
             print("prompt:", prompt)
             text_from_prompt = input_data.filter(pl.col("prompt_title") == prompt)
-            for attribute in ["content", "wording"]:
+            print(text_from_prompt)
+            for attribute in [
+                "content",
+                "wording",
+                "text_length",
+                "word_count",
+                "sentence_count",
+                "unique_words",
+            ]:
                 content = text_from_prompt.select(pl.col(attribute)).to_numpy()
                 fig, axis = plt.subplots()
                 axis.set_ylabel("frequency")
                 axis.set_xlabel(attribute)
-                axis.hist(content)
+                axis.hist(content, bins=50)
                 normalized_prompt = prompt.replace(" ", "_").lower()
                 plot_path = config.PLOTS_DIR / (
                     f"{attribute}_distribution_" + normalized_prompt + ".jpg"
