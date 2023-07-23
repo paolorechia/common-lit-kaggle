@@ -13,9 +13,18 @@ class PredictBasicRandomForestTask(Task):
         wording_regressor: RandomForestRegressor = context["wording_regressor"]
         content_regressor: RandomForestRegressor = context["content_regressor"]
 
-        x_features = prediction_data.select(
-            "text_length", "word_count", "sentence_count", "unique_words"
-        ).to_numpy()
+        # Get features
+        try:
+            extra_features = context["extra_features"]
+        except KeyError:
+            extra_features = None
+
+        features = ["text_length", "word_count", "sentence_count", "unique_words"]
+
+        if extra_features:
+            features.extend(extra_features)
+
+        x_features = prediction_data.select(features).to_numpy()
 
         wording_preds = wording_regressor.predict(x_features)
 

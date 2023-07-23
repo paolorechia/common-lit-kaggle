@@ -2,6 +2,7 @@ from .task_add_basic_features_prediction import AddBasicFeaturesPredictionTask
 from .task_add_basic_features_test import AddBasicFeaturesTestTask
 from .task_add_basic_features_train import AddBasicFeaturesTrainTask
 from .task_add_sentence_embedding import (
+    AddSentenceEmbeddingToPredictTask,
     AddSentenceEmbeddingToTestTask,
     AddSentenceEmbeddingToTrainTask,
 )

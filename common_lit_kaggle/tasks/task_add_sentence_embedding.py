@@ -131,3 +131,16 @@ class AddSentenceEmbeddingToTestTask(Task):
         test_data = _AddSentenceEmbeddingToDataSubTask().calculate(test_data)
 
         return {key: test_data, "extra_features": ["embedding_distance"]}
+
+
+class AddSentenceEmbeddingToPredictTask(Task):
+    def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
+        # Load model from HuggingFace Hub
+        key = "enriched_prediction_data"
+        test_data: pl.DataFrame = context[key]
+        test_data = _AddSentenceEmbeddingToDataSubTask().calculate(test_data)
+
+        return {
+            "enriched_prediction_data": test_data,
+            "extra_features": ["embedding_distance"],
+        }
