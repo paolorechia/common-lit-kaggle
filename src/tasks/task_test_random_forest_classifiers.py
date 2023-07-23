@@ -3,6 +3,7 @@ from typing import Any, Mapping
 import mlflow
 import polars as pl
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
 
 from framework.task import Task
 
@@ -24,9 +25,14 @@ class TestBasicRandomForestTask(Task):
             "text_length", "word_count", "sentence_count", "unique_words"
         ).to_numpy()
 
-        score = wording_regressor.score(x_features, y_wording)
+
+        wording_preds = wording_regressor.predict(x_features)
+
+        content_preds = content_regressor.predict(x_features) 
+
+        score = mean_squared_error(wording_preds, y_wording, squared=True)
         print("Wording score", score)
-        score = content_regressor.score(x_features, y_content)
+        score = mean_squared_error(content_preds, y_content, squared=True)
         print("Content score", score)
 
         return {}
