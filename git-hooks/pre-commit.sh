@@ -2,7 +2,7 @@
 
 # Inits Poetry
 set -e
-poetry run isort --check-only --profile black src
-poetry run black --check src
-poetry run pylint src
-poetry run mypy src
+poetry run isort --check-only --profile black common_lit_kaggle
+poetry run black --check common_lit_kaggle
+poetry run pylint common_lit_kaggle
+poetry run mypy common_lit_kaggle
