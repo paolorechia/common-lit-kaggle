@@ -87,7 +87,7 @@ class Config:
         assert (
             len(self.train_prompts) > 0
         ), "At least one prompt must be used for training!"
-        assert len(self.train_prompts) + len(self.test_prompts) <= len(
+        assert len(self.train_prompts) + len(self.test_prompts) > len(
             self.available_prompts
         ), "Invalid prompt configuration!"
 
