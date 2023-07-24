@@ -78,10 +78,10 @@ class Config:
             "814d6b",
         ]
 
-        if train_prompts:
+        if train_prompts is not None:
             self.train_prompts = train_prompts
 
-        if test_prompts:
+        if test_prompts is not None:
             self.test_prompts = test_prompts
 
         assert (
