@@ -41,6 +41,7 @@ class TestBasicRandomForestTask(Task):
         config = Config.get()
         mlflow.log_param("distance_metric", config.distance_metric)
         mlflow.log_param("sentence_transformer", config.sentence_transformer)
+        mlflow.log_param("distance_stategy", config.distance_stategy)
 
         wording_score = mean_squared_error(wording_preds, y_wording, squared=True)
         print("Wording score", wording_score)

@@ -54,7 +54,9 @@ def sentence_embedding_factory(model, tokenizer):
     return calculate_sentence_embeddings
 
 
-def find_minimum_distance(text_embeddings_column, prompt_embeddings_column, metric):
+def find_distance(
+    text_embeddings_column, prompt_embeddings_column, metric, strategy="minimum"
+):
     num_rows = text_embeddings_column.shape[0]
 
     logger.info("Computing minimum distance...")
@@ -63,10 +65,19 @@ def find_minimum_distance(text_embeddings_column, prompt_embeddings_column, metr
         text_embeddings_row = text_embeddings_column[i][0]
         prompt_embeddings_row = prompt_embeddings_column[i][0]
 
-        minimum_distance = pairwise_distances(
+        distance_matrix = pairwise_distances(
             text_embeddings_row, prompt_embeddings_row, metric=metric
-        ).min()
-        output.append(minimum_distance)
+        )
+        if strategy == "minimum":
+            distance = distance_matrix.min()
+        if strategy == "mean":
+            distance = distance_matrix.mean()
+        if strategy == "maximum":
+            distance = distance_matrix.max()
+        else:
+            raise ValueError(f"Unsupported distance strategy: {strategy}")
+
+        output.append(distance)
     return output
 
 
@@ -97,15 +108,16 @@ class _AddSentenceEmbeddingToDataSubTask:
         )
         logger.info(data)
 
-        min_dist = find_minimum_distance(
+        embedding_distance = find_distance(
             data.select("text_set_embedding").to_numpy(),
             data.select("prompt_set_embedding").to_numpy(),
             metric=config.distance_metric,
+            strategy=config.distance_stategy,
         )
 
-        assert len(min_dist) == len(data)
-
-        data = data.with_columns(pl.Series(name="embedding_distance", values=min_dist))
+        data = data.with_columns(
+            pl.Series(name="embedding_distance", values=embedding_distance)
+        )
 
         logger.info("Done!")
         logger.info(data)
