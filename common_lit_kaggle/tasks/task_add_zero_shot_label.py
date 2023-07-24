@@ -5,14 +5,11 @@ import polars as pl
 from transformers import pipeline
 
 from common_lit_kaggle.framework.task import Task
-from common_lit_kaggle.utils.load_zero_shot_model import load_llm
 
 logger = logging.getLogger(__name__)
 
 
 def zero_shot_label(enriched_train_data: pl.DataFrame):
-    llm = load_llm()
-
     classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
 
     logger.info("Starting zero shot...")
