@@ -14,15 +14,7 @@ class PredictBasicRandomForestTask(Task):
         content_regressor: RandomForestRegressor = context["content_regressor"]
 
         # Get features
-        try:
-            extra_features = context["extra_features"]
-        except KeyError:
-            extra_features = None
-
-        features = ["text_length", "word_count", "sentence_count", "unique_words"]
-
-        if extra_features:
-            features.extend(extra_features)
+        features = context["features"]
 
         x_features = prediction_data.select(features).to_numpy()
 

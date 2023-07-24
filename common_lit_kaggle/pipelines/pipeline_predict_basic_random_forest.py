@@ -7,12 +7,15 @@ class BasicPredictRandomForestPipeline(Pipeline):
         super().__init__(
             "basic_predict_random_forest",
             [
+                # Train
                 tasks.ReadTrainDataTask(),
                 tasks.AddBasicFeaturesTrainTask(),
                 tasks.TrainBasicRandomForestTask(),
+                # Predict
                 tasks.ReadPredictionInputDataTask(),
                 tasks.AddBasicFeaturesPredictionTask(),
                 tasks.PredictBasicRandomForestTask(),
+                # Write output
                 tasks.WritePredictionsTask(),
             ],
         )

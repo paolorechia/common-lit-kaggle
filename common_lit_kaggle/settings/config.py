@@ -87,8 +87,11 @@ class Config:
         assert (
             len(self.train_prompts) > 0
         ), "At least one prompt must be used for training!"
-        assert len(self.train_prompts) + len(self.test_prompts) > len(
-            self.available_prompts
-        ), "Invalid prompt configuration!"
+        train = len(self.train_prompts)
+        test = len(self.test_prompts)
+        available = len(self.available_prompts)
+        assert (
+            train + test <= available
+        ), f"Invalid prompt configuration! {train} + {test} > {available}"
 
         self.device = "cuda:0"

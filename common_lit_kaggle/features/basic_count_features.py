@@ -24,18 +24,18 @@ def add_basic_features(input_data) -> pl.DataFrame:
     )
 
     def word_intersection_percentage(row):
-        student_id = row[0]
-        prompt_id = row[1]
+        """Using numeric indices here was a bad idea,
+        because the prediction data has a different column layout (without labels).
+        """
         text = row[2]
-        content = row[3]
-        wording = row[4]
-        prompt_question = row[5]
-        prompt_title = row[6]
-        prompt_text = row[7]
 
         text_words = set(text.split(" "))
 
-        prompt_words = set(prompt_text.split(" "))
+        try:
+            prompt_words = set(row[7].split(" "))
+        except AttributeError:
+            # If we're dealing with prediction label, adjust the index
+            prompt_words = set(row[5].split(" "))
 
         # How many words of the prompt are repeated
         return len(text_words.intersection(prompt_words)) / len(prompt_words)
