@@ -23,6 +23,25 @@ def add_basic_features(input_data) -> pl.DataFrame:
         pl.col("text").str.split(" ").apply(count_unique_words).alias("unique_words")
     )
 
+    input_data = input_data.with_columns(
+        pl.col("prompt").str.n_chars().alias("prompt_length")
+    )
+
+    input_data = input_data.with_columns(
+        pl.col("prompt").str.split(" ").list.lengths().alias("prompt_word_count")
+    )
+
+    input_data = input_data.with_columns(
+        pl.col("prompt").str.split(".").list.lengths().alias("prompt_sentence_count")
+    )
+
+    input_data = input_data.with_columns(
+        pl.col("prompt")
+        .str.split(" ")
+        .apply(count_unique_words)
+        .alias("prompt_unique_words")
+    )
+
     def word_intersection_percentage(row):
         """Using numeric indices here was a bad idea,
         because the prediction data has a different column layout (without labels).

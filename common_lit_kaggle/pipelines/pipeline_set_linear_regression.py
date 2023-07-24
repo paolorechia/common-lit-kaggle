@@ -1,10 +1,10 @@
 from common_lit_kaggle import tasks
 from common_lit_kaggle.framework import Pipeline
 
-LABEL = "set_train_random_forest"
+LABEL = "set_train_linear"
 
 
-class SentenceTransformerRandomForestPipeline(Pipeline):
+class SentenceTransformerLinearRegressionPipeline(Pipeline):
     def __init__(self) -> None:
         super().__init__(
             LABEL,
@@ -13,12 +13,12 @@ class SentenceTransformerRandomForestPipeline(Pipeline):
                 tasks.ReadTrainDataTask(),
                 tasks.AddBasicFeaturesTrainTask(),
                 tasks.AddSentenceEmbeddingToTrainTask(),
-                tasks.TrainBasicRandomForestTask(),
+                tasks.TrainBasicLinearRegressorTask(),
                 # Test
                 tasks.ReadTestDataTask(),
                 tasks.AddBasicFeaturesTestTask(),
                 tasks.AddSentenceEmbeddingToTestTask(),
-                tasks.TestBasicRandomForestTask(),
+                tasks.TestBasicLinearRegressorTask(),
                 tasks.AnalysePredictionsTask(name=LABEL),
             ],
         )
