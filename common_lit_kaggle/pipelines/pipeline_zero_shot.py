@@ -1,12 +1,13 @@
 from common_lit_kaggle import tasks
 from common_lit_kaggle.framework import Pipeline
 
+LABEL = "zero_train_random_forest"
 
-label = "zero_train_random_forest"
+
 class ZeroShotRandomForestPipeline(Pipeline):
     def __init__(self) -> None:
         super().__init__(
-            label,
+            LABEL,
             [
                 tasks.ReadTrainDataTask(),
                 tasks.AddBasicFeaturesTrainTask(),
@@ -14,6 +15,6 @@ class ZeroShotRandomForestPipeline(Pipeline):
                 tasks.TrainBasicRandomForestTask(),
                 tasks.ReadTestDataTask(),
                 tasks.AddBasicFeaturesTestTask(),
-                tasks.TestBasicRandomForestTask(name=label),
+                tasks.TestBasicRandomForestTask(name=LABEL),
             ],
         )

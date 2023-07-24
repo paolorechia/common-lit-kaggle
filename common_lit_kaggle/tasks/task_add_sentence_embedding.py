@@ -54,9 +54,7 @@ def sentence_embedding_factory(model, tokenizer):
     return calculate_sentence_embeddings
 
 
-def find_minimum_distance(
-    text_embeddings_column, prompt_embeddings_column, metric
-):
+def find_minimum_distance(text_embeddings_column, prompt_embeddings_column, metric):
     num_rows = text_embeddings_column.shape[0]
 
     logger.info("Computing minimum distance...")
