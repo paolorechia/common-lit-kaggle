@@ -38,6 +38,7 @@ disable = [
     "not-callable",
     "unused-variable",
     "too-many-arguments",
+    "too-many-locals",
 ]
 
 [tool.mypy]

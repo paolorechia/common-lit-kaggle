@@ -10,6 +10,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 
 from common_lit_kaggle.framework.task import Task
+from common_lit_kaggle.settings.config import Config
 
 
 class TestBasicRandomForestTask(Task):
@@ -36,6 +37,10 @@ class TestBasicRandomForestTask(Task):
         wording_preds = wording_regressor.predict(x_features)
 
         content_preds = content_regressor.predict(x_features)
+
+        config = Config.get()
+        mlflow.log_param("distance_metric", config.distance_metric)
+        mlflow.log_param("sentence_transformer", config.sentence_transformer)
 
         wording_score = mean_squared_error(wording_preds, y_wording, squared=True)
         print("Wording score", wording_score)
