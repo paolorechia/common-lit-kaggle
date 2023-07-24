@@ -31,11 +31,11 @@ class TrainBasicRandomForestTask(Task):
         # Get content labels
         y_content = train_data.select("content").to_numpy()
 
-        content_regressor = RandomForestRegressor()
+        content_regressor = RandomForestRegressor(random_state=config.random_state)
 
         content_regressor.fit(x_features, y_content)
 
-        wording_regressor = RandomForestRegressor()
+        wording_regressor = RandomForestRegressor(random_state=config.random_state)
         wording_regressor.fit(x_features, y_wording)
 
         return {

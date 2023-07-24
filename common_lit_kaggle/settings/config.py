@@ -110,3 +110,4 @@ class Config:
         ), f"Invalid prompt configuration! {train} + {test} > {available}"
 
         self.device = "cuda:0"
+        self.random_state = 42
