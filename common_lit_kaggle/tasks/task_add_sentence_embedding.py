@@ -55,7 +55,7 @@ def sentence_embedding_factory(model, tokenizer):
 
 
 def find_minimum_distance(
-    text_embeddings_column, prompt_embeddings_column, metric="euclidean"
+    text_embeddings_column, prompt_embeddings_column, metric
 ):
     num_rows = text_embeddings_column.shape[0]
 

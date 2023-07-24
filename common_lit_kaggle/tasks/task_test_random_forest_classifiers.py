@@ -21,7 +21,7 @@ class TestBasicRandomForestTask(Task):
 
         used_features = context["features"]
 
-        mlflow.set_tag("name", "basic random forest")
+        mlflow.set_tag("name", self.name)
 
         for idx, feature in enumerate(used_features):
             mlflow.log_param(f"features_{idx}", feature)

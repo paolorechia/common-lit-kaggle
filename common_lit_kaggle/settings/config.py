@@ -44,7 +44,7 @@ class Config:
             self.data_output_dir = pathlib.Path(self.data_root_dir / "output")
 
         self.sentence_transformer = sentence_transformer
-        self.distance_metric = "euclidean"
+        self.distance_metric = "cosine"
 
         self.zero_shot_model = zero_shot_model
         self.device = "cuda:0"
