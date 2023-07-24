@@ -1,3 +1,4 @@
+from .pipeline_basic_linear_regressor import BasicLinearRegressorPipeline
 from .pipeline_basic_random_forest import BasicRandomForestPipeline
 from .pipeline_explore_data import ExploreDataPipeline
 from .pipeline_predict_basic_random_forest import BasicPredictRandomForestPipeline

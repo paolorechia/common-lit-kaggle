@@ -86,9 +86,8 @@ class Config:
         ]
 
         # Default configuration locally, uses only one of the prompts for training
-        self.train_prompts = ["3b9047"]
+        self.train_prompts = ["3b9047", "39c16e"]
         self.test_prompts = [
-            "39c16e",
             "ebad26",
             "814d6b",
         ]
