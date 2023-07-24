@@ -1,4 +1,29 @@
 [[package]]
+name = "accelerate"
+version = "0.21.0"
+description = "Accelerate"
+category = "dev"
+optional = false
+python-versions = ">=3.8.0"
+
+[package.dependencies]
+numpy = ">=1.17"
+packaging = ">=20.0"
+psutil = "*"
+pyyaml = "*"
+torch = ">=1.10.0"
+
+[package.extras]
+dev = ["black (>=23.1,<24.0)", "ruff (>=0.0.241)", "hf-doc-builder (>=0.3.0)", "urllib3 (<2.0.0)", "pytest", "pytest-xdist", "pytest-subtests", "parameterized", "datasets", "evaluate", "transformers", "scipy", "scikit-learn", "deepspeed", "tqdm", "rich"]
+quality = ["black (>=23.1,<24.0)", "ruff (>=0.0.241)", "hf-doc-builder (>=0.3.0)", "urllib3 (<2.0.0)"]
+rich = ["rich"]
+sagemaker = ["sagemaker"]
+test_dev = ["datasets", "evaluate", "transformers", "scipy", "scikit-learn", "deepspeed", "tqdm"]
+test_prod = ["pytest", "pytest-xdist", "pytest-subtests", "parameterized"]
+test_trackers = ["wandb", "comet-ml", "tensorboard"]
+testing = ["pytest", "pytest-xdist", "pytest-subtests", "parameterized", "datasets", "evaluate", "transformers", "scipy", "scikit-learn", "deepspeed", "tqdm"]
+
+[[package]]
 name = "aiohttp"
 version = "3.8.5"
 description = "Async http client/server framework (asyncio)"
@@ -721,6 +746,20 @@ gateway = ["pydantic (>=1.0,<2)", "fastapi (<1)", "uvicorn[standard] (<1)", "wat
 sqlserver = ["mlflow-dbstore"]
 
 [[package]]
+name = "mpmath"
+version = "1.3.0"
+description = "Python library for arbitrary-precision floating-point arithmetic"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.extras]
+develop = ["pytest (>=4.6)", "pycodestyle", "pytest-cov", "codecov", "wheel"]
+docs = ["sphinx"]
+gmpy = ["gmpy2 (>=2.1.0a4)"]
+tests = ["pytest (>=4.6)"]
+
+[[package]]
 name = "msal"
 version = "1.23.0"
 description = "The Microsoft Authentication Library (MSAL) for Python library enables your app to access the Microsoft Cloud by supporting authentication of users with Microsoft Azure Active Directory accounts (AAD) and Microsoft Accounts (MSA) using industry standard OAuth2 and OpenID Connect."
@@ -778,6 +817,21 @@ description = "Patch asyncio to allow nested event loops"
 category = "dev"
 optional = false
 python-versions = ">=3.5"
+
+[[package]]
+name = "networkx"
+version = "3.1"
+description = "Python package for creating and manipulating graphs and networks"
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+
+[package.extras]
+default = ["numpy (>=1.20)", "scipy (>=1.8)", "matplotlib (>=3.4)", "pandas (>=1.3)"]
+developer = ["pre-commit (>=3.2)", "mypy (>=1.1)"]
+doc = ["sphinx (>=6.1)", "pydata-sphinx-theme (>=0.13)", "sphinx-gallery (>=0.12)", "numpydoc (>=1.5)", "pillow (>=9.4)", "nb2plots (>=0.6)", "texext (>=0.6.7)"]
+extra = ["lxml (>=4.6)", "pygraphviz (>=1.10)", "pydot (>=1.4.2)", "sympy (>=1.10)"]
+test = ["pytest (>=7.2)", "pytest-cov (>=4.0)", "codecov (>=2.1)"]
 
 [[package]]
 name = "numpy"
@@ -931,6 +985,17 @@ description = ""
 category = "dev"
 optional = false
 python-versions = ">=3.7"
+
+[[package]]
+name = "psutil"
+version = "5.9.5"
+description = "Cross-platform lib for process and system monitoring in Python."
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.extras]
+test = ["ipaddress", "mock", "enum34", "pywin32", "wmi"]
 
 [[package]]
 name = "pyarrow"
@@ -1217,6 +1282,17 @@ doc = ["sphinx"]
 test = ["pytest", "pytest-cov"]
 
 [[package]]
+name = "sympy"
+version = "1.12"
+description = "Computer algebra system (CAS) in Python"
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+mpmath = ">=0.19"
+
+[[package]]
 name = "tabulate"
 version = "0.9.0"
 description = "Pretty-print tabular data"
@@ -1273,6 +1349,24 @@ description = "Style preserving TOML library"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
+
+[[package]]
+name = "torch"
+version = "2.0.1"
+description = "Tensors and Dynamic neural networks in Python with strong GPU acceleration"
+category = "dev"
+optional = false
+python-versions = ">=3.8.0"
+
+[package.dependencies]
+filelock = "*"
+jinja2 = "*"
+networkx = "*"
+sympy = "*"
+typing-extensions = "*"
+
+[package.extras]
+opt-einsum = ["opt-einsum (>=3.3)"]
 
 [[package]]
 name = "tqdm"
@@ -1403,9 +1497,10 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-ena
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "30d1301674a507588076e6e5dd8cac278be0c99c9160ab24ce41b6886f85ec4d"
+content-hash = "b285a3ae5340aaeeac90b6dbe87606371d6f20eb962d810fc2e9f2fba0a8fcd7"
 
 [metadata.files]
+accelerate = []
 aiohttp = []
 aiosignal = []
 alembic = []
@@ -1457,11 +1552,13 @@ markupsafe = []
 matplotlib = []
 mccabe = []
 mlflow = []
+mpmath = []
 msal = []
 multidict = []
 mypy = []
 mypy-extensions = []
 nest-asyncio = []
+networkx = []
 numpy = []
 oauthlib = []
 openai = []
@@ -1472,6 +1569,7 @@ pillow = []
 platformdirs = []
 polars = []
 protobuf = []
+psutil = []
 pyarrow = []
 pycparser = []
 pygtrie = []
@@ -1493,12 +1591,14 @@ six = []
 smmap = []
 sqlalchemy = []
 sqlparse = []
+sympy = []
 tabulate = []
 text-unidecode = []
 threadpoolctl = []
 tiktoken = []
 tomli = []
 tomlkit = []
+torch = []
 tqdm = []
 typing-extensions = []
 tzdata = []

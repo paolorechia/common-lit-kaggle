@@ -11,7 +11,8 @@ class Config:
         input_dir=None,
         output_dir=None,
         sentence_transformer="sentence-transformers/all-MiniLM-L6-v2",
-        zero_shot_model="meta-llama/Llama-2-7b-chat-hf",
+        zero_shot_model="facebook/bart-large-mnli",
+        # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
     ):
         if cls._config is None:
             Config._config = cls(

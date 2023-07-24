@@ -6,3 +6,4 @@ from .pipeline_predict_set_random_forest import (
 )
 from .pipeline_set_random_forest import SentenceTransformerRandomForestPipeline
 from .pipeline_split_train_test import SplitTrainTestPipeline
+from .pipeline_zero_shot import ZeroShotRandomForestPipeline
