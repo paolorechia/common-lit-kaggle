@@ -102,6 +102,7 @@ class _AddSentenceEmbeddingToDataSubTask:
         min_dist = find_minimum_distance(
             data.select("text_set_embedding").to_numpy(),
             data.select("prompt_set_embedding").to_numpy(),
+            metric=config.distance_metric,
         )
 
         assert len(min_dist) == len(data)
