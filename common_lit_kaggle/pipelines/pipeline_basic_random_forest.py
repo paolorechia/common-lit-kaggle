@@ -14,6 +14,8 @@ class BasicRandomForestPipeline(Pipeline):
                 tasks.TrainBasicRandomForestTask(),
                 tasks.ReadTestDataTask(),
                 tasks.AddBasicFeaturesTestTask(),
-                tasks.TestBasicRandomForestTask(name=LABEL),
+                tasks.TestBasicRandomForestTask(),
+                tasks.WritePredictionsTask(),
+                tasks.AnalysePredictionsTask(name=LABEL),
             ],
         )

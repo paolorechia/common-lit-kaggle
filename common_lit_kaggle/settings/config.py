@@ -63,7 +63,7 @@ class Config:
 
         self.sentence_transformer = sentence_transformer
         self.distance_metric = "euclidean"
-        self.distance_stategy = "maximum"
+        self.distance_stategy = "minimum"
 
         self.used_features = [
             "text_length",

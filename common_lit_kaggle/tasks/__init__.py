@@ -7,6 +7,7 @@ from .task_add_sentence_embedding import (
     AddSentenceEmbeddingToTrainTask,
 )
 from .task_add_zero_shot_label import AddZeroShotLabelTrainTask
+from .task_analyse_predictions import AnalysePredictionsTask
 from .task_explore_input_data import ExploreInputDataTask
 from .task_join_input_data import JoinInputTask
 from .task_predict_random_forest_classifiers import PredictBasicRandomForestTask
