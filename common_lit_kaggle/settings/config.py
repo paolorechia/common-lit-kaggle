@@ -14,6 +14,7 @@ class Config:
         zero_shot_model="facebook/bart-large-mnli",
         train_prompts=None,
         test_prompts=None,
+        used_features=None,
         # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
     ):
         if cls._config is None:
@@ -25,6 +26,7 @@ class Config:
                 zero_shot_model,
                 train_prompts,
                 test_prompts,
+                used_features,
             )
 
         return Config._config
@@ -38,6 +40,7 @@ class Config:
         zero_shot_model,
         train_prompts,
         test_prompts,
+        used_features,
     ) -> None:
         self.data_root_dir = pathlib.Path(root_dir)
 
@@ -62,6 +65,17 @@ class Config:
         self.distance_metric = "euclidean"
         self.distance_stategy = "maximum"
 
+        self.used_features = [
+            "text_length",
+            "word_count",
+            "sentence_count",
+            "unique_words",
+            "word_intersection",
+        ]
+
+        if used_features:
+            self.used_features = used_features
+
         self.zero_shot_model = zero_shot_model
 
         self.available_prompts = [
@@ -71,9 +85,10 @@ class Config:
             "814d6b",
         ]
 
-        # Default configuration locally, use only half the prompts for training
-        self.train_prompts = ["3b9047", "39c16e"]
+        # Default configuration locally, uses only one of the prompts for training
+        self.train_prompts = ["3b9047"]
         self.test_prompts = [
+            "39c16e",
             "ebad26",
             "814d6b",
         ]

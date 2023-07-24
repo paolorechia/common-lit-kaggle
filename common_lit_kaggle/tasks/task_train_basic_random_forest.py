@@ -4,10 +4,12 @@ import polars as pl
 from sklearn.ensemble import RandomForestRegressor
 
 from common_lit_kaggle.framework.task import Task
+from common_lit_kaggle.settings.config import Config
 
 
 class TrainBasicRandomForestTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
+        config = Config.get()
         train_data: pl.DataFrame = context["enriched_train_data"]
 
         # Get features
@@ -16,13 +18,7 @@ class TrainBasicRandomForestTask(Task):
         except KeyError:
             extra_features = None
 
-        features = [
-            "text_length",
-            "word_count",
-            "sentence_count",
-            "unique_words",
-            "word_intersection",
-        ]
+        features = config.used_features
 
         if extra_features:
             features.extend(extra_features)
