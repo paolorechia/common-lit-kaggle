@@ -71,6 +71,10 @@ class Config:
             "sentence_count",
             "unique_words",
             "word_intersection",
+            "prompt_length",
+            "prompt_word_count",
+            "prompt_sentence_count",
+            "prompt_unique_words",
         ]
 
         if used_features:

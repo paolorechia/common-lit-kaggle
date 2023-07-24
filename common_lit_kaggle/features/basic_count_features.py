@@ -24,19 +24,22 @@ def add_basic_features(input_data) -> pl.DataFrame:
     )
 
     input_data = input_data.with_columns(
-        pl.col("prompt").str.n_chars().alias("prompt_length")
+        pl.col("prompt_text").str.n_chars().alias("prompt_length")
     )
 
     input_data = input_data.with_columns(
-        pl.col("prompt").str.split(" ").list.lengths().alias("prompt_word_count")
+        pl.col("prompt_text").str.split(" ").list.lengths().alias("prompt_word_count")
     )
 
     input_data = input_data.with_columns(
-        pl.col("prompt").str.split(".").list.lengths().alias("prompt_sentence_count")
+        pl.col("prompt_text")
+        .str.split(".")
+        .list.lengths()
+        .alias("prompt_sentence_count")
     )
 
     input_data = input_data.with_columns(
-        pl.col("prompt")
+        pl.col("prompt_text")
         .str.split(" ")
         .apply(count_unique_words)
         .alias("prompt_unique_words")
