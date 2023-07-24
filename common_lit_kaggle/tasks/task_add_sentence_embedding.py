@@ -70,12 +70,13 @@ def find_distance(
         )
         if strategy == "minimum":
             distance = distance_matrix.min()
-        if strategy == "mean":
+        elif strategy == "mean":
             distance = distance_matrix.mean()
-        if strategy == "maximum":
+        elif strategy == "maximum":
             distance = distance_matrix.max()
+
         else:
-            raise ValueError(f"Unsupported distance strategy: {strategy}")
+            raise ValueError(f"Unsupported distance strategy: '{strategy}'")
 
         output.append(distance)
     return output

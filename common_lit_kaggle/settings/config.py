@@ -45,7 +45,7 @@ class Config:
 
         self.sentence_transformer = sentence_transformer
         self.distance_metric = "euclidean"
-        self.distance_stategy = "minimum"
+        self.distance_stategy = "maximum"
 
         self.zero_shot_model = zero_shot_model
         self.device = "cuda:0"
