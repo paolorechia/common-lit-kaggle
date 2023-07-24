@@ -4,21 +4,17 @@ import polars as pl
 
 from common_lit_kaggle.framework import table_io
 from common_lit_kaggle.framework.task import Task
+from common_lit_kaggle.settings.config import Config
 from common_lit_kaggle.tables import TestSplitTable, TrainSplitTable
 
 
 class SplitTrainTestByPromptTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
+        config = Config.get()
         input_data: pl.DataFrame = context["joined_data"]
 
-        train_prompts = [
-            "3b9047",
-            "39c16e",
-        ]
-        test_prompts = [
-            "ebad26",
-            "814d6b",
-        ]
+        train_prompts = config.train_prompts
+        test_prompts = config.test_prompts
 
         train_data = input_data.filter(pl.col("prompt_id").is_in(train_prompts))
 

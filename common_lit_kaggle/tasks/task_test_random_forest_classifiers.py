@@ -15,6 +15,8 @@ from common_lit_kaggle.settings.config import Config
 
 class TestBasicRandomForestTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
+        config = Config.get()
+
         test_data: pl.DataFrame = context["enriched_test_data"]
         wording_regressor: RandomForestRegressor = context["wording_regressor"]
         content_regressor: RandomForestRegressor = context["content_regressor"]
@@ -25,6 +27,9 @@ class TestBasicRandomForestTask(Task):
 
         for idx, feature in enumerate(used_features):
             mlflow.log_param(f"features_{idx}", feature)
+
+        for idx, prompt in enumerate(config.train_prompts):
+            mlflow.log_param(f"train_prompt_{idx}", prompt)
 
         # Get wording labels
         y_wording = test_data.select("wording").to_numpy()
@@ -38,7 +43,6 @@ class TestBasicRandomForestTask(Task):
 
         content_preds = content_regressor.predict(x_features)
 
-        config = Config.get()
         mlflow.log_param("distance_metric", config.distance_metric)
         mlflow.log_param("sentence_transformer", config.sentence_transformer)
         mlflow.log_param("distance_stategy", config.distance_stategy)
