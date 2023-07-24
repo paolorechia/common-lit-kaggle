@@ -33,10 +33,10 @@ class TrainBasicLinearRegressorTask(Task):
 
         content_regressor = LinearRegression()
 
-        content_regressor.fit(x_features, y_content + 3)
+        content_regressor.fit(x_features, y_content)
 
         wording_regressor = LinearRegression()
-        wording_regressor.fit(x_features, y_wording + 3)
+        wording_regressor.fit(x_features, y_wording)
 
         return {
             "wording_regressor": wording_regressor,
@@ -62,8 +62,8 @@ class TestBasicLinearRegressorTask(Task):
         content_preds = content_regressor.predict(x_features)
 
         data_with_predictions = original_test_data.with_columns(
-            pl.Series(name="wording_preds", values=wording_preds - 3),
-            pl.Series(name="content_preds", values=content_preds - 3),
+            pl.Series(name="wording_preds", values=wording_preds),
+            pl.Series(name="content_preds", values=content_preds),
         )
 
         return {"data_with_predictions": data_with_predictions}
