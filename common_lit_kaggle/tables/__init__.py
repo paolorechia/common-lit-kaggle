@@ -7,3 +7,4 @@ from .table_summaries import InputSummariesTable
 from .table_test_split import TestSplitTable
 from .table_texts_per_prompt import TextsPerPromptTable
 from .table_train_split import TrainSplitTable
+from .table_unified_text_data import UnifiedTextDataTable

@@ -4,3 +4,4 @@ from .schema_output_prediction import OutputPredictionSchema
 from .schema_students_per_text import StudentsPerTextSchema
 from .schema_texts_per_prompt import TextsPerPromptSchema
 from .schema_train_test_split import TrainTestSplitSchema
+from .schema_unified_text_data import UnifiedTextDataSchema
