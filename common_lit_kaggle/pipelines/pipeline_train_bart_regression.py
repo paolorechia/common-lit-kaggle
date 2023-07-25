@@ -9,5 +9,6 @@ class TrainBartRegressionPipeline(Pipeline):
             [
                 tasks.ReadTrainDataTask(),
                 tasks.CreateUnifiedTextDataTask(),
+                tasks.ExploreUnifiedInputDataTask(),
             ],
         )

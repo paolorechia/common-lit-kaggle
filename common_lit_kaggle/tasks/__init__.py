@@ -10,6 +10,7 @@ from .task_add_zero_shot_label import AddZeroShotLabelTrainTask
 from .task_analyse_predictions import AnalysePredictionsTask
 from .task_create_unified_text_data import CreateUnifiedTextDataTask
 from .task_explore_input_data import ExploreInputDataTask
+from .task_explore_unified_data import ExploreUnifiedInputDataTask
 from .task_join_input_data import JoinInputTask
 from .task_linear_regressor import (
     TestBasicLinearRegressorTask,
