@@ -9,3 +9,4 @@ class UnifiedTextDataSchema(Schema):
     content = pl.Float64
     wording = pl.Float64
     unified_text = pl.Utf8
+    unified_labels = pl.Utf8

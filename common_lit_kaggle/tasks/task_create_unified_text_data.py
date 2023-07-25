@@ -11,6 +11,7 @@ class CreateUnifiedTextDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         train_data: pl.DataFrame = context["train_data"]
 
+        # Prepare a single string to train transformers
         unified_text_data = train_data.with_columns(
             pl.concat_str(
                 [
@@ -22,6 +23,15 @@ class CreateUnifiedTextDataTask(Task):
                     pl.col("prompt_question"),
                     pl.lit("\nSTUDENT ANSWER: \n"),
                     pl.col("text"),
+                ]
+            ).alias("unified_text")
+        )
+
+        # If we want to train a GPT-like model, we can include the labels as part of the text
+        # Have the string ready, so later we can just concatenate together with the unified_text
+        unified_text_data = unified_text_data.with_columns(
+            pl.concat_str(
+                [
                     pl.lit("\n\nGRADING SECTION"),
                     pl.lit("\nWORDING: "),
                     pl.col("wording"),
@@ -29,7 +39,7 @@ class CreateUnifiedTextDataTask(Task):
                     pl.col("content"),
                     pl.lit("\nEND_OF_TEXT\n"),
                 ]
-            ).alias("unified_text")
+            ).alias("unified_labels")
         )
 
         table_io.write_table(
@@ -39,6 +49,7 @@ class CreateUnifiedTextDataTask(Task):
                 "content",
                 "wording",
                 "unified_text",
+                "unified_labels",
             ),
             UnifiedTextDataTable(),
         )
