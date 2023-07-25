@@ -17,6 +17,7 @@ from .task_linear_regressor import (
     TrainBasicLinearRegressorTask,
 )
 from .task_predict_random_forest_classifiers import PredictBasicRandomForestTask
+from .task_prepare_tensor_data import PrepareTensorDataTask
 from .task_read_input_data import ReadInputDataTask
 from .task_read_prediction_input_data import ReadPredictionInputDataTask
 from .task_read_prediction_prompt_data import ReadPredictionInputPromptDataTask
