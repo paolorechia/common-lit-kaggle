@@ -8,4 +8,4 @@ class UnifiedTextDataSchema(Schema):
     prompt_id = pl.Utf8
     content = pl.Float64
     wording = pl.Float64
-    unified_text_data = pl.Utf8
+    unified_text = pl.Utf8

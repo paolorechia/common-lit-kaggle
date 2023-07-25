@@ -14,21 +14,33 @@ class CreateUnifiedTextDataTask(Task):
         unified_text_data = train_data.with_columns(
             pl.concat_str(
                 [
-                    pl.lit("Question: \n"),
+                    pl.lit("TOPIC TITLE: "),
                     pl.col("prompt_title"),
+                    pl.lit("\nREFERENCE TEXT: "),
                     pl.col("prompt_text"),
+                    pl.lit("\nQUESTION: \n"),
                     pl.col("prompt_question"),
-                    pl.lit("Student Answer: \n"),
+                    pl.lit("\nSTUDENT ANSWER: \n"),
                     pl.col("text"),
-                    pl.lit("---Grading---\n"),
-                    pl.lit("Wording: "),
+                    pl.lit("\n\nGRADING SECTION"),
+                    pl.lit("\nWORDING: "),
                     pl.col("wording"),
-                    pl.lit("\nContent: "),
+                    pl.lit("\nCONTENT: "),
                     pl.col("content"),
+                    pl.lit("\nEND_OF_TEXT\n"),
                 ]
             ).alias("unified_text")
         )
 
-        table_io.write_table(unified_text_data, UnifiedTextDataTable())
+        table_io.write_table(
+            unified_text_data.select(
+                "student_id",
+                "prompt_id",
+                "content",
+                "wording",
+                "unified_text",
+            ),
+            UnifiedTextDataTable(),
+        )
 
         return {"unified_text_data": unified_text_data}
