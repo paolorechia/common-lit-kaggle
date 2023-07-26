@@ -1,3 +1,4 @@
+import os
 import pathlib
 
 
@@ -7,7 +8,9 @@ class Config:
     @classmethod
     def get(
         cls,
-        root_dir="/home/paolo/kaggle/common-lit-kaggle/data",
+        root_dir=os.getenv(
+            "KAGGLE_DATA_DIR", "/home/paolo/kaggle/common-lit-kaggle/data"
+        ),
         input_dir=None,
         output_dir=None,
         sentence_transformer="sentence-transformers/all-MiniLM-L6-v2",
@@ -42,6 +45,7 @@ class Config:
         test_prompts,
         used_features,
     ) -> None:
+        # Config parameters that end with _dir are automatically created by the 'main.py' script.
         self.data_root_dir = pathlib.Path(root_dir)
 
         if input_dir:

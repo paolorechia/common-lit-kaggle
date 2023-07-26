@@ -1,12 +1,27 @@
+import os
 import argparse
 import textwrap
 
 import common_lit_kaggle.pipelines as pipelines
+from common_lit_kaggle.settings.config import Config
 from common_lit_kaggle.framework import build_pipeline_registry
 from common_lit_kaggle.utils.setup import create_stdout_handler
 
 if __name__ == "__main__":
     create_stdout_handler()
+
+    # Creates standard directories
+    config = Config.get()
+    attrs = dir(config)
+
+    for attr in attrs:
+        if attr.endswith("_dir"):
+            dir_path = getattr(config, attr)
+
+            try:
+                os.makedirs(dir_path)
+            except FileExistsError:
+                pass
 
     pipeline_registry = build_pipeline_registry(pipelines)
 

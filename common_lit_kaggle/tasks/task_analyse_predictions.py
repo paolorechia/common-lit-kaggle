@@ -2,6 +2,7 @@ import logging
 from typing import Any, Mapping
 
 import matplotlib.pyplot as plt
+
 try:
     import mlflow
 except ImportError:
