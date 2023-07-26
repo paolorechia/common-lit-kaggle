@@ -2,7 +2,11 @@ import logging
 from typing import Any, Mapping
 
 import matplotlib.pyplot as plt
-import mlflow
+try:
+    import mlflow
+except ImportError:
+    pass
+
 import polars as pl
 from sklearn.metrics import mean_squared_error
 
