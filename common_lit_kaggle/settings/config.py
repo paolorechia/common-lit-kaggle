@@ -60,6 +60,12 @@ class Config:
         self.plots_dir = pathlib.Path(self.data_root_dir / "plots")
         self.models_root_dir = pathlib.Path(self.data_root_dir / "models")
 
+        self.bart_model = "facebook/bart-large-cnn"
+        self.string_truncation_length = (
+            2700  # value set on trial and error, until it stopped issuing warnings
+        )
+        self.model_context_length = 1024
+
         if output_dir:
             self.data_output_dir = output_dir
         else:

@@ -1,11 +1,16 @@
+import logging
 from typing import Any, Mapping, Optional
 
 import numpy as np
 import polars as pl
 import torch
+from torch.utils.data import TensorDataset
+from transformers import AutoTokenizer
 
 from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.settings.config import Config
+
+logger = logging.getLogger(__name__)
 
 
 class PrepareTensorDataTask(Task):
@@ -18,27 +23,65 @@ class PrepareTensorDataTask(Task):
 
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         assert self.truncation_length, "Set string length truncation first!"
+
         config = Config.get()
+
+        model_path = config.bart_model
+        bart_tokenizer = AutoTokenizer.from_pretrained(model_path)
 
         input_data: pl.DataFrame = context["unified_text_data"]
 
-        # WIP: figure out how to load this data into pytorch with the right format
+        def tokenize_text(text: str):
+            assert self.truncation_length, "Set string length truncation first!"
 
-        # Should probably use the model tokenizer to create unified_text_data batches
-        # But how to handle the labels?
+            assert isinstance(text, str)
+
+            # pylint: disable=invalid-unary-operand-type
+            used_text = text[-self.truncation_length :]
+
+            assert len(used_text) <= self.truncation_length
+
+            input_ids = bart_tokenizer(used_text, return_tensors="pt")["input_ids"]
+            if len(input_ids) >= config.model_context_length:
+                raise TypeError(
+                    f"Context model length limit not respected! {len(input_ids)} > {config.model_context_length}"
+                )
+
+            return input_ids
+
+        input_ids_list = []
+        for text in input_data.select(pl.col("unified_text")).to_numpy():
+            input_ids: torch.Tensor = tokenize_text(text[0])
+
+            padding_length = config.model_context_length - len(input_ids[0])
+            padder = torch.nn.ConstantPad1d((0, padding_length), 0)
+            padded = padder((input_ids))
+            input_ids_list.append(padded)
+
+        # pylint: disable=no-member
+        input_ids_stack = torch.stack(input_ids_list)
+
         content = input_data.select("content").to_numpy().reshape(-1)
         wording = input_data.select("wording").to_numpy().reshape(-1)
 
-        print(content)
-        print(wording.shape)
-
-        # creating tensor from targets_df
         content_tensor = torch.Tensor(content.astype(np.float64))
         wording_tensor = torch.Tensor(wording.astype(np.float64))
 
-        print(content_tensor)
-        # printing out result
-        print(content_tensor.shape)
-        print(wording_tensor.shape)
+        stacked_labels = torch.stack(
+            [
+                content_tensor,
+                wording_tensor,
+            ],
+            dim=1,
+        )
 
-        return {}
+        print(input_ids_stack.shape)
+        print(stacked_labels.shape)
+        tensor_train_data = TensorDataset(
+            input_ids_stack.to(config.device), stacked_labels.to(config.device)
+        )
+        # Managed to create a TensorDataset, but is this correct? :D
+        return {
+            "tokenizer": bart_tokenizer,
+            "tensor_train_data": tensor_train_data,
+        }
