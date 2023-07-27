@@ -8,6 +8,7 @@ import os
 import time
 from typing import Any, Mapping, Optional
 
+import mlflow
 import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader, RandomSampler
@@ -147,6 +148,9 @@ def train(
                     print_loss_avg,
                 )
             )
+
+        mlflow.log_metric("loss", print_loss_avg, epoch - 1)
+        model.save_pretrained(f"trained_bart_{epoch}")
 
 
 class TrainBartTask(Task):
