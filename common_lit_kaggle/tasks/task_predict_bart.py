@@ -179,7 +179,11 @@ class PredictBertTask(Task):
         prediction_data = prediction_data.with_columns(pl.Series("wording", wording))
 
         # For now, save some duplicate columns here to use in different places
-        prediction_data = prediction_data.with_columns(pl.Series("content_preds", content))
-        prediction_data = prediction_data.with_columns(pl.Series("wording_preds", wording))
+        prediction_data = prediction_data.with_columns(
+            pl.Series("content_preds", content)
+        )
+        prediction_data = prediction_data.with_columns(
+            pl.Series("wording_preds", wording)
+        )
 
         return {"data_with_predictions": prediction_data}
