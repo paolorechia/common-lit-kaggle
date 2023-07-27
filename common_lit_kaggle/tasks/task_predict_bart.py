@@ -157,9 +157,12 @@ class PredictBertTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         bart_path = context["trained_bart_path"]
         tensors_to_predict = context["predict_input_ids_stack"]
-        prediction_data = context["test_data"]
+        prediction_data: pl.DataFrame = context["test_data"]
         bart_model = BartWithRegressionHead.from_pretrained(bart_path)
 
+        # Use limit to test it quickly
+        tensors_to_predict = tensors_to_predict[:100]
+        prediction_data = prediction_data.limit(n=100)
         bart_model.eval()
 
         content = []
@@ -175,10 +178,6 @@ class PredictBertTask(Task):
 
         logger.info("Starting prediction")
 
-        prediction_data = prediction_data.with_columns(pl.Series("content", content))
-        prediction_data = prediction_data.with_columns(pl.Series("wording", wording))
-
-        # For now, save some duplicate columns here to use in different places
         prediction_data = prediction_data.with_columns(
             pl.Series("content_preds", content)
         )
