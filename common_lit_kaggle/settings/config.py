@@ -65,6 +65,9 @@ class Config:
             2700  # value set on trial and error, until it stopped issuing warnings
         )
         self.model_context_length = 1024
+        self.num_train_epochs = 2
+        self.batch_size = 64
+        self.learning_rate = 0.001
 
         if output_dir:
             self.data_output_dir = output_dir
