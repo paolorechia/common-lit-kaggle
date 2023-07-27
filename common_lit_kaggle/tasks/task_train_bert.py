@@ -10,6 +10,7 @@ from typing import Any, Mapping, Optional
 import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader, RandomSampler
+from tqdm import tqdm
 from transformers import BartModel
 from transformers.models.bart.configuration_bart import BartConfig
 
@@ -70,6 +71,8 @@ class BartWithRegressionHead(BartModel):
 
         # Black magic from Transformers library source code
         eos_mask = input_ids.eq(self.config.eos_token_id).to(hidden_states.device)
+        if len(torch.unique_consecutive(eos_mask.sum(1))) > 1:
+            raise ValueError("All examples must have the same number of <eos> tokens.")
 
         sentence_representation = hidden_states[eos_mask, :].view(
             hidden_states.size(0), -1, hidden_states.size(-1)
@@ -96,7 +99,7 @@ def timeSince(since, percent):
 def train_epoch(dataloader, model: BartWithRegressionHead, optimizer, criterion):
     """Adapted from: https://huggingface.co/docs/transformers/v4.26.1/training#training-loop"""
     total_loss = 0
-    for data in dataloader:
+    for data in tqdm(dataloader):
         input_tensor, target_tensor = data
 
         optimizer.zero_grad()
@@ -112,9 +115,6 @@ def train_epoch(dataloader, model: BartWithRegressionHead, optimizer, criterion)
 
         optimizer.zero_grad()
 
-        # progress_bar.update(1)
-        model_output = model.forward(input_tensor)
-
         optimizer.step()
         total_loss += loss.item()
 
@@ -126,21 +126,18 @@ def train(
     model,
     n_epochs,
     learning_rate=0.001,
-    print_every=100,
-    plot_every=100,
+    print_every=1,
 ):
     start = time.time()
-    plot_losses = []
     print_loss_total = 0  # Reset every print_every
-    plot_loss_total = 0  # Reset every plot_every
 
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate)
     criterion = nn.MSELoss()
 
     for epoch in range(1, n_epochs + 1):
+        print("Starting epoch: ", epoch)
         loss = train_epoch(train_dataloader, model, optimizer, criterion)
         print_loss_total += loss
-        plot_loss_total += loss
 
         if epoch % print_every == 0:
             print_loss_avg = print_loss_total / print_every
@@ -154,11 +151,6 @@ def train(
                     print_loss_avg,
                 )
             )
-
-        if epoch % plot_every == 0:
-            plot_loss_avg = plot_loss_total / plot_every
-            plot_losses.append(plot_loss_avg)
-            plot_loss_total = 0
 
 
 class TrainBertTask(Task):
@@ -177,6 +169,8 @@ class TrainBertTask(Task):
 
         bart_model = BartWithRegressionHead.from_pretrained(model_path)
         bart_model.to(config.device)
+
+        bart_model.train(True)
         train_sampler = RandomSampler(train_data)
         train_dataloader = DataLoader(
             train_data, sampler=train_sampler, batch_size=batch_size
@@ -187,4 +181,5 @@ class TrainBertTask(Task):
             num_epochs,
             learning_rate,
         )
+        bart_model.save_pretrained("trained_bart")
         return {}

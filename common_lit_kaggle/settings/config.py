@@ -60,13 +60,23 @@ class Config:
         self.plots_dir = pathlib.Path(self.data_root_dir / "plots")
         self.models_root_dir = pathlib.Path(self.data_root_dir / "models")
 
-        self.bart_model = "facebook/bart-large-cnn"
+        # Bart Base
         self.string_truncation_length = (
-            2700  # value set on trial and error, until it stopped issuing warnings
+            1500  # value set on trial and error, until it stopped issuing warnings
         )
-        self.model_context_length = 1024
+        self.bart_model = "facebook/bart-base"
+        self.model_context_length = 768
+        self.batch_size = 8
+
+        # Large bart
+        # self.bart_model = "facebook/bart-large-cnn"
+        # self.model_context_length = 1024
+        # self.string_truncation_length = (
+        #     2700  # value set on trial and error, until it stopped issuing warnings
+        # )
+        # self.batch_size = 2
+
         self.num_train_epochs = 2
-        self.batch_size = 2
         self.learning_rate = 0.001
         self.num_of_labels = 2
 

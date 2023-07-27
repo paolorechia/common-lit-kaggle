@@ -54,8 +54,14 @@ class PrepareTensorDataTask(Task):
             input_ids: torch.Tensor = tokenize_text(text[0])
 
             padding_length = config.model_context_length - len(input_ids[0])
+            if padding_length < 0:
+                # If we let data exceet context size, we crash during training loop
+                raise ValueError("Data does not fit into context size")
+
             padder = torch.nn.ConstantPad1d((0, padding_length), 0)
             padded = padder((input_ids)).reshape(-1)
+            padded[0] = float(bart_tokenizer.eos_token_id)
+
             input_ids_list.append(padded)
 
         # pylint: disable=no-member
