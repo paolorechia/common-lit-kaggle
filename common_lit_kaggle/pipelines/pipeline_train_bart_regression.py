@@ -5,7 +5,7 @@ from common_lit_kaggle.settings.config import Config
 
 class TrainBartRegressionPipeline(Pipeline):
     def __init__(self) -> None:
-        prepare_tensor_data = tasks.PrepareTensorDataTask()
+        prepare_tensor_data = tasks.PrepareTensorTrainDataTask()
         config = Config.get()
         # Bart supports up to 1024 sub-word tokens
         # Let's consider only the last 4096 characters
@@ -14,13 +14,24 @@ class TrainBartRegressionPipeline(Pipeline):
         prepare_tensor_data.set_string_length_truncation(
             config.string_truncation_length
         )
+
+        predict_prepare_tensor_data = tasks.PrepareTensorPredictDataTask()
+        predict_prepare_tensor_data.set_string_length_truncation(
+            config.string_truncation_length
+        )
+
         super().__init__(
             "train_bart_regression",
             [
                 tasks.ReadTrainDataTask(),
-                tasks.CreateUnifiedTextDataTask(),
+                tasks.CreateUnifiedTextTrainDataTask(),
                 tasks.ExploreUnifiedInputDataTask(),
                 prepare_tensor_data,
-                tasks.TrainBertTask(),
+                tasks.TrainBartTask(),
+                tasks.ReadTestDataTask(),
+                tasks.CreateUnifiedTextTestDataTask(),
+                predict_prepare_tensor_data,
+                tasks.PredictBertTask(),
+                tasks.AnalysePredictionsTask()
             ],
         )

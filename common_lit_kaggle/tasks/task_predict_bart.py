@@ -5,12 +5,12 @@ https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html
 import logging
 import math
 import time
+from tqdm import tqdm
 from typing import Any, Mapping, Optional
 
 import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader, RandomSampler
-from tqdm import tqdm
 from transformers import BartModel
 from transformers.models.bart.configuration_bart import BartConfig
 
@@ -153,33 +153,39 @@ def train(
             )
 
 
-class TrainBertTask(Task):
+class PredictBertTask(Task):
     def __init__(self, name: str | None = None) -> None:
         super().__init__(name)
         self.truncation_length: Optional[int] = None
 
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
-        train_data = context["tensor_train_data"]
-        config = Config.get()
 
-        model_path = config.bart_model
-        num_epochs = config.num_train_epochs
-        batch_size = config.batch_size
-        learning_rate = config.learning_rate
+        bart_path = context["trained_bart_path"]
+        tensors_to_predict = context["predict_input_ids_stack"]
+        prediction_data = context["test_data"]
+        bart_model = BartWithRegressionHead.from_pretrained(bart_path)
 
-        bart_model = BartWithRegressionHead.from_pretrained(model_path)
-        bart_model.to(config.device)
+        bart_model.eval()
 
-        bart_model.train(True)
-        train_sampler = RandomSampler(train_data)
-        train_dataloader = DataLoader(
-            train_data, sampler=train_sampler, batch_size=batch_size
+        import polars as pl
+        content = []
+        wording = []
+        print(tensors_to_predict.shape)
+        for tensor in tensors_to_predict:
+            print(tensor[0:5], tensor.shape)
+            result = bart_model.forward(tensor.reshape(1, 768))
+            print(result)
+            content.append(result.cpu().detach()[0][0])
+            wording.append(result.cpu().detach()[0][1])
+
+
+
+        prediction_data = prediction_data.with_columns(
+            pl.Series("content", content)
         )
-        train(
-            train_dataloader,
-            bart_model,
-            num_epochs,
-            learning_rate,
+        
+        prediction_data = prediction_data.with_columns(
+            pl.Series("wording", wording)
         )
-        bart_model.save_pretrained("trained_bart")
-        return {}
+
+        return {"data_with_predictions": prediction_data}

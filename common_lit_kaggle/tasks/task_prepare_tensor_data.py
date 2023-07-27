@@ -13,7 +13,7 @@ from common_lit_kaggle.settings.config import Config
 logger = logging.getLogger(__name__)
 
 
-class PrepareTensorDataTask(Task):
+class PrepareTensorTrainDataTask(Task):
     def __init__(self, name: str | None = None) -> None:
         super().__init__(name)
         self.truncation_length: Optional[int] = None
@@ -29,7 +29,7 @@ class PrepareTensorDataTask(Task):
         model_path = config.bart_model
         bart_tokenizer = AutoTokenizer.from_pretrained(model_path)
 
-        input_data: pl.DataFrame = context["unified_text_data"]
+        input_data: pl.DataFrame = context["train_unified_text_data"]
 
         def tokenize_text(text: str):
             assert self.truncation_length, "Set string length truncation first!"
@@ -88,4 +88,63 @@ class PrepareTensorDataTask(Task):
         return {
             "tokenizer": bart_tokenizer,
             "tensor_train_data": tensor_train_data,
+        }
+
+
+
+class PrepareTensorPredictDataTask(Task):
+    def __init__(self, name: str | None = None) -> None:
+        super().__init__(name)
+        self.truncation_length: Optional[int] = None
+
+    def set_string_length_truncation(self, truncation_length: int):
+        self.truncation_length = truncation_length
+
+    def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
+        assert self.truncation_length, "Set string length truncation first!"
+
+        config = Config.get()
+
+        model_path = config.bart_model
+        bart_tokenizer = AutoTokenizer.from_pretrained(model_path)
+
+        input_data: pl.DataFrame = context["test_unified_text_data"]
+
+        def tokenize_text(text: str):
+            assert self.truncation_length, "Set string length truncation first!"
+
+            assert isinstance(text, str)
+
+            # pylint: disable=invalid-unary-operand-type
+            used_text = text[-self.truncation_length :]
+
+            assert len(used_text) <= self.truncation_length
+
+            input_ids = bart_tokenizer(used_text, return_tensors="pt")["input_ids"]
+            if len(input_ids) >= config.model_context_length:
+                raise TypeError(
+                    f"Context model length limit not respected! {len(input_ids)} > {config.model_context_length}"
+                )
+
+            return input_ids
+
+        input_ids_list = []
+        for text in input_data.select(pl.col("unified_text")).to_numpy():
+            input_ids: torch.Tensor = tokenize_text(text[0])
+
+            padding_length = config.model_context_length - len(input_ids[0])
+            if padding_length < 0:
+                # If we let data exceet context size, we crash during training loop
+                raise ValueError("Data does not fit into context size")
+
+            padder = torch.nn.ConstantPad1d((0, padding_length), 0)
+            padded = padder((input_ids)).reshape(-1)
+            padded[0] = float(bart_tokenizer.eos_token_id)
+
+            input_ids_list.append(padded)
+
+        # pylint: disable=no-member
+        input_ids_stack = torch.stack(input_ids_list)
+        return {
+            "predict_input_ids_stack": input_ids_stack
         }

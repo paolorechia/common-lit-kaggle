@@ -8,7 +8,7 @@ from .task_add_sentence_embedding import (
 )
 from .task_add_zero_shot_label import AddZeroShotLabelTrainTask
 from .task_analyse_predictions import AnalysePredictionsTask
-from .task_create_unified_text_data import CreateUnifiedTextDataTask
+from .task_create_unified_text_data import CreateUnifiedTextTrainDataTask, CreateUnifiedTextTestDataTask
 from .task_explore_input_data import ExploreInputDataTask
 from .task_explore_unified_data import ExploreUnifiedInputDataTask
 from .task_join_input_data import JoinInputTask
@@ -17,7 +17,7 @@ from .task_linear_regressor import (
     TrainBasicLinearRegressorTask,
 )
 from .task_predict_random_forest_classifiers import PredictBasicRandomForestTask
-from .task_prepare_tensor_data import PrepareTensorDataTask
+from .task_prepare_tensor_data import PrepareTensorTrainDataTask, PrepareTensorPredictDataTask
 from .task_read_input_data import ReadInputDataTask
 from .task_read_prediction_input_data import ReadPredictionInputDataTask
 from .task_read_prediction_prompt_data import ReadPredictionInputPromptDataTask
@@ -27,5 +27,6 @@ from .task_read_train_data import ReadTrainDataTask
 from .task_split_train_test import SplitTrainTestByPromptTask
 from .task_test_random_forest_classifiers import TestBasicRandomForestTask
 from .task_train_basic_random_forest import TrainBasicRandomForestTask
-from .task_train_bert import TrainBertTask
+from .task_train_bart import TrainBartTask
 from .task_write_predictions import WritePredictionsTask
+from .task_predict_bart import PredictBertTask

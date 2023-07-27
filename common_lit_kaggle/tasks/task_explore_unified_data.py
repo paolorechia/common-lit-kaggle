@@ -10,7 +10,7 @@ from common_lit_kaggle.settings.config import Config
 
 class ExploreUnifiedInputDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
-        input_data: pl.DataFrame = context["unified_text_data"]
+        input_data: pl.DataFrame = context["train_unified_text_data"]
         text_length = input_data.select(
             pl.col("unified_text").str.lengths().alias("input_text_length")
         ).sort(by=pl.col("input_text_length"))
