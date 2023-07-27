@@ -27,6 +27,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pylint]
 disable = [
+    "fixme",
     "missing-module-docstring",
     "unused-import",
     "missing-function-docstring",

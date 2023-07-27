@@ -55,7 +55,7 @@ class PrepareTensorDataTask(Task):
 
             padding_length = config.model_context_length - len(input_ids[0])
             padder = torch.nn.ConstantPad1d((0, padding_length), 0)
-            padded = padder((input_ids))
+            padded = padder((input_ids)).reshape(-1)
             input_ids_list.append(padded)
 
         # pylint: disable=no-member
@@ -75,8 +75,6 @@ class PrepareTensorDataTask(Task):
             dim=1,
         )
 
-        print(input_ids_stack.shape)
-        print(stacked_labels.shape)
         tensor_train_data = TensorDataset(
             input_ids_stack.to(config.device), stacked_labels.to(config.device)
         )

@@ -66,8 +66,9 @@ class Config:
         )
         self.model_context_length = 1024
         self.num_train_epochs = 2
-        self.batch_size = 64
+        self.batch_size = 2
         self.learning_rate = 0.001
+        self.num_of_labels = 2
 
         if output_dir:
             self.data_output_dir = output_dir
