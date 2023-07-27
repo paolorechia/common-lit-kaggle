@@ -5,12 +5,12 @@ https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html
 import logging
 import math
 import time
-from tqdm import tqdm
 from typing import Any, Mapping, Optional
 
+import polars as pl
 import torch
 from torch import nn, optim
-from torch.utils.data import DataLoader, RandomSampler
+from tqdm import tqdm
 from transformers import BartModel
 from transformers.models.bart.configuration_bart import BartConfig
 
@@ -112,10 +112,6 @@ def train_epoch(dataloader, model: BartWithRegressionHead, optimizer, criterion)
         optimizer.step()
 
         # lr_scheduler.step()
-
-        optimizer.zero_grad()
-
-        optimizer.step()
         total_loss += loss.item()
 
     return total_loss / len(dataloader)
@@ -159,7 +155,6 @@ class PredictBertTask(Task):
         self.truncation_length: Optional[int] = None
 
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
-
         bart_path = context["trained_bart_path"]
         tensors_to_predict = context["predict_input_ids_stack"]
         prediction_data = context["test_data"]
@@ -167,25 +162,21 @@ class PredictBertTask(Task):
 
         bart_model.eval()
 
-        import polars as pl
         content = []
         wording = []
-        print(tensors_to_predict.shape)
-        for tensor in tensors_to_predict:
-            print(tensor[0:5], tensor.shape)
+
+        config = Config.get()
+        batch_size = config.batch_size
+        # TODO: make this prediction work in batches too
+        for tensor in tqdm(tensors_to_predict):
             result = bart_model.forward(tensor.reshape(1, 768))
-            print(result)
             content.append(result.cpu().detach()[0][0])
             wording.append(result.cpu().detach()[0][1])
 
+        logger.info("Starting prediction")
 
+        prediction_data = prediction_data.with_columns(pl.Series("content", content))
 
-        prediction_data = prediction_data.with_columns(
-            pl.Series("content", content)
-        )
-        
-        prediction_data = prediction_data.with_columns(
-            pl.Series("wording", wording)
-        )
+        prediction_data = prediction_data.with_columns(pl.Series("wording", wording))
 
         return {"data_with_predictions": prediction_data}

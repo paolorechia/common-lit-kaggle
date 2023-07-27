@@ -32,6 +32,6 @@ class TrainBartRegressionPipeline(Pipeline):
                 tasks.CreateUnifiedTextTestDataTask(),
                 predict_prepare_tensor_data,
                 tasks.PredictBertTask(),
-                tasks.AnalysePredictionsTask()
+                tasks.AnalysePredictionsTask(),
             ],
         )

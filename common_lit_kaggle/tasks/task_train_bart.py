@@ -4,13 +4,14 @@ https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html
 """
 import logging
 import math
+import os
 import time
-from tqdm import tqdm
 from typing import Any, Mapping, Optional
 
 import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader, RandomSampler
+from tqdm import tqdm
 from transformers import BartModel
 from transformers.models.bart.configuration_bart import BartConfig
 
@@ -110,12 +111,7 @@ def train_epoch(dataloader, model: BartWithRegressionHead, optimizer, criterion)
         loss.backward()
 
         optimizer.step()
-
         # lr_scheduler.step()
-
-        optimizer.zero_grad()
-
-        optimizer.step()
         total_loss += loss.item()
 
     return total_loss / len(dataloader)
@@ -160,12 +156,10 @@ class TrainBartTask(Task):
 
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         train_data = context["tensor_train_data"]
-        # import os
-        # if os.path.exists("trained_bart"):
-        #     logger.info("Model already trained!")
-        #     return {
-        #     "trained_bart_path": "trained_bart"
-        # }
+
+        if os.path.exists("trained_bart"):
+            logger.info("Model already trained!")
+            return {"trained_bart_path": "trained_bart"}
 
         config = Config.get()
 
@@ -189,6 +183,4 @@ class TrainBartTask(Task):
             learning_rate,
         )
         bart_model.save_pretrained("trained_bart")
-        return {
-            "trained_bart_path": "trained_bart"
-        }
+        return {"trained_bart_path": "trained_bart"}

@@ -28,3 +28,4 @@ class PredictBasicRandomForestTask(Task):
             pl.Series("content", content_preds)
         )
 
+        return {}

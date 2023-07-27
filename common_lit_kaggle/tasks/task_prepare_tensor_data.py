@@ -91,7 +91,6 @@ class PrepareTensorTrainDataTask(Task):
         }
 
 
-
 class PrepareTensorPredictDataTask(Task):
     def __init__(self, name: str | None = None) -> None:
         super().__init__(name)
@@ -145,6 +144,4 @@ class PrepareTensorPredictDataTask(Task):
 
         # pylint: disable=no-member
         input_ids_stack = torch.stack(input_ids_list)
-        return {
-            "predict_input_ids_stack": input_ids_stack
-        }
+        return {"predict_input_ids_stack": input_ids_stack}
