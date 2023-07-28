@@ -161,10 +161,6 @@ class TrainBartTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         train_data = context["tensor_train_data"]
 
-        # if os.path.exists("trained_bart"):
-        #     logger.info("Model already trained!")
-        #     return {"trained_bart_path": "trained_bart"}
-
         config = Config.get()
 
         model_path = config.bart_model

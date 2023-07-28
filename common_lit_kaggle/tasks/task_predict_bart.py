@@ -155,14 +155,11 @@ class PredictBertTask(Task):
         self.truncation_length: Optional[int] = None
 
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
-        bart_path = context["trained_bart_path"]
+        bart_path = "trained_bart"
         tensors_to_predict = context["predict_input_ids_stack"]
         prediction_data: pl.DataFrame = context["test_data"]
         bart_model = BartWithRegressionHead.from_pretrained(bart_path)
 
-        # Use limit to test it quickly
-        tensors_to_predict = tensors_to_predict[:100]
-        prediction_data = prediction_data.limit(n=100)
         bart_model.eval()
 
         content = []

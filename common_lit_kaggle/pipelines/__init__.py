@@ -9,5 +9,6 @@ from .pipeline_set_linear_regression import SentenceTransformerLinearRegressionP
 from .pipeline_set_random_forest import SentenceTransformerRandomForestPipeline
 from .pipeline_split_train_test import SplitTrainTestPipeline
 from .pipeline_test_bart_checkpoints import TestBartCheckpoints
+from .pipeline_test_bart_model_full_data import TestBartFullData
 from .pipeline_train_bart_regression import TrainBartRegressionPipeline
 from .pipeline_zero_shot import ZeroShotRandomForestPipeline
