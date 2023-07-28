@@ -1,14 +1,11 @@
-from .pipeline_basic_linear_regressor import BasicLinearRegressorPipeline
-from .pipeline_basic_random_forest import BasicRandomForestPipeline
-from .pipeline_explore_data import ExploreDataPipeline
-from .pipeline_predict_basic_random_forest import BasicPredictRandomForestPipeline
-from .pipeline_predict_set_random_forest import (
+from .bart import TestBartCheckpoints, TestBartFullData, TrainBartRegressionPipeline
+from .basic_ml import (
+    BasicLinearRegressorPipeline,
+    BasicPredictRandomForestPipeline,
+    BasicRandomForestPipeline,
+    SentenceTransformerLinearRegressionPipeline,
+    SentenceTransformerRandomForestPipeline,
     SentenceTransformersPredictRandomForestPipeline,
 )
-from .pipeline_set_linear_regression import SentenceTransformerLinearRegressionPipeline
-from .pipeline_set_random_forest import SentenceTransformerRandomForestPipeline
-from .pipeline_split_train_test import SplitTrainTestPipeline
-from .pipeline_test_bart_checkpoints import TestBartCheckpoints
-from .pipeline_test_bart_model_full_data import TestBartFullData
-from .pipeline_train_bart_regression import TrainBartRegressionPipeline
-from .pipeline_zero_shot import ZeroShotRandomForestPipeline
+from .data_split import ExploreDataPipeline, SplitTrainTestPipeline
+from .zero_shot import ZeroShotRandomForestPipeline

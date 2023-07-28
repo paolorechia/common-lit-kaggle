@@ -1,11 +1,11 @@
-from common_lit_kaggle import tasks
 from common_lit_kaggle.framework import Pipeline
 from common_lit_kaggle.settings.config import Config
+from common_lit_kaggle.tasks import bart, basic_ml, data_split
 
 
 class TrainBartRegressionPipeline(Pipeline):
     def __init__(self) -> None:
-        prepare_tensor_data = tasks.PrepareTensorTrainDataTask()
+        prepare_tensor_data = bart.PrepareTensorTrainDataTask()
         config = Config.get()
         # Bart supports up to 1024 sub-word tokens
         # Let's consider only the last 4096 characters
@@ -15,7 +15,7 @@ class TrainBartRegressionPipeline(Pipeline):
             config.string_truncation_length
         )
 
-        predict_prepare_tensor_data = tasks.PrepareTensorPredictDataTask()
+        predict_prepare_tensor_data = bart.PrepareTensorPredictDataTask()
         predict_prepare_tensor_data.set_string_length_truncation(
             config.string_truncation_length
         )
@@ -23,16 +23,16 @@ class TrainBartRegressionPipeline(Pipeline):
         super().__init__(
             "train_bart_regression",
             [
-                tasks.ReadTrainDataTask(),
-                tasks.CreateUnifiedTextTrainDataTask(),
-                tasks.ExploreUnifiedInputDataTask(),
+                data_split.ReadTrainDataTask(),
+                bart.CreateUnifiedTextTrainDataTask(),
+                bart.ExploreUnifiedInputDataTask(),
                 prepare_tensor_data,
-                tasks.TrainBartTask(),
-                tasks.ReadTestDataTask(),
-                tasks.CreateUnifiedTextTestDataTask(),
+                bart.TrainBartTask(),
+                data_split.ReadTestDataTask(),
+                bart.CreateUnifiedTextTestDataTask(),
                 predict_prepare_tensor_data,
-                tasks.PredictBertTask(),
-                tasks.WritePredictionsTask(),
-                tasks.AnalysePredictionsTask(),
+                bart.PredictBertTask(),
+                data_split.WritePredictionsTask(),
+                basic_ml.AnalysePredictionsTask(),
             ],
         )

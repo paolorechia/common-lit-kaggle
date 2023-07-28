@@ -1,5 +1,4 @@
-from itertools import product
-from typing import Any, List, Mapping
+from typing import Any, Mapping
 
 import matplotlib.pyplot as plt
 import polars as pl
