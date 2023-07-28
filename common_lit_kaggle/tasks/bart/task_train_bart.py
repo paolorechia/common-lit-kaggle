@@ -43,8 +43,6 @@ class TrainBartTask(Task):
         train_model(
             train_dataloader,
             bart_model,
-            num_epochs,
-            learning_rate,
         )
         bart_model.save_pretrained("trained_bart")
         return {"trained_bart_path": "trained_bart"}

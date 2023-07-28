@@ -1,9 +1,11 @@
 import math
 import time
+from pathlib import Path
 
 from torch import nn, optim
 from tqdm import tqdm
 
+from common_lit_kaggle.settings.config import Config
 from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 from .bart import BartWithRegressionHead
@@ -49,17 +51,17 @@ def train_epoch(dataloader, model: BartWithRegressionHead, optimizer, criterion)
 def train_model(
     train_dataloader,
     model,
-    n_epochs,
-    learning_rate=0.001,
     print_every=1,
 ):
+    config = Config.get()
+
     start = time.time()
     print_loss_total = 0  # Reset every print_every
 
-    optimizer = optim.AdamW(model.parameters(), lr=learning_rate)
+    optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
     criterion = nn.MSELoss()
 
-    for epoch in range(1, n_epochs + 1):
+    for epoch in range(1, config.num_train_epochs + 1):
         print("Starting epoch: ", epoch)
         loss = train_epoch(train_dataloader, model, optimizer, criterion)
         print_loss_total += loss
@@ -70,12 +72,15 @@ def train_model(
             print(
                 "%s (%d %d%%) %.4f"
                 % (
-                    timeSince(start, epoch / n_epochs),
+                    timeSince(start, epoch / config.num_train_epochs),
                     epoch,
-                    epoch / n_epochs * 100,
+                    epoch / config.num_train_epochs * 100,
                     print_loss_avg,
                 )
             )
 
         mlflow.log_metric("loss", print_loss_avg, epoch - 1)
-        model.save_pretrained(f"trained_bart_{epoch}")
+        if config.save_checkpoints:
+            checkpoint_path = Path(config.checkpoints_dir / f"trained_bart_{epoch}")
+            print(f"Saving checkpoint for epoch {epoch} at '{checkpoint_path}'")
+            model.save_pretrained(checkpoint_path)
