@@ -22,6 +22,7 @@ class Config:
         # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
         bart_model="facebook/bart-base",
         run_with_small_sample=False,
+        num_train_epochs=100,
         batch_size=8,
     ):
         if cls._config is None:
@@ -36,6 +37,7 @@ class Config:
                 used_features,
                 bart_model,
                 run_with_small_sample,
+                num_train_epochs,
                 batch_size,
             )
 
@@ -53,6 +55,7 @@ class Config:
         used_features,
         bart_model,
         run_with_small_sample,
+        num_train_epochs,
         batch_size,
     ) -> None:
         # Config parameters that end with _dir are automatically created by the 'main.py' script.
@@ -86,7 +89,7 @@ class Config:
         # )
         # self.batch_size = 2
 
-        self.num_train_epochs = 100
+        self.num_train_epochs = num_train_epochs
         self.learning_rate = 0.0000001
         self.num_of_labels = 2
         self.run_with_small_sample = run_with_small_sample
