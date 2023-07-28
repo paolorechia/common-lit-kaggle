@@ -28,9 +28,7 @@ class TrainBartTask(Task):
         config = Config.get()
 
         model_path = config.bart_model
-        num_epochs = config.num_train_epochs
         batch_size = config.batch_size
-        learning_rate = config.learning_rate
 
         bart_model = BartWithRegressionHead.from_pretrained(model_path)
         bart_model.to(config.device)
@@ -44,5 +42,6 @@ class TrainBartTask(Task):
             train_dataloader,
             bart_model,
         )
+
         bart_model.save_pretrained("trained_bart")
-        return {"trained_bart_path": "trained_bart"}
+        return {"trained_bart_path": "trained_bart", "bart_model": bart_model}
