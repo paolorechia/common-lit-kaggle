@@ -5,7 +5,6 @@ https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html
 import logging
 from typing import Any, Mapping, Optional
 
-import mlflow
 import polars as pl
 from sklearn.metrics import mean_squared_error
 from tqdm import tqdm
@@ -13,6 +12,7 @@ from tqdm import tqdm
 from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.modeling import BartWithRegressionHead
 from common_lit_kaggle.settings.config import Config
+from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 logger = logging.getLogger(__name__)
 

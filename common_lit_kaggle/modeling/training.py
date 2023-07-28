@@ -1,9 +1,10 @@
 import math
 import time
 
-import mlflow
 from torch import nn, optim
 from tqdm import tqdm
+
+from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 from .bart import BartWithRegressionHead
 

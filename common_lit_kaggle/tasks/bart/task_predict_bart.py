@@ -21,17 +21,21 @@ class PredictBertTask(Task):
         self.truncation_length: Optional[int] = None
 
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
+        config = Config.get()
+
         bart_path = "trained_bart"
         tensors_to_predict = context["predict_input_ids_stack"]
         prediction_data: pl.DataFrame = context["test_data"]
-        bart_model = BartWithRegressionHead.from_pretrained(bart_path)
 
+        if config.run_with_small_sample:
+            prediction_data = prediction_data.limit(config.small_sample_size)
+
+        bart_model = BartWithRegressionHead.from_pretrained(bart_path)
         bart_model.eval()
 
         content = []
         wording = []
 
-        config = Config.get()
         batch_size = config.batch_size
         # TODO: make this prediction work in batches too
         for tensor in tqdm(tensors_to_predict):

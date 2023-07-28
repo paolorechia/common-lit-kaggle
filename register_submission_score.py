@@ -1,11 +1,11 @@
 import argparse
-import mlflow
+from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 
 def submit_score(run_id, score):
     with mlflow.start_run(run_id=run_id) as _:
         mlflow.log_metric("submission_score", score)
-    
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

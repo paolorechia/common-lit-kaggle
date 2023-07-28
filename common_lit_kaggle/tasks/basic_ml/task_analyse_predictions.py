@@ -2,17 +2,12 @@ import logging
 from typing import Any, Mapping
 
 import matplotlib.pyplot as plt
-
-try:
-    import mlflow
-except ImportError:
-    pass
-
 import polars as pl
 from sklearn.metrics import mean_squared_error
 
 from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.settings.config import Config
+from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 logger = logging.getLogger(__name__)
 

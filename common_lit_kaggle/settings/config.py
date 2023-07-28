@@ -1,3 +1,4 @@
+"""This configuration module could use some refactor to reduce duplication too"""
 import os
 import pathlib
 
@@ -19,6 +20,9 @@ class Config:
         test_prompts=None,
         used_features=None,
         # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
+        bart_model="facebook/bart-base",
+        run_with_small_sample=False,
+        batch_size=8,
     ):
         if cls._config is None:
             Config._config = cls(
@@ -30,6 +34,9 @@ class Config:
                 train_prompts,
                 test_prompts,
                 used_features,
+                bart_model,
+                run_with_small_sample,
+                batch_size,
             )
 
         return Config._config
@@ -44,6 +51,9 @@ class Config:
         train_prompts,
         test_prompts,
         used_features,
+        bart_model,
+        run_with_small_sample,
+        batch_size,
     ) -> None:
         # Config parameters that end with _dir are automatically created by the 'main.py' script.
         self.data_root_dir = pathlib.Path(root_dir)
@@ -64,9 +74,9 @@ class Config:
         self.string_truncation_length = (
             1500  # value set on trial and error, until it stopped issuing warnings
         )
-        self.bart_model = "facebook/bart-base"
+        self.bart_model = bart_model
         self.model_context_length = 768
-        self.batch_size = 8
+        self.batch_size = batch_size
 
         # Large bart
         # self.bart_model = "facebook/bart-large-cnn"
@@ -79,6 +89,8 @@ class Config:
         self.num_train_epochs = 100
         self.learning_rate = 0.0000001
         self.num_of_labels = 2
+        self.run_with_small_sample = run_with_small_sample
+        self.small_sample_size = 10
 
         if output_dir:
             self.data_output_dir = output_dir

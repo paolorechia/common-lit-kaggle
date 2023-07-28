@@ -87,6 +87,9 @@ class PrepareTensorTrainDataTask(Task):
 
         input_data: pl.DataFrame = context["train_unified_text_data"]
 
+        if config.run_with_small_sample:
+            input_data = input_data.sample(config.small_sample_size)
+
         input_ids_stack = dataframe_to_tensors(
             input_data=input_data,
             bart_tokenizer=bart_tokenizer,
@@ -136,6 +139,8 @@ class PrepareTensorPredictDataTask(Task):
         bart_tokenizer = AutoTokenizer.from_pretrained(model_path)
 
         input_data: pl.DataFrame = context["test_unified_text_data"]
+        if config.run_with_small_sample:
+            input_data = input_data.limit(config.small_sample_size)
 
         input_ids_stack = dataframe_to_tensors(
             input_data=input_data,
