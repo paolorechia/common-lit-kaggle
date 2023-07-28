@@ -32,6 +32,7 @@ from .task_read_prompt_data import ReadInputPromptDataTask
 from .task_read_test_data import ReadTestDataTask
 from .task_read_train_data import ReadTrainDataTask
 from .task_split_train_test import SplitTrainTestByPromptTask
+from .task_test_bart_checkpoints import TestBartCheckpointsTask
 from .task_test_random_forest_classifiers import TestBasicRandomForestTask
 from .task_train_bart import TrainBartTask
 from .task_train_basic_random_forest import TrainBasicRandomForestTask
