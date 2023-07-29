@@ -1,6 +1,7 @@
 from common_lit_kaggle.framework import Pipeline
 from common_lit_kaggle.settings.config import Config
 from common_lit_kaggle.tasks import bart, basic_ml, data_split
+from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 
 class TrainBartRegressionPipeline(Pipeline):
@@ -18,6 +19,15 @@ class TrainBartRegressionPipeline(Pipeline):
         predict_prepare_tensor_data = bart.PrepareTensorPredictDataTask()
         predict_prepare_tensor_data.set_string_length_truncation(
             config.string_truncation_length
+        )
+        mlflow.set_tags({"name": config.bart_model})
+        mlflow.log_params(
+            {
+                "batch_size": config.batch_size,
+                "learning_rate": config.learning_rate,
+                "truncation_length": config.string_truncation_length,
+                "model_context_length": config.model_context_length,
+            }
         )
 
         super().__init__(

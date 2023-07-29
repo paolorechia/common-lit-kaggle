@@ -27,21 +27,9 @@ def plot_labels_x_predictions(name, labels, predictions):
 
 class AnalysePredictionsTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
-        config = Config.get()
-
         logger.info("Analysing predictions...")
 
         data_with_predictions: pl.DataFrame = context["data_with_predictions"]
-        mlflow.set_tag("name", self.name)
-        for idx, feature in enumerate(config.used_features):
-            mlflow.log_param(f"features_{idx}", feature)
-
-        for idx, prompt in enumerate(config.train_prompts):
-            mlflow.log_param(f"train_prompt_{idx}", prompt)
-
-        mlflow.log_param("distance_metric", config.distance_metric)
-        mlflow.log_param("sentence_transformer", config.sentence_transformer)
-        mlflow.log_param("distance_stategy", config.distance_stategy)
 
         wording_score = mean_squared_error(
             data_with_predictions.select("wording_preds").to_numpy(),
@@ -64,18 +52,5 @@ class AnalysePredictionsTask(Task):
         mean = (content_score + wording_score) / 2
         logger.info("Mean error: %s", mean)
         mlflow.log_metric("avg_mean_squared_error", mean)
-
-        logger.info("Plotting predictions...")
-        plot_labels_x_predictions(
-            "wording",
-            data_with_predictions.select("wording_preds").to_numpy(),
-            data_with_predictions.select("wording").to_numpy(),
-        )
-
-        plot_labels_x_predictions(
-            "content",
-            data_with_predictions.select("content_preds").to_numpy(),
-            data_with_predictions.select("content").to_numpy(),
-        )
 
         return {}

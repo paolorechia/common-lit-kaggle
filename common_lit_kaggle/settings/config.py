@@ -2,6 +2,8 @@
 import os
 import pathlib
 
+# pylint: disable=too-many-statements
+
 
 class Config:
     _config = None
@@ -20,10 +22,11 @@ class Config:
         test_prompts=None,
         used_features=None,
         # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
-        bart_model="facebook/bart-base",
+        # bart_model="facebook/bart-base",
+        bart_model="facebook/bart-large-cnn",
         run_with_small_sample=False,
         num_train_epochs=100,
-        batch_size=8,
+        batch_size=2,
         save_checkpoints=True,
         learning_rate=0.0000001,
     ):
@@ -81,20 +84,24 @@ class Config:
         self.checkpoints_dir = pathlib.Path(self.data_root_dir / "checkpoints")
 
         # Bart Base
-        self.string_truncation_length = (
-            1500  # value set on trial and error, until it stopped issuing warnings
-        )
-        self.bart_model = bart_model
-        self.model_context_length = 768
         self.batch_size = batch_size
+        self.bart_model = bart_model
 
-        # Large bart
-        # self.bart_model = "facebook/bart-large-cnn"
-        # self.model_context_length = 1024
-        # self.string_truncation_length = (
-        #     2700  # value set on trial and error, until it stopped issuing warnings
-        # )
-        # self.batch_size = 2
+        if "bart-base" in bart_model:
+            self.string_truncation_length = (
+                1500  # value set on trial and error, until it stopped issuing warnings
+            )
+            self.model_context_length = 768
+        elif "bart-large" in bart_model:
+            # Large bart
+            self.model_context_length = 1024
+            self.string_truncation_length = (
+                2700  # value set on trial and error, until it stopped issuing warnings
+            )
+        else:
+            raise ValueError(
+                f"Unknown model: '{bart_model}'. Could not set preprocessing parameters."
+            )
 
         # Shared bart parameters
         self.save_checkpoints = save_checkpoints
@@ -109,6 +116,7 @@ class Config:
         else:
             self.data_output_dir = pathlib.Path(self.data_root_dir / "output")
 
+        # Only used for basic_ml pipelines
         self.sentence_transformer = sentence_transformer
         self.distance_metric = "euclidean"
         self.distance_stategy = "minimum"
