@@ -1,4 +1,9 @@
-from .bart import TestBartCheckpoints, TestBartFullData, TrainBartRegressionPipeline
+from .bart import (
+    BartPredictionRegressionPipeline,
+    TestBartCheckpoints,
+    TestBartFullData,
+    TrainBartRegressionPipeline,
+)
 from .basic_ml import (
     BasicLinearRegressorPipeline,
     BasicPredictRandomForestPipeline,

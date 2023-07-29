@@ -16,16 +16,19 @@ logger = logging.getLogger(__name__)
 
 
 class PredictBertTask(Task):
-    def __init__(self, name: str | None = None) -> None:
+    def __init__(
+        self, name: str | None = None, input_data_key: str = "test_data"
+    ) -> None:
         super().__init__(name)
         self.truncation_length: Optional[int] = None
+        self.input_data_key = input_data_key
 
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         config = Config.get()
 
         bart_path = "trained_bart"
         tensors_to_predict = context["predict_input_ids_stack"]
-        prediction_data: pl.DataFrame = context["test_data"]
+        prediction_data: pl.DataFrame = context[self.input_data_key]
 
         if config.run_with_small_sample:
             prediction_data = prediction_data.limit(config.small_sample_size)

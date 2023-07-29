@@ -42,6 +42,6 @@ class TrainBartTask(Task):
             train_dataloader,
             bart_model,
         )
-
-        bart_model.save_pretrained("trained_bart")
+        model_name = config.bart_model.replace("/", "-")
+        bart_model.save_pretrained(f"trained_{model_name}")
         return {"trained_bart_path": "trained_bart", "bart_model": bart_model}

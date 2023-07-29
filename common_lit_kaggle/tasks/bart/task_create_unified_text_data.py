@@ -24,20 +24,21 @@ def add_unified_data(train_data: pl.DataFrame) -> pl.DataFrame:
         ).alias("unified_text")
     )
 
-    # If we want to train a GPT-like model, we can include the labels as part of the text
-    # Have the string ready, so later we can just concatenate together with the unified_text
-    unified_text_data = unified_text_data.with_columns(
-        pl.concat_str(
-            [
-                pl.lit("\n\nGRADING SECTION"),
-                pl.lit("\nWORDING: "),
-                pl.col("wording"),
-                pl.lit("\nCONTENT: "),
-                pl.col("content"),
-                pl.lit("\nEND_OF_TEXT\n"),
-            ]
-        ).alias("unified_labels")
-    )
+    # I think for now we should disable this block altogether
+    #     # If we want to train a GPT-like model, we can include the labels as part of the text
+    #     # Have the string ready, so later we can just concatenate together with the unified_text
+    #     unified_text_data = unified_text_data.with_columns(
+    #         pl.concat_str(
+    #             [
+    #                 pl.lit("\n\nGRADING SECTION"),
+    #                 pl.lit("\nWORDING: "),
+    #                 pl.col("wording"),
+    #                 pl.lit("\nCONTENT: "),
+    #                 pl.col("content"),
+    #                 pl.lit("\nEND_OF_TEXT\n"),
+    #             ]
+    #         ).alias("unified_labels")
+    #     )
     return unified_text_data
 
 
@@ -63,7 +64,15 @@ class CreateUnifiedTextTrainDataTask(Task):
 
 class CreateUnifiedTextTestDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
-        train_data: pl.DataFrame = context["test_data"]
-        unified_text_data = add_unified_data(train_data)
+        test_data: pl.DataFrame = context["test_data"]
+        unified_text_data = add_unified_data(test_data)
 
         return {"test_unified_text_data": unified_text_data}
+
+
+class CreateUnifiedTextPredictionDataTask(Task):
+    def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
+        prediction_input_data: pl.DataFrame = context["input_prediction_data"]
+        unified_text_data = add_unified_data(prediction_input_data)
+
+        return {"prediction_unified_text_data": unified_text_data}

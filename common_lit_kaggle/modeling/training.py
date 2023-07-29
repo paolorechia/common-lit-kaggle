@@ -81,6 +81,9 @@ def train_model(
 
         mlflow.log_metric("loss", print_loss_avg, epoch - 1)
         if config.save_checkpoints:
-            checkpoint_path = Path(config.checkpoints_dir / f"trained_bart_{epoch}")
+            model_name = config.bart_model.replace("/", "-")
+            checkpoint_path = Path(
+                config.checkpoints_dir / f"trained_{model_name}_{epoch}"
+            )
             print(f"Saving checkpoint for epoch {epoch} at '{checkpoint_path}'")
             model.save_pretrained(checkpoint_path)
