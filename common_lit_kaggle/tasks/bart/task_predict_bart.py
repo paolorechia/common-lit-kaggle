@@ -42,7 +42,7 @@ class PredictBertTask(Task):
         batch_size = config.batch_size
         # TODO: make this prediction work in batches too
         for tensor in tqdm(tensors_to_predict):
-            result = bart_model.forward(tensor.reshape(1, 768))
+            result = bart_model.forward(tensor.reshape(1, config.model_context_length))
             content.append(result.cpu().detach()[0][0])
             wording.append(result.cpu().detach()[0][1])
 
