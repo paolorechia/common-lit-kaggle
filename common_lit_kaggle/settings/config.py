@@ -1,4 +1,3 @@
-"""This configuration module could use some refactor to reduce duplication too"""
 import os
 import pathlib
 
@@ -12,7 +11,7 @@ class Config:
     def get(
         cls,
         root_dir=os.getenv(
-            "KAGGLE_DATA_DIR", "/home/paolo/kaggle/common-lit-kaggle/data"
+            "KAGGLE_DATA_DIR", "/home/karajan/labzone/kaggle/common-lit-kaggle/data"
         ),
         input_dir=None,
         output_dir=None,
@@ -21,14 +20,13 @@ class Config:
         train_prompts=None,
         test_prompts=None,
         used_features=None,
-        # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
-        # bart_model="facebook/bart-base",
-        bart_model="facebook/bart-large-cnn",
+        bart_model="facebook/bart-base",
         run_with_small_sample=False,
         num_train_epochs=50,
-        batch_size=2,
+        batch_size=12,
         save_checkpoints=True,
         learning_rate=0.0000005,
+        gradient_accumulation_steps=10,  # added this line
     ):
         if cls._config is None:
             Config._config = cls(
@@ -46,6 +44,7 @@ class Config:
                 batch_size,
                 save_checkpoints,
                 learning_rate,
+                gradient_accumulation_steps,  # and this line
             )
 
         return Config._config
@@ -66,6 +65,7 @@ class Config:
         batch_size,
         save_checkpoints,
         learning_rate,
+        gradient_accumulation_steps,  # and this line
     ) -> None:
         # Config parameters that end with _dir are automatically created by the 'main.py' script.
         self.data_root_dir = pathlib.Path(root_dir)
@@ -86,6 +86,7 @@ class Config:
         # Bart Base
         self.batch_size = batch_size
         self.bart_model = bart_model
+        self.gradient_accumulation_steps = gradient_accumulation_steps  # and this line
 
         if "bart-base" in bart_model:
             self.string_truncation_length = (
