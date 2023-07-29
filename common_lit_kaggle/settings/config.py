@@ -25,10 +25,10 @@ class Config:
         # bart_model="facebook/bart-base",
         bart_model="facebook/bart-large-cnn",
         run_with_small_sample=False,
-        num_train_epochs=100,
+        num_train_epochs=50,
         batch_size=2,
         save_checkpoints=True,
-        learning_rate=0.0000001,
+        learning_rate=0.0000005,
     ):
         if cls._config is None:
             Config._config = cls(
