@@ -25,6 +25,7 @@ class Config:
         num_train_epochs=100,
         batch_size=8,
         save_checkpoints=True,
+        learning_rate=0.0000001,
     ):
         if cls._config is None:
             Config._config = cls(
@@ -41,6 +42,7 @@ class Config:
                 num_train_epochs,
                 batch_size,
                 save_checkpoints,
+                learning_rate,
             )
 
         return Config._config
@@ -60,6 +62,7 @@ class Config:
         num_train_epochs,
         batch_size,
         save_checkpoints,
+        learning_rate,
     ) -> None:
         # Config parameters that end with _dir are automatically created by the 'main.py' script.
         self.data_root_dir = pathlib.Path(root_dir)
@@ -96,7 +99,7 @@ class Config:
         # Shared bart parameters
         self.save_checkpoints = save_checkpoints
         self.num_train_epochs = num_train_epochs
-        self.learning_rate = 0.0000001
+        self.learning_rate = learning_rate
         self.num_of_labels = 2
         self.run_with_small_sample = run_with_small_sample
         self.small_sample_size = 10
