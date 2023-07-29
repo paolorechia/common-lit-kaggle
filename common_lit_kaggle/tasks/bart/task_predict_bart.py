@@ -26,13 +26,13 @@ class PredictBertTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         config = Config.get()
 
-        bart_path = "trained_bart"
         tensors_to_predict = context["predict_input_ids_stack"]
         prediction_data: pl.DataFrame = context[self.input_data_key]
 
         if config.run_with_small_sample:
             prediction_data = prediction_data.limit(config.small_sample_size)
 
+        bart_path = config.bart_model
         bart_model = BartWithRegressionHead.from_pretrained(bart_path)
         bart_model.eval()
 
