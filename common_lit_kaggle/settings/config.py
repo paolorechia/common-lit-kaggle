@@ -23,7 +23,9 @@ class Config:
         used_features=None,
         # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
         # bart_model="facebook/bart-base",
-        bart_model="facebook/bart-large-cnn",
+        # bart_model="facebook/bart-large-cnn",
+        tokenizer="facebook/bart-base",
+        bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_bart-base_10",
         run_with_small_sample=False,
         num_train_epochs=50,
         batch_size=2,
@@ -40,6 +42,7 @@ class Config:
                 train_prompts,
                 test_prompts,
                 used_features,
+                tokenizer,
                 bart_model,
                 run_with_small_sample,
                 num_train_epochs,
@@ -60,6 +63,7 @@ class Config:
         train_prompts,
         test_prompts,
         used_features,
+        tokenizer,
         bart_model,
         run_with_small_sample,
         num_train_epochs,
@@ -82,6 +86,8 @@ class Config:
         self.plots_dir = pathlib.Path(self.data_root_dir / "plots")
         self.models_root_dir = pathlib.Path(self.data_root_dir / "models")
         self.checkpoints_dir = pathlib.Path(self.data_root_dir / "checkpoints")
+
+        self.tokenizer = tokenizer
 
         # Bart Base
         self.batch_size = batch_size

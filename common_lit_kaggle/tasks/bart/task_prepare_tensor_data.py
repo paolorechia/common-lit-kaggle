@@ -1,4 +1,5 @@
 import logging
+import warnings
 from typing import Any, Mapping, Optional
 
 import numpy as np
@@ -123,22 +124,29 @@ class PrepareTensorTrainDataTask(Task):
 
 
 class PrepareTensorPredictDataTask(Task):
-    def __init__(self, name: str | None = None) -> None:
+    def __init__(
+        self,
+        name: str = "",
+        input_data_key: str = "test_unified_text_data",
+        truncation_length: Optional[int] = None,
+    ) -> None:
         super().__init__(name)
-        self.truncation_length: Optional[int] = None
+        self.truncation_length: Optional[int] = truncation_length
+        self.input_data_key = input_data_key
 
     def set_string_length_truncation(self, truncation_length: int):
         self.truncation_length = truncation_length
+        warnings.warn("Deprecated method, prefer passing this in the constructor")
 
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         assert self.truncation_length, "Set string length truncation first!"
 
         config = Config.get()
 
-        model_path = config.bart_model
-        bart_tokenizer = AutoTokenizer.from_pretrained(model_path)
+        tokenizer_path = config.tokenizer
+        bart_tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
 
-        input_data: pl.DataFrame = context["test_unified_text_data"]
+        input_data: pl.DataFrame = context[self.input_data_key]
         if config.run_with_small_sample:
             input_data = input_data.limit(config.small_sample_size)
 

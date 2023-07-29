@@ -1,4 +1,5 @@
 from .task_create_unified_text_data import (
+    CreateUnifiedTextPredictionDataTask,
     CreateUnifiedTextTestDataTask,
     CreateUnifiedTextTrainDataTask,
 )

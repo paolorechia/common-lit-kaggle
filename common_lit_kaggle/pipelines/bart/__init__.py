@@ -1,3 +1,4 @@
+from .pipeline_bart_predict_for_submission import BartPredictionRegressionPipeline
 from .pipeline_test_bart_checkpoints import TestBartCheckpoints
 from .pipeline_test_bart_model_full_data import TestBartFullData
 from .pipeline_train_bart_regression import TrainBartRegressionPipeline
