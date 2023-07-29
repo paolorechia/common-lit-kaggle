@@ -54,7 +54,6 @@ class CreateUnifiedTextTrainDataTask(Task):
                 "content",
                 "wording",
                 "unified_text",
-                "unified_labels",
             ),
             UnifiedTextDataTable(),
         )
