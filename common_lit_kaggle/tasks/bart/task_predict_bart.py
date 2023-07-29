@@ -34,6 +34,9 @@ class PredictBertTask(Task):
 
         bart_path = config.bart_model
         bart_model = BartWithRegressionHead.from_pretrained(bart_path)
+        # Make sure model is in GPU
+        bart_model.to(config.device)
+
         bart_model.eval()
 
         content = []
@@ -42,9 +45,12 @@ class PredictBertTask(Task):
         batch_size = config.batch_size
         # TODO: make this prediction work in batches too
         for tensor in tqdm(tensors_to_predict):
+            tensor = tensor.to(config.device)
             result = bart_model.forward(tensor.reshape(1, config.model_context_length))
             content.append(result.cpu().detach()[0][0])
             wording.append(result.cpu().detach()[0][1])
+            # Copy back to avoid OOM
+            tensor = tensor.to("cpu")
 
         logger.info("Starting prediction")
 
