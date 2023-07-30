@@ -5,7 +5,7 @@ import polars as pl
 from common_lit_kaggle.framework import table_io
 from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.settings.config import Config
-from common_lit_kaggle.tables import TestSplitTable, TrainSplitTable
+from common_lit_kaggle.tables import EvalSplitTable, TestSplitTable, TrainSplitTable
 
 
 class SplitTrainTestByPromptTask(Task):
@@ -15,6 +15,7 @@ class SplitTrainTestByPromptTask(Task):
 
         train_prompts = config.train_prompts
         test_prompts = config.test_prompts
+        eval_prompts = config.eval_prompts
 
         train_data = input_data.filter(pl.col("prompt_id").is_in(train_prompts))
 
@@ -28,10 +29,18 @@ class SplitTrainTestByPromptTask(Task):
             test_data.select("prompt_id").unique().to_series().to_list()
         )
 
+        eval_data = input_data.filter(pl.col("prompt_id").is_in(eval_prompts))
+
+        assert sorted(eval_prompts) == sorted(
+            eval_data.select("prompt_id").unique().to_series().to_list()
+        )
+
         table_io.write_table(train_data, TrainSplitTable())
         table_io.write_table(test_data, TestSplitTable())
+        table_io.write_table(eval_data, EvalSplitTable())
 
         return {
             "train_split": train_data,
             "test_data": test_data,
+            "eval_data": eval_data,
         }

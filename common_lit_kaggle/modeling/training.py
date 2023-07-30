@@ -1,11 +1,11 @@
 import math
 import time
-from pathlib import Path
 
 from torch import nn, optim
 from tqdm import tqdm
 
 from common_lit_kaggle.settings.config import Config
+from common_lit_kaggle.utils.checkpoint import get_checkpoint_path
 from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 from .bart import BartWithRegressionHead
@@ -48,10 +48,25 @@ def train_epoch(dataloader, model: BartWithRegressionHead, optimizer, criterion)
     return total_loss / len(dataloader)
 
 
+def eval_epoch(dataloader, model: BartWithRegressionHead, criterion):
+    total_loss = 0
+    for data in tqdm(dataloader):
+        input_tensor, target_tensor = data
+        logits = model.forward(input_tensor)
+
+        # Compute loss here
+        loss = criterion(logits, target_tensor)
+        # lr_scheduler.step()
+        total_loss += loss.item()
+
+    return total_loss / len(dataloader)
+
+
 def train_model(
     train_dataloader,
     model,
     print_every=1,
+    val_dataloader=None,
 ):
     config = Config.get()
 
@@ -79,11 +94,17 @@ def train_model(
                 )
             )
 
-        mlflow.log_metric("loss", print_loss_avg, epoch - 1)
+        mlflow.log_metric("train_loss", print_loss_avg, epoch - 1)
+
+        if val_dataloader:
+            print("Evaluating on validation dataset")
+            model.eval()
+            # Validate model
+            eval_loss = eval_epoch(val_dataloader, model, criterion)
+            mlflow.log_metric("eval_loss", eval_loss)
+            model.train()
+
         if config.save_checkpoints:
-            model_name = config.bart_model.replace("/", "-")
-            checkpoint_path = Path(
-                config.checkpoints_dir / f"trained_{model_name}_{epoch}"
-            )
+            checkpoint_path = get_checkpoint_path()
             print(f"Saving checkpoint for epoch {epoch} at '{checkpoint_path}'")
             model.save_pretrained(checkpoint_path)

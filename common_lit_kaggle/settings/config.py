@@ -20,6 +20,7 @@ class Config:
         zero_shot_model="facebook/bart-large-mnli",
         train_prompts=None,
         test_prompts=None,
+        eval_prompts=None,
         used_features=None,
         # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
         bart_model="facebook/bart-base",
@@ -28,7 +29,7 @@ class Config:
         # tokenizer="facebook/bart-large-cnn",
         # bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
         run_with_small_sample=False,
-        num_train_epochs=10,
+        num_train_epochs=5,
         batch_size=2,
         save_checkpoints=True,
         learning_rate=0.00001,
@@ -43,6 +44,7 @@ class Config:
                 zero_shot_model,
                 train_prompts,
                 test_prompts,
+                eval_prompts,
                 used_features,
                 tokenizer,
                 bart_model,
@@ -65,6 +67,7 @@ class Config:
         zero_shot_model,
         train_prompts,
         test_prompts,
+        eval_prompts,
         used_features,
         tokenizer,
         bart_model,
@@ -158,8 +161,8 @@ class Config:
 
         # Default configuration locally, uses only one of the prompts for training
         self.train_prompts = ["3b9047", "39c16e"]
+        self.eval_prompts = ["ebad26"]
         self.test_prompts = [
-            "ebad26",
             "814d6b",
         ]
 
@@ -168,6 +171,9 @@ class Config:
 
         if test_prompts is not None:
             self.test_prompts = test_prompts
+
+        if eval_prompts is not None:
+            self.eval_prompts = eval_prompts
 
         assert (
             len(self.train_prompts) > 0
