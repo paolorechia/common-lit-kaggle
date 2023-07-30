@@ -88,6 +88,8 @@ def train_model(
     if early_stopper:
         assert eval_dataloader, "To use early stopper we need an eval dataloader!"
 
+    should_stop = False
+
     for epoch in range(1, config.num_train_epochs + 1):
         logger.info("Starting epoch: %d", epoch)
         loss = train_epoch(train_dataloader, model, optimizer, criterion)
@@ -116,7 +118,7 @@ def train_model(
 
         if early_stopper:
             assert eval_loss, "Cannot use early stopper without eval loss!"
-            early_stopper.early_stop(eval_loss)
+            should_stop = early_stopper.early_stop(eval_loss)
 
         if config.save_checkpoints:
             checkpoint_path = get_checkpoint_path()
@@ -124,3 +126,6 @@ def train_model(
                 "Saving checkpoint for epoch %d at '%s'", epoch, checkpoint_path
             )
             model.save_pretrained(checkpoint_path)
+
+        if should_stop:
+            return
