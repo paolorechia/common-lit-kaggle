@@ -1,4 +1,4 @@
-import math
+import logging
 import time
 
 from torch import nn, optim
@@ -13,19 +13,7 @@ from .bart import BartWithRegressionHead
 # pylint: disable=no-member,too-many-ancestors
 # pylint: disable=invalid-name,consider-using-f-string
 
-
-def asMinutes(s):
-    m = math.floor(s / 60)
-    s -= m * 60
-    return "%dm %ds" % (m, s)
-
-
-def timeSince(since, percent):
-    now = time.time()
-    s = now - since
-    es = s / (percent)
-    rs = es - s
-    return "%s (- %s)" % (asMinutes(s), asMinutes(rs))
+logger = logging.getLogger(__name__)
 
 
 def train_epoch(dataloader, model: BartWithRegressionHead, optimizer, criterion):
@@ -70,41 +58,39 @@ def train_model(
 ):
     config = Config.get()
 
-    start = time.time()
     print_loss_total = 0  # Reset every print_every
 
     optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
     criterion = nn.MSELoss()
 
     for epoch in range(1, config.num_train_epochs + 1):
-        print("Starting epoch: ", epoch)
+        logger.info("Starting epoch: %d", epoch)
         loss = train_epoch(train_dataloader, model, optimizer, criterion)
         print_loss_total += loss
 
         if epoch % print_every == 0:
             print_loss_avg = print_loss_total / print_every
             print_loss_total = 0
-            print(
-                "%s (%d %d%%) %.4f"
-                % (
-                    timeSince(start, epoch / config.num_train_epochs),
-                    epoch,
-                    epoch / config.num_train_epochs * 100,
-                    print_loss_avg,
-                )
+            logger.info(
+                "TRAIN LOSS: %.4f",
+                print_loss_avg,
             )
 
         mlflow.log_metric("train_loss", print_loss_avg, epoch - 1)
 
         if eval_dataloader:
-            print("Evaluating on validation dataset")
+            logger.info("Evaluating on validation dataset")
             model.eval()
             # Validate model
             eval_loss = eval_epoch(eval_dataloader, model, criterion)
+            logger.info("EVAL LOSS: %.4f", eval_loss)
+
             mlflow.log_metric("eval_loss", eval_loss)
             model.train()
 
         if config.save_checkpoints:
             checkpoint_path = get_checkpoint_path()
-            print(f"Saving checkpoint for epoch {epoch} at '{checkpoint_path}'")
+            logger.info(
+                "Saving checkpoint for epoch %d at '%s'", epoch, checkpoint_path
+            )
             model.save_pretrained(checkpoint_path)
