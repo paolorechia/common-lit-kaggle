@@ -34,6 +34,11 @@ class Config:
         run_with_small_sample=False,
         num_train_epochs=10,
         batch_size=8,
+        # bart_model="facebook/bart-base",
+        # tokenizer="facebook/bart-base",
+        # bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
+        falcon_model="tiiuae/falcon-rw-1b",
+        falcon_tokenizer="tiiuae/falcon-rw-1b",
         save_checkpoints=True,
         learning_rate=0.00001,
         regression_dropout=0.1,
@@ -58,8 +63,13 @@ class Config:
                 batch_size,
                 save_checkpoints,
                 learning_rate,
+<<<<<<< HEAD
                 regression_dropout,
                 gradient_accumulation_steps,
+=======
+                falcon_model,
+                falcon_tokenizer,
+>>>>>>> 37678b6 (Falcon)
             )
 
         return Config._config
@@ -85,6 +95,8 @@ class Config:
         learning_rate,
         dropout,
         gradient_accumulation_steps,
+        falcon_model,
+        falcon_tokenizer,
     ) -> None:
         # Config parameters that end with _dir are automatically created by the 'main.py' script.
         self.data_root_dir = pathlib.Path(root_dir)
@@ -122,6 +134,10 @@ class Config:
         self.early_stop_patience = 3
         self.early_stop_min_delta = 0.1
 
+        self.falcon_model = falcon_model
+        self.falcon_tokenizer = falcon_tokenizer
+
+        self.tokenizer = tokenizer
         # Bart Base
         self.batch_size = batch_size
         self.bart_model = bart_model
