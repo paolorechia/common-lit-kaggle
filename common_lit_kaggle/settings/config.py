@@ -22,16 +22,17 @@ class Config:
         test_prompts=None,
         used_features=None,
         # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
-        # bart_model="facebook/bart-base",
-        # tokenizer="facebook/bart-base",
+        bart_model="facebook/bart-base",
+        tokenizer="facebook/bart-base",
         # bart_model="facebook/bart-large-cnn",
-        tokenizer="facebook/bart-large-cnn",
-        bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
+        # tokenizer="facebook/bart-large-cnn",
+        # bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
         run_with_small_sample=False,
-        num_train_epochs=50,
+        num_train_epochs=10,
         batch_size=2,
         save_checkpoints=True,
-        learning_rate=0.0000005,
+        learning_rate=0.00001,
+        dropout=0.3,
     ):
         if cls._config is None:
             Config._config = cls(
@@ -50,6 +51,7 @@ class Config:
                 batch_size,
                 save_checkpoints,
                 learning_rate,
+                dropout,
             )
 
         return Config._config
@@ -71,6 +73,7 @@ class Config:
         batch_size,
         save_checkpoints,
         learning_rate,
+        dropout,
     ) -> None:
         # Config parameters that end with _dir are automatically created by the 'main.py' script.
         self.data_root_dir = pathlib.Path(root_dir)
@@ -88,6 +91,7 @@ class Config:
         self.models_root_dir = pathlib.Path(self.data_root_dir / "models")
         self.checkpoints_dir = pathlib.Path(self.data_root_dir / "checkpoints")
 
+        self.dropout = dropout
         self.tokenizer = tokenizer
 
         # Bart Base

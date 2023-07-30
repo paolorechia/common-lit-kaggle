@@ -17,12 +17,12 @@ class LinearHead(nn.Module):
         input_dim: int,
         inner_dim: int,
         num_classes: int,
-        pooler_dropout: float,
+        dropout: float,
     ):
         super().__init__()
 
         self.dense = nn.Linear(input_dim, inner_dim)
-        self.dropout = nn.Dropout(p=pooler_dropout)
+        self.dropout = nn.Dropout(p=dropout)
         self.out_proj = nn.Linear(inner_dim, num_classes)
 
     def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:
@@ -48,7 +48,7 @@ class BartWithRegressionHead(BartModel):
             input_dim=config.d_model,
             inner_dim=config.d_model,
             num_classes=project_config.num_of_labels,
-            pooler_dropout=config.classifier_dropout,
+            dropout=project_config.dropout,
         )
 
     def forward(self, input_ids: torch.LongTensor):
