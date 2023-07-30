@@ -32,11 +32,11 @@ class Config:
         # tokenizer="facebook/bart-large-cnn",
         # bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
         run_with_small_sample=False,
-        num_train_epochs=5,
-        batch_size=8,
+        num_train_epochs=10,
+        batch_size=12,
         save_checkpoints=True,
         learning_rate=0.00001,
-        regression_dropout=0.3,
+        regression_dropout=0.1,
     ):
         if cls._config is None:
             Config._config = cls(
