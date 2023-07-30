@@ -25,6 +25,7 @@ class TrainBartTask(Task):
 
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         train_data = context["tensor_train_data"]
+        eval_data = context["tesnor_eval_data"]
 
         config = Config.get()
 
@@ -42,13 +43,18 @@ class TrainBartTask(Task):
 
         bart_model.train(True)
         train_sampler = RandomSampler(train_data)
+
         train_dataloader = DataLoader(
             train_data, sampler=train_sampler, batch_size=batch_size
         )
-        train_model(
-            train_dataloader,
-            bart_model,
+
+        eval_sampler = RandomSampler(eval_data)
+        eval_dataloader = DataLoader(
+            eval_data, sampler=eval_sampler, batch_size=batch_size
         )
+
+        train_model(train_dataloader, bart_model, eval_dataloader=eval_dataloader)
+
         model_name = config.bart_model.replace("/", "-")
         bart_model.save_pretrained(f"trained_{model_name}")
         return {"trained_bart_path": "trained_bart", "bart_model": bart_model}

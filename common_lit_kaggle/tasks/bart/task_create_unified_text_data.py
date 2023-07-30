@@ -69,6 +69,14 @@ class CreateUnifiedTextTestDataTask(Task):
         return {"test_unified_text_data": unified_text_data}
 
 
+class CreateUnifiedTextEvalDataTask(Task):
+    def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
+        test_data: pl.DataFrame = context["eval_data"]
+        unified_text_data = add_unified_data(test_data)
+
+        return {"eval_unified_text_data": unified_text_data}
+
+
 class CreateUnifiedTextPredictionDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         prediction_input_data: pl.DataFrame = context["input_prediction_data"]

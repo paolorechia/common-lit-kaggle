@@ -66,7 +66,7 @@ def train_model(
     train_dataloader,
     model,
     print_every=1,
-    val_dataloader=None,
+    eval_dataloader=None,
 ):
     config = Config.get()
 
@@ -96,11 +96,11 @@ def train_model(
 
         mlflow.log_metric("train_loss", print_loss_avg, epoch - 1)
 
-        if val_dataloader:
+        if eval_dataloader:
             print("Evaluating on validation dataset")
             model.eval()
             # Validate model
-            eval_loss = eval_epoch(val_dataloader, model, criterion)
+            eval_loss = eval_epoch(eval_dataloader, model, criterion)
             mlflow.log_metric("eval_loss", eval_loss)
             model.train()
 
