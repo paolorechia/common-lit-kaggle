@@ -3,6 +3,7 @@ https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html
 
 """
 import logging
+from pathlib import Path
 from typing import Any, Mapping, Optional
 
 import polars as pl
@@ -33,13 +34,14 @@ class TestBartCheckpointsTask(Task):
 
         for epoch in range(1, config.num_train_epochs + 1):
             print("Testing epoch: ", epoch)
-            bart_path = f"trained_bart_{epoch}"
+            model_name = config.bart_model.replace("/", "-")
+            checkpoint_path = Path(
+                config.checkpoints_dir / f"trained_{model_name}_{epoch}"
+            )
 
-            bart_model = BartWithRegressionHead.from_pretrained(bart_path)
+            bart_model = BartWithRegressionHead.from_pretrained(checkpoint_path)
+            bart_model.to(config.device)
 
-            # Use limit to test it quickly
-            tensors_to_predict = tensors_to_predict[:100]
-            prediction_data = prediction_data.limit(n=100)
             bart_model.eval()
 
             content = []
@@ -49,9 +51,15 @@ class TestBartCheckpointsTask(Task):
             batch_size = config.batch_size
             # TODO: make this prediction work in batches too
             for tensor in tqdm(tensors_to_predict):
-                result = bart_model.forward(tensor.reshape(1, 768))
+                tensor = tensor.to(config.device)
+
+                result = bart_model.forward(
+                    tensor.reshape(1, config.model_context_length)
+                )
                 content.append(result.cpu().detach()[0][0])
                 wording.append(result.cpu().detach()[0][1])
+
+                tensor = tensor.to("cpu")
 
             logger.info("Starting prediction")
 
