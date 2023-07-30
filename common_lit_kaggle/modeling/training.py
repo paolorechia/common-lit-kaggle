@@ -103,7 +103,7 @@ def train_model(
                 print_loss_avg,
             )
 
-        mlflow.log_metric("train_loss", print_loss_avg, epoch - 1)
+        mlflow.log_metric("train_loss", print_loss_avg, epoch)
 
         eval_loss = None
         if eval_dataloader:
@@ -113,7 +113,7 @@ def train_model(
             eval_loss = eval_epoch(eval_dataloader, model, criterion)
             logger.info("EVAL LOSS: %.4f", eval_loss)
 
-            mlflow.log_metric("eval_loss", eval_loss)
+            mlflow.log_metric("eval_loss", eval_loss, epoch)
             model.train()
 
         if early_stopper:
@@ -121,7 +121,7 @@ def train_model(
             should_stop = early_stopper.early_stop(eval_loss)
 
         if config.save_checkpoints:
-            checkpoint_path = get_checkpoint_path()
+            checkpoint_path = get_checkpoint_path(epoch=epoch)
             logger.info(
                 "Saving checkpoint for epoch %d at '%s'", epoch, checkpoint_path
             )

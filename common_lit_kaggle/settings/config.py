@@ -33,7 +33,7 @@ class Config:
         # bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
         run_with_small_sample=False,
         num_train_epochs=10,
-        batch_size=12,
+        batch_size=8,
         save_checkpoints=True,
         learning_rate=0.00001,
         regression_dropout=0.1,
