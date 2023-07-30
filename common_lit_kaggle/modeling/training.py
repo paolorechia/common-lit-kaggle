@@ -128,4 +128,8 @@ def train_model(
             model.save_pretrained(checkpoint_path)
 
         if should_stop:
+            logger.info("Training stopped early!")
+            mlflow.log_metric("early_stop", True)
             return
+
+    mlflow.log_metric("early_stop", False)
