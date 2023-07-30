@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, RandomSampler
 from transformers import AutoConfig
 
 from common_lit_kaggle.framework.task import Task
-from common_lit_kaggle.modeling import BartWithRegressionHead, train_model
+from common_lit_kaggle.modeling import BartWithRegressionHead, EarlyStopper, train_model
 from common_lit_kaggle.settings.config import Config
 
 logger = logging.getLogger(__name__)
@@ -52,8 +52,16 @@ class TrainBartTask(Task):
         eval_dataloader = DataLoader(
             eval_data, sampler=eval_sampler, batch_size=batch_size
         )
+        early_stopper = EarlyStopper(
+            patience=config.early_stop_patience, min_delta=config.early_stop_min_delta
+        )
 
-        train_model(train_dataloader, bart_model, eval_dataloader=eval_dataloader)
+        train_model(
+            train_dataloader,
+            bart_model,
+            eval_dataloader=eval_dataloader,
+            early_stopper=early_stopper,
+        )
 
         model_name = config.bart_model.replace("/", "-")
         bart_model.save_pretrained(f"trained_{model_name}")

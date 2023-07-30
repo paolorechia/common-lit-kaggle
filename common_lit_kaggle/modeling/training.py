@@ -1,6 +1,7 @@
 import logging
-import time
+from typing import Optional
 
+import numpy as np
 from torch import nn, optim
 from tqdm import tqdm
 
@@ -14,6 +15,26 @@ from .bart import BartWithRegressionHead
 # pylint: disable=invalid-name,consider-using-f-string
 
 logger = logging.getLogger(__name__)
+
+
+class EarlyStopper:
+    """Code from: https://stackoverflow.com/a/73704579/8628527"""
+
+    def __init__(self, patience=1, min_delta=0):
+        self.patience = patience
+        self.min_delta = min_delta
+        self.counter = 0
+        self.min_validation_loss = np.inf
+
+    def early_stop(self, validation_loss):
+        if validation_loss < self.min_validation_loss:
+            self.min_validation_loss = validation_loss
+            self.counter = 0
+        elif validation_loss > (self.min_validation_loss + self.min_delta):
+            self.counter += 1
+            if self.counter >= self.patience:
+                return True
+        return False
 
 
 def train_epoch(dataloader, model: BartWithRegressionHead, optimizer, criterion):
@@ -55,6 +76,7 @@ def train_model(
     model,
     print_every=1,
     eval_dataloader=None,
+    early_stopper: Optional[EarlyStopper] = None,
 ):
     config = Config.get()
 
@@ -62,6 +84,9 @@ def train_model(
 
     optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
     criterion = nn.MSELoss()
+
+    if early_stopper:
+        assert eval_dataloader, "To use early stopper we need an eval dataloader!"
 
     for epoch in range(1, config.num_train_epochs + 1):
         logger.info("Starting epoch: %d", epoch)
@@ -78,6 +103,7 @@ def train_model(
 
         mlflow.log_metric("train_loss", print_loss_avg, epoch - 1)
 
+        eval_loss = None
         if eval_dataloader:
             logger.info("Evaluating on validation dataset")
             model.eval()
@@ -87,6 +113,10 @@ def train_model(
 
             mlflow.log_metric("eval_loss", eval_loss)
             model.train()
+
+        if early_stopper:
+            assert eval_loss, "Cannot use early stopper without eval loss!"
+            early_stopper.early_stop(eval_loss)
 
         if config.save_checkpoints:
             checkpoint_path = get_checkpoint_path()

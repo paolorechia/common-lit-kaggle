@@ -108,6 +108,10 @@ class Config:
         self.dropout = dropout
         self.tokenizer = tokenizer
 
+        # Early stop
+        self.early_stop_patience = 3
+        self.early_stop_min_delta = 0.1
+
         # Bart Base
         self.batch_size = batch_size
         self.bart_model = bart_model
