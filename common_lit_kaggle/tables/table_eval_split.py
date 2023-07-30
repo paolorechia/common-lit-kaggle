@@ -10,7 +10,7 @@ class EvalSplitTable(TableReference):
         config = Config.get()
         super().__init__(
             name="eval_split",
-            path=pathlib.Path(config.data_train_dir, "eval_split.csv"),
+            path=pathlib.Path(config.data_eval_dir, "eval_split.csv"),
             schema=TrainTestSplitSchema,
             format="csv",
         )

@@ -6,6 +6,7 @@ import logging
 from typing import Any, Mapping, Optional
 
 from torch.utils.data import DataLoader, RandomSampler
+from transformers import AutoConfig
 
 from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.modeling import BartWithRegressionHead, train_model
@@ -30,7 +31,13 @@ class TrainBartTask(Task):
         model_path = config.bart_model
         batch_size = config.batch_size
 
-        bart_model = BartWithRegressionHead.from_pretrained(model_path)
+        bart_config = AutoConfig.from_pretrained(config.model_custom_config_dir)
+
+        logger.info("Loaded the following config: %s", bart_config)
+        bart_model = BartWithRegressionHead.from_pretrained(
+            model_path, config=bart_config
+        )
+
         bart_model.to(config.device)
 
         bart_model.train(True)

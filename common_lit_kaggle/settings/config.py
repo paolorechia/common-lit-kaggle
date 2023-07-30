@@ -14,6 +14,9 @@ class Config:
         root_dir=os.getenv(
             "KAGGLE_DATA_DIR", "/home/paolo/kaggle/common-lit-kaggle/data"
         ),
+        model_config_root_dir=os.getenv(
+            "MODEL_CONFIG_DIR", "/home/paolo/kaggle/common-lit-kaggle/model_config"
+        ),
         input_dir=None,
         output_dir=None,
         sentence_transformer="sentence-transformers/all-MiniLM-L6-v2",
@@ -30,14 +33,15 @@ class Config:
         # bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
         run_with_small_sample=False,
         num_train_epochs=5,
-        batch_size=2,
+        batch_size=8,
         save_checkpoints=True,
         learning_rate=0.00001,
-        dropout=0.3,
+        regression_dropout=0.3,
     ):
         if cls._config is None:
             Config._config = cls(
                 root_dir,
+                model_config_root_dir,
                 input_dir,
                 output_dir,
                 sentence_transformer,
@@ -53,7 +57,7 @@ class Config:
                 batch_size,
                 save_checkpoints,
                 learning_rate,
-                dropout,
+                regression_dropout,
             )
 
         return Config._config
@@ -61,6 +65,7 @@ class Config:
     def __init__(
         self,
         root_dir,
+        model_config_root_dir,
         input_dir,
         output_dir,
         sentence_transformer,
@@ -80,6 +85,7 @@ class Config:
     ) -> None:
         # Config parameters that end with _dir are automatically created by the 'main.py' script.
         self.data_root_dir = pathlib.Path(root_dir)
+        self.model_config_root_dir = pathlib.Path(model_config_root_dir)
 
         if input_dir:
             self.data_input_dir = input_dir
@@ -90,9 +96,14 @@ class Config:
         self.data_exploration_dir = pathlib.Path(self.data_root_dir / "exploration")
         self.data_train_dir = pathlib.Path(self.data_root_dir / "train")
         self.data_test_dir = pathlib.Path(self.data_root_dir / "test")
+        self.data_eval_dir = pathlib.Path(self.data_root_dir / "eval")
         self.plots_dir = pathlib.Path(self.data_root_dir / "plots")
         self.models_root_dir = pathlib.Path(self.data_root_dir / "models")
         self.checkpoints_dir = pathlib.Path(self.data_root_dir / "checkpoints")
+
+        self.model_custom_config_dir = pathlib.Path(
+            self.model_config_root_dir / bart_model
+        )
 
         self.dropout = dropout
         self.tokenizer = tokenizer
