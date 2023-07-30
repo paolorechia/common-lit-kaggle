@@ -25,7 +25,7 @@ class TrainBartTask(Task):
 
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         train_data = context["tensor_train_data"]
-        eval_data = context["tesnor_eval_data"]
+        eval_data = context["tensor_eval_data"]
 
         config = Config.get()
 
