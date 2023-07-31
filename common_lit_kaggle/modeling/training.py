@@ -92,7 +92,17 @@ def train_model(
 
     optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
     criterion = nn.MSELoss()
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.8)
+
+    scheduler = optim.lr_scheduler.StepLR(
+        optimizer, step_size=config.step_lr_step_size, gamma=config.step_lr_gamma
+    )
+
+    mlflow.log_params(
+        {
+            "step_lr_step_size": config.step_lr_step_size,
+            "step_lr_gamma": config.step_lr_gamma,
+        }
+    )
 
     if early_stopper:
         assert eval_dataloader, "To use early stopper we need an eval dataloader!"

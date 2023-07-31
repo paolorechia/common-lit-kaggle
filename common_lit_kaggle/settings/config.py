@@ -111,6 +111,10 @@ class Config:
         self.dropout = dropout
         self.tokenizer = tokenizer
 
+        # Step Linear Rate Scheduler config
+        self.step_lr_step_size = 1  # Triggered every epoch
+        self.step_lr_gamma = 0.8  # Multiplicative factor
+
         # Early stop
         self.early_stop_patience = 3
         self.early_stop_min_delta = 0.1
