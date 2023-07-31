@@ -44,21 +44,22 @@ def train_epoch(
     total_loss = 0
     config = Config.get()
 
-    for idx, data in enumerate(tqdm(dataloader)):
+    idx = 1
+    for data in tqdm(dataloader):
         input_tensor, target_tensor = data
-
         logits = model.forward(input_tensor)
 
         # Compute loss here
         loss = criterion(logits, target_tensor) / config.gradient_accumulation_steps
         loss.backward()
 
-        if (idx + 1) % config.gradient_accumulation_steps == 0:
+        if idx % config.gradient_accumulation_steps == 0:
             optimizer.step()
             scheduler.step()
             optimizer.zero_grad()
 
         total_loss += loss.item() * config.gradient_accumulation_steps
+        idx += 1
 
     return total_loss / len(dataloader)
 
