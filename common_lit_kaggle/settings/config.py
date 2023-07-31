@@ -14,34 +14,41 @@ class Config:
         root_dir=os.getenv(
             "KAGGLE_DATA_DIR", "/home/paolo/kaggle/common-lit-kaggle/data"
         ),
+        model_config_root_dir=os.getenv(
+            "MODEL_CONFIG_DIR", "/home/paolo/kaggle/common-lit-kaggle/model_config"
+        ),
         input_dir=None,
         output_dir=None,
         sentence_transformer="sentence-transformers/all-MiniLM-L6-v2",
         zero_shot_model="facebook/bart-large-mnli",
         train_prompts=None,
         test_prompts=None,
+        eval_prompts=None,
         used_features=None,
         # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
-        # bart_model="facebook/bart-base",
-        # tokenizer="facebook/bart-base",
+        bart_model="facebook/bart-base",
+        tokenizer="facebook/bart-base",
         # bart_model="facebook/bart-large-cnn",
-        tokenizer="facebook/bart-large-cnn",
-        bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
+        # tokenizer="facebook/bart-large-cnn",
+        # bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
         run_with_small_sample=False,
-        num_train_epochs=50,
-        batch_size=2,
+        num_train_epochs=10,
+        batch_size=8,
         save_checkpoints=True,
-        learning_rate=0.0000005,
+        learning_rate=0.00001,
+        regression_dropout=0.1,
     ):
         if cls._config is None:
             Config._config = cls(
                 root_dir,
+                model_config_root_dir,
                 input_dir,
                 output_dir,
                 sentence_transformer,
                 zero_shot_model,
                 train_prompts,
                 test_prompts,
+                eval_prompts,
                 used_features,
                 tokenizer,
                 bart_model,
@@ -50,6 +57,7 @@ class Config:
                 batch_size,
                 save_checkpoints,
                 learning_rate,
+                regression_dropout,
             )
 
         return Config._config
@@ -57,12 +65,14 @@ class Config:
     def __init__(
         self,
         root_dir,
+        model_config_root_dir,
         input_dir,
         output_dir,
         sentence_transformer,
         zero_shot_model,
         train_prompts,
         test_prompts,
+        eval_prompts,
         used_features,
         tokenizer,
         bart_model,
@@ -71,9 +81,11 @@ class Config:
         batch_size,
         save_checkpoints,
         learning_rate,
+        dropout,
     ) -> None:
         # Config parameters that end with _dir are automatically created by the 'main.py' script.
         self.data_root_dir = pathlib.Path(root_dir)
+        self.model_config_root_dir = pathlib.Path(model_config_root_dir)
 
         if input_dir:
             self.data_input_dir = input_dir
@@ -84,11 +96,21 @@ class Config:
         self.data_exploration_dir = pathlib.Path(self.data_root_dir / "exploration")
         self.data_train_dir = pathlib.Path(self.data_root_dir / "train")
         self.data_test_dir = pathlib.Path(self.data_root_dir / "test")
+        self.data_eval_dir = pathlib.Path(self.data_root_dir / "eval")
         self.plots_dir = pathlib.Path(self.data_root_dir / "plots")
         self.models_root_dir = pathlib.Path(self.data_root_dir / "models")
         self.checkpoints_dir = pathlib.Path(self.data_root_dir / "checkpoints")
 
+        self.model_custom_config_dir = pathlib.Path(
+            self.model_config_root_dir / bart_model
+        )
+
+        self.dropout = dropout
         self.tokenizer = tokenizer
+
+        # Early stop
+        self.early_stop_patience = 3
+        self.early_stop_min_delta = 0.1
 
         # Bart Base
         self.batch_size = batch_size
@@ -154,8 +176,8 @@ class Config:
 
         # Default configuration locally, uses only one of the prompts for training
         self.train_prompts = ["3b9047", "39c16e"]
+        self.eval_prompts = ["ebad26"]
         self.test_prompts = [
-            "ebad26",
             "814d6b",
         ]
 
@@ -164,6 +186,9 @@ class Config:
 
         if test_prompts is not None:
             self.test_prompts = test_prompts
+
+        if eval_prompts is not None:
+            self.eval_prompts = eval_prompts
 
         assert (
             len(self.train_prompts) > 0

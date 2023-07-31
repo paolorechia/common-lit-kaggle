@@ -1,4 +1,5 @@
 from .task_join_input_data import JoinInputTask
+from .task_read_eval_data import ReadEvalDataTask
 from .task_read_input_data import ReadInputDataTask
 from .task_read_prediction_input_data import ReadPredictionInputDataTask
 from .task_read_prediction_prompt_data import ReadPredictionInputPromptDataTask

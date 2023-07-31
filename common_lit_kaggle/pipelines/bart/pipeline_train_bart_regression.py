@@ -6,20 +6,7 @@ from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 class TrainBartRegressionPipeline(Pipeline):
     def __init__(self) -> None:
-        prepare_tensor_data = bart.PrepareTensorTrainDataTask()
         config = Config.get()
-        # Bart supports up to 1024 sub-word tokens
-        # Let's consider only the last 4096 characters
-        # This should guarantee (if this approximation is correct)
-        # That we truncate only prompt data instead of student data
-        prepare_tensor_data.set_string_length_truncation(
-            config.string_truncation_length
-        )
-
-        predict_prepare_tensor_data = bart.PrepareTensorPredictDataTask()
-        predict_prepare_tensor_data.set_string_length_truncation(
-            config.string_truncation_length
-        )
         mlflow.set_tags({"name": config.bart_model})
         mlflow.log_params(
             {
@@ -33,14 +20,30 @@ class TrainBartRegressionPipeline(Pipeline):
         super().__init__(
             "train_bart_regression",
             [
+                # Load training data
                 data_split.ReadTrainDataTask(),
                 bart.CreateUnifiedTextTrainDataTask(),
                 bart.ExploreUnifiedInputDataTask(),
-                prepare_tensor_data,
+                bart.PrepareTensorTrainDataTask(
+                    truncation_length=config.string_truncation_length
+                ),
+                # Load eval data
+                data_split.ReadEvalDataTask(),
+                bart.CreateUnifiedTextEvalDataTask(),
+                bart.PrepareTensorTrainDataTask(
+                    truncation_length=config.string_truncation_length,
+                    unified_text_data_key="eval_unified_text_data",
+                    output_text_data_key="tensor_eval_data",
+                ),
+                # Train
                 bart.TrainBartTask(),
+                # Load test data
                 data_split.ReadTestDataTask(),
                 bart.CreateUnifiedTextTestDataTask(),
-                predict_prepare_tensor_data,
+                bart.PrepareTensorPredictDataTask(
+                    truncation_length=config.string_truncation_length
+                ),
+                # Predict and analyse
                 bart.PredictBertTask(input_data_key="test_unified_text_data"),
                 data_split.WritePredictionsTask(),
                 basic_ml.AnalysePredictionsTask(),
