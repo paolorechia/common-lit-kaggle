@@ -88,7 +88,7 @@ class PrepareTensorTrainDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         config = Config.get()
 
-        model_path = config.bart_model
+        model_path = config.model
         bart_tokenizer = AutoTokenizer.from_pretrained(model_path)
 
         input_data: pl.DataFrame = context[self.unified_text_data_key]

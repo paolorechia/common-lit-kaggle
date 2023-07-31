@@ -2,8 +2,7 @@ import logging
 
 import torch
 from torch import nn
-from transformers import FalconModel
-from transformers.models.falcon.configuration_falcon import FalconConfig
+from transformers import FalconConfig, FalconModel
 
 from common_lit_kaggle.settings.config import Config
 
@@ -38,24 +37,27 @@ class LinearHead(nn.Module):
         return hidden_states
 
 
-class FalconWithRegressionHead(FalconModel):
-    def __init__(self, config: FalconConfig):
-        super().__init__(config)
+class FalconWithRegressionHead:
+    def __init__(self, config: FalconConfig, falcon_model: FalconModel):
         project_config = Config.get()
-
+        self.falcon_model = falcon_model
+        self.config = config
         self.regression_head = LinearHead(
-            input_dim=config.d_model,
-            inner_dim=config.d_model,
+            input_dim=config.hidden_size,
+            inner_dim=config.hidden_size,
             num_classes=project_config.num_of_labels,
-            pooler_dropout=config.classifier_dropout,
+            pooler_dropout=project_config.dropout,
         )
+        self.regression_head.to(project_config.device)
 
-    def forward(self, input_ids: torch.LongTensor):
+    def forward(self, input_ids: torch.LongTensor, *args, **kwargs):
         """Copied/adapted from the transformers library:
 
         https://github.com/huggingface/transformers/blob/05cda5df3405e6a2ee4ecf8f7e1b2300ebda472e/src/transformers/models/falcon/modeling_falcon.py#L979
         """
-        outputs = super().forward(input_ids)
+        kwargs["use_cache"] = False
+
+        outputs = self.falcon_model.forward(input_ids, *args, **kwargs)
         hidden_states = outputs[0]  # last hidden state
 
         logits = self.regression_head.forward(hidden_states)

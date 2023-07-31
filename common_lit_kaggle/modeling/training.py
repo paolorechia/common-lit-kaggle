@@ -1,6 +1,7 @@
 import logging
 from typing import Optional
 
+import bitsandbytes as bnb
 import numpy as np
 from torch import nn, optim
 from tqdm import tqdm
@@ -85,12 +86,21 @@ def train_model(
     print_every=1,
     eval_dataloader=None,
     early_stopper: Optional[EarlyStopper] = None,
+    use_8bit_optimizer=False,
 ):
     config = Config.get()
 
     print_loss_total = 0  # Reset every print_every
 
-    optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
+    if use_8bit_optimizer:
+        optimizer = bnb.optim.AdamW(
+            model.falcon_model.parameters(), lr=config.learning_rate, optim_bits=8
+        )
+    else:
+        optimizer = optim.AdamW(
+            model.falcon_model.parameters(), lr=config.learning_rate
+        )
+
     criterion = nn.MSELoss()
 
     scheduler = optim.lr_scheduler.StepLR(

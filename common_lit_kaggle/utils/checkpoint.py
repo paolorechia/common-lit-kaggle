@@ -10,7 +10,7 @@ def get_checkpoint_path(passed_model_name=None, existing_run_id=None, epoch=None
         model_name = passed_model_name
 
     else:
-        model_name = config.bart_model
+        model_name = config.model
 
     model_name = model_name.replace("/", "-")
 
