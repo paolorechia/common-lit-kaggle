@@ -40,18 +40,23 @@ class EarlyStopper:
 def train_epoch(dataloader, model: BartWithRegressionHead, optimizer, criterion):
     """Adapted from: https://huggingface.co/docs/transformers/v4.26.1/training#training-loop"""
     total_loss = 0
-    for data in tqdm(dataloader):
+    config = Config.get()
+
+    for idx, data in enumerate(tqdm(dataloader)):
         input_tensor, target_tensor = data
 
-        optimizer.zero_grad()
         logits = model.forward(input_tensor)
 
         # Compute loss here
-        loss = criterion(logits, target_tensor)
+        loss = criterion(logits, target_tensor) / config.gradient_accumulation_steps
         loss.backward()
 
-        optimizer.step()
-        # lr_scheduler.step()
+        if idx % config.gradient_accumulation_steps == 0:
+            optimizer.step()
+            optimizer.zero_grad()
+
+            # lr_scheduler.step()
+
         total_loss += loss.item()
 
     return total_loss / len(dataloader)
@@ -59,12 +64,14 @@ def train_epoch(dataloader, model: BartWithRegressionHead, optimizer, criterion)
 
 def eval_epoch(dataloader, model: BartWithRegressionHead, criterion):
     total_loss = 0
+    config = Config.get()
+
     for data in tqdm(dataloader):
         input_tensor, target_tensor = data
         logits = model.forward(input_tensor)
 
         # Compute loss here
-        loss = criterion(logits, target_tensor)
+        loss = criterion(logits, target_tensor) / config.gradient_accumulation_steps
         # lr_scheduler.step()
         total_loss += loss.item()
 
