@@ -1,3 +1,5 @@
+import json
+
 from common_lit_kaggle.framework import Pipeline
 from common_lit_kaggle.settings.config import Config
 from common_lit_kaggle.tasks import bart, basic_ml, data_split
@@ -14,6 +16,11 @@ class TrainBartRegressionPipeline(Pipeline):
                 "learning_rate": config.learning_rate,
                 "truncation_length": config.string_truncation_length,
                 "model_context_length": config.model_context_length,
+                "gradient_acumulation_steps": config.gradient_accumulation_steps,
+                "eval_prompts": json.dumps(config.eval_prompts),
+                "test_prompts": json.dumps(config.test_prompts),
+                "virtual_batch_size": config.batch_size
+                * config.gradient_accumulation_steps,
             }
         )
 
