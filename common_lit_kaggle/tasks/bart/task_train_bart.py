@@ -6,11 +6,12 @@ import logging
 from typing import Any, Mapping, Optional
 
 from torch.utils.data import DataLoader, RandomSampler
-from transformers import AutoConfig
+from transformers import AutoConfig, BartConfig
 
 from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.modeling import BartWithRegressionHead, EarlyStopper, train_model
 from common_lit_kaggle.settings.config import Config
+from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 logger = logging.getLogger(__name__)
 
@@ -32,9 +33,16 @@ class TrainBartTask(Task):
         model_path = config.bart_model
         batch_size = config.batch_size
 
-        bart_config = AutoConfig.from_pretrained(config.model_custom_config_dir)
+        bart_config: BartConfig = AutoConfig.from_pretrained(
+            config.model_custom_config_dir
+        )
 
         logger.info("Loaded the following config: %s", bart_config)
+
+        for key in dir(bart_config):
+            if "dropout" in key:
+                mlflow.log_param(f"bart_{key}", getattr(bart_config, key))
+
         bart_model = BartWithRegressionHead.from_pretrained(
             model_path, config=bart_config
         )

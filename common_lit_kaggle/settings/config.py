@@ -32,12 +32,12 @@ class Config:
         # tokenizer="facebook/bart-large-cnn",
         # bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
         run_with_small_sample=False,
-        num_train_epochs=20,
+        num_train_epochs=10,
         batch_size=8,
         save_checkpoints=True,
         learning_rate=0.00001,
         regression_dropout=0.1,
-        gradient_accumulation_steps=8,
+        gradient_accumulation_steps=16,
     ):
         if cls._config is None:
             Config._config = cls(
@@ -113,7 +113,7 @@ class Config:
 
         # Step Linear Rate Scheduler config
         self.step_lr_step_size = 1  # Triggered every epoch
-        self.step_lr_gamma = 0.8  # Multiplicative factor
+        self.step_lr_gamma = 0.7  # Multiplicative factor
 
         # Early stop
         self.early_stop_patience = 3
