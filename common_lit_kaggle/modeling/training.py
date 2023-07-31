@@ -91,9 +91,7 @@ def train_model(
 
     optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
     criterion = nn.MSELoss()
-    scheduler = optim.lr_scheduler.StepLR(
-        optimizer, step_size=2 / config.gradient_accumulation_steps, gamma=0.1
-    )
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.1)
 
     if early_stopper:
         assert eval_dataloader, "To use early stopper we need an eval dataloader!"
