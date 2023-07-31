@@ -37,7 +37,9 @@ class EarlyStopper:
         return False
 
 
-def train_epoch(dataloader, model: BartWithRegressionHead, optimizer, criterion):
+def train_epoch(
+    dataloader, model: BartWithRegressionHead, optimizer, scheduler, criterion
+):
     """Adapted from: https://huggingface.co/docs/transformers/v4.26.1/training#training-loop"""
     total_loss = 0
     config = Config.get()
@@ -54,24 +56,22 @@ def train_epoch(dataloader, model: BartWithRegressionHead, optimizer, criterion)
         if idx % config.gradient_accumulation_steps == 0:
             optimizer.step()
             optimizer.zero_grad()
+            scheduler.step()
 
-            # lr_scheduler.step()
-
-        total_loss += loss.item()
+        total_loss += loss.item() * config.gradient_accumulation_steps
 
     return total_loss / len(dataloader)
 
 
 def eval_epoch(dataloader, model: BartWithRegressionHead, criterion):
     total_loss = 0
-    config = Config.get()
 
     for data in tqdm(dataloader):
         input_tensor, target_tensor = data
         logits = model.forward(input_tensor)
 
         # Compute loss here
-        loss = criterion(logits, target_tensor) / config.gradient_accumulation_steps
+        loss = criterion(logits, target_tensor)
         # lr_scheduler.step()
         total_loss += loss.item()
 
@@ -91,6 +91,9 @@ def train_model(
 
     optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
     criterion = nn.MSELoss()
+    scheduler = optim.lr_scheduler.StepLR(
+        optimizer, step_size=2 / config.gradient_accumulation_steps, gamma=0.1
+    )
 
     if early_stopper:
         assert eval_dataloader, "To use early stopper we need an eval dataloader!"
@@ -99,7 +102,7 @@ def train_model(
 
     for epoch in range(1, config.num_train_epochs + 1):
         logger.info("Starting epoch: %d", epoch)
-        loss = train_epoch(train_dataloader, model, optimizer, criterion)
+        loss = train_epoch(train_dataloader, model, optimizer, scheduler, criterion)
         print_loss_total += loss
 
         if epoch % print_every == 0:
