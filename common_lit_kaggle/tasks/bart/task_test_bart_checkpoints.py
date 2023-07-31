@@ -31,6 +31,7 @@ class TestBartCheckpointsTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         config = Config.get()
 
+        mlflow.end_run()
         with mlflow.start_run(run_id=self.existing_run_id) as _:
             tensors_to_predict = context["predict_input_ids_stack"]
             prediction_data: pl.DataFrame = context["test_data"]
