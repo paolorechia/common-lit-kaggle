@@ -22,17 +22,18 @@ logger = logging.getLogger(__name__)
 
 
 class TestBartCheckpointsTask(Task):
-    def __init__(self, name: str | None = None, existing_run_id: str = "") -> None:
+    def __init__(self, name: str | None = None) -> None:
         super().__init__(name)
         self.truncation_length: Optional[int] = None
-        self.existing_run_id = existing_run_id
-        assert self.existing_run_id, "Must pass an existing run id to test"
 
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         config = Config.get()
 
         mlflow.end_run()
-        with mlflow.start_run(run_id=self.existing_run_id) as _:
+
+        existing_run_id = config.existing_run_id
+
+        with mlflow.start_run(run_id=existing_run_id) as _:
             tensors_to_predict = context["predict_input_ids_stack"]
             prediction_data: pl.DataFrame = context["test_data"]
 
@@ -41,7 +42,7 @@ class TestBartCheckpointsTask(Task):
 
                 checkpoint_path = get_checkpoint_path(
                     passed_model_name=config.bart_model,
-                    existing_run_id=self.existing_run_id,
+                    existing_run_id=existing_run_id,
                     epoch=epoch,
                 )
 

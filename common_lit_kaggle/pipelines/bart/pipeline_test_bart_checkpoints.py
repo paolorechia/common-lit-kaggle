@@ -17,8 +17,6 @@ class TestBartCheckpoints(Pipeline):
                 data_split.ReadTestDataTask(),
                 bart.CreateUnifiedTextTestDataTask(),
                 predict_prepare_tensor_data,
-                bart.TestBartCheckpointsTask(
-                    existing_run_id="4b4266422da34e1da14be818523cd8fb"
-                ),
+                bart.TestBartCheckpointsTask(),
             ],
         )

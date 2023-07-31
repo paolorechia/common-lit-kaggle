@@ -37,6 +37,7 @@ class Config:
         save_checkpoints=True,
         learning_rate=0.00001,
         regression_dropout=0.1,
+        gradient_accumulation_steps=16,
     ):
         if cls._config is None:
             Config._config = cls(
@@ -58,6 +59,7 @@ class Config:
                 save_checkpoints,
                 learning_rate,
                 regression_dropout,
+                gradient_accumulation_steps,
             )
 
         return Config._config
@@ -82,6 +84,7 @@ class Config:
         save_checkpoints,
         learning_rate,
         dropout,
+        gradient_accumulation_steps,
     ) -> None:
         # Config parameters that end with _dir are automatically created by the 'main.py' script.
         self.data_root_dir = pathlib.Path(root_dir)
@@ -105,8 +108,15 @@ class Config:
             self.model_config_root_dir / bart_model
         )
 
+        # Used to backtest a training with test split
+        self.existing_run_id = "325a3949cc90415c810ddad14d18f680"
+
         self.dropout = dropout
         self.tokenizer = tokenizer
+
+        # Step Linear Rate Scheduler config
+        self.step_lr_step_size = 1  # Triggered every epoch
+        self.step_lr_gamma = 0.7  # Multiplicative factor
 
         # Early stop
         self.early_stop_patience = 3
@@ -139,6 +149,7 @@ class Config:
         self.num_of_labels = 2
         self.run_with_small_sample = run_with_small_sample
         self.small_sample_size = 10
+        self.gradient_accumulation_steps = gradient_accumulation_steps
 
         if output_dir:
             self.data_output_dir = output_dir
