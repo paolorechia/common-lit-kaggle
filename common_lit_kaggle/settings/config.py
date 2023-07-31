@@ -108,6 +108,9 @@ class Config:
             self.model_config_root_dir / bart_model
         )
 
+        # Used to backtest a training with test split
+        self.existing_run_id = "325a3949cc90415c810ddad14d18f680"
+
         self.dropout = dropout
         self.tokenizer = tokenizer
 
