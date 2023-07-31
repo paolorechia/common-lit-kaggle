@@ -53,10 +53,10 @@ def train_epoch(
         loss = criterion(logits, target_tensor) / config.gradient_accumulation_steps
         loss.backward()
 
-        if idx % config.gradient_accumulation_steps == 0:
+        if (idx + 1) % config.gradient_accumulation_steps == 0:
             optimizer.step()
-            optimizer.zero_grad()
             scheduler.step()
+            optimizer.zero_grad()
 
         total_loss += loss.item() * config.gradient_accumulation_steps
 
