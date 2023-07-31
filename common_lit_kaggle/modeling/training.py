@@ -55,12 +55,12 @@ def train_epoch(
 
         if idx % config.gradient_accumulation_steps == 0:
             optimizer.step()
-            scheduler.step()
             optimizer.zero_grad()
 
         total_loss += loss.item() * config.gradient_accumulation_steps
         idx += 1
 
+    scheduler.step()
     return total_loss / len(dataloader)
 
 
