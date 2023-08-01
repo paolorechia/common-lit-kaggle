@@ -2,9 +2,10 @@ from typing import Any, Mapping
 
 import polars as pl
 
+from common_lit_kaggle.settings.config import Config
 from common_lit_kaggle.framework.task import Task
 
-from .bucket import BucketResult, bucket_data
+from .bucket import BucketResult
 
 
 class UndersampleTrainDataTask(Task):
@@ -12,7 +13,7 @@ class UndersampleTrainDataTask(Task):
         train_data: pl.DataFrame = context["train_data"]
         bucket_result: BucketResult = context["bucket_train_data"]
 
-        undersampled_data = None
+        config = Config.get()
         # Process category
         for attr in ["content", "wording"]:
             samples = []
@@ -23,6 +24,7 @@ class UndersampleTrainDataTask(Task):
                 histogram = bucket_result.wording_histogram
                 min_count = bucket_result.wording_min_label_size
 
+            min_count *= config.min_count_multiplier
             for category in histogram.select("category").to_numpy():
                 tuple_string = category[0]
                 tuple_string = tuple_string.replace("(", "").replace("]", "")
@@ -32,7 +34,8 @@ class UndersampleTrainDataTask(Task):
                 bucket = train_data.filter(pl.col(attr) > min_).filter(
                     pl.col(attr) < max_
                 )
-                label_sample = bucket.sample(min_count)
+                sample_size = min(len(bucket), min_count)
+                label_sample = bucket.sample(sample_size)
                 samples.append(label_sample)
 
         category_undersampled_data = pl.concat(samples)

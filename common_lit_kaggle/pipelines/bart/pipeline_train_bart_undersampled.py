@@ -21,6 +21,7 @@ class TrainBartWithUndersamplingPipeline(Pipeline):
                 "test_prompts": json.dumps(config.test_prompts),
                 "virtual_batch_size": config.batch_size
                 * config.gradient_accumulation_steps,
+                "undersampling_multiplier": config.min_count_multiplier,
             }
         )
 

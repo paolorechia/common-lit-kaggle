@@ -31,12 +31,12 @@ class Config:
         # model="facebook/bart-large-cnn",
         # tokenizer="facebook/bart-large-cnn",
         run_with_small_sample=False,
-        num_train_epochs=100,
+        num_train_epochs=20,
         batch_size=8,
         # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         # tokenizer="tiiuae/falcon-rw-1b",
         save_checkpoints=True,
-        learning_rate=0.001,
+        learning_rate=0.00001,
         regression_dropout=0.0,
         gradient_accumulation_steps=1,
     ):
@@ -106,6 +106,9 @@ class Config:
         self.checkpoints_dir = pathlib.Path(self.data_root_dir / "checkpoints")
 
         self.model_custom_config_dir = pathlib.Path(self.model_config_root_dir / model)
+
+        # Undersampling settings
+        self.min_count_multiplier = 4
 
         # Used to backtest a training with test split
         self.existing_run_id = "325a3949cc90415c810ddad14d18f680"

@@ -68,7 +68,7 @@ class TrainBartTask(Task):
             train_dataloader,
             bart_model,
             eval_dataloader=eval_dataloader,
-            early_stopper=early_stopper,
+            # early_stopper=early_stopper,
         )
 
         model_name = config.model.replace("/", "-")
