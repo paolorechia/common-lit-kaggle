@@ -40,7 +40,7 @@ class Config:
         model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         tokenizer="tiiuae/falcon-rw-1b",
         save_checkpoints=True,
-        learning_rate=0.00000001,
+        learning_rate=0.000001,
         regression_dropout=0.0,
         gradient_accumulation_steps=16,
     ):
@@ -119,7 +119,7 @@ class Config:
 
         # Step Linear Rate Scheduler config
         self.step_lr_step_size = 1  # Triggered every epoch
-        self.step_lr_gamma = 1.0  # Multiplicative factor
+        self.step_lr_gamma = 0.9  # Multiplicative factor
 
         # Early stop
         self.early_stop_patience = 3
