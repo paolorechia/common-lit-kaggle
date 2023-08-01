@@ -5,13 +5,7 @@ https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html
 import logging
 from typing import Any, Mapping, Optional
 
-from peft import (
-    LoraConfig,
-    TaskType,
-    get_peft_config,
-    get_peft_model,
-    prepare_model_for_int8_training,
-)
+from peft import LoraConfig, TaskType, get_peft_model, prepare_model_for_int8_training
 from torch.utils.data import DataLoader, RandomSampler
 from transformers import AutoConfig, AutoModel, FalconConfig
 
@@ -25,15 +19,16 @@ from common_lit_kaggle.settings.config import Config
 from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 peft_config = LoraConfig(
-    task_type=TaskType.SEQ_2_SEQ_LM,
+    task_type=TaskType.CAUSAL_LM,
     inference_mode=False,
     r=8,
     lora_alpha=32,
     lora_dropout=0.1,
     target_modules=[
-        # "query_key_value",
+        "query_key_value",
         "dense",
-        #   "dense_h_to_4h", "dense_4h_to_h"
+        "dense_h_to_4h",
+        "dense_4h_to_h",
     ],
 )
 
