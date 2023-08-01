@@ -3,6 +3,7 @@ from .bart import (
     TestBartCheckpoints,
     TestBartFullData,
     TrainBartRegressionPipeline,
+    TrainBartWithUndersamplingPipeline,
 )
 from .basic_ml import (
     BasicLinearRegressorPipeline,
