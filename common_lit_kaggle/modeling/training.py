@@ -1,6 +1,7 @@
 import logging
-from typing import Optional
+from typing import Optional, Union
 
+import bitsandbytes as bnb
 import numpy as np
 from torch import nn, optim
 from tqdm import tqdm
@@ -10,6 +11,7 @@ from common_lit_kaggle.utils.checkpoint import get_checkpoint_path
 from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 from .bart import BartWithRegressionHead
+from .falcon import FalconLoraWithRegressionHead
 
 # pylint: disable=no-member,too-many-ancestors
 # pylint: disable=invalid-name,consider-using-f-string
@@ -38,7 +40,11 @@ class EarlyStopper:
 
 
 def train_epoch(
-    dataloader, model: BartWithRegressionHead, optimizer, scheduler, criterion
+    dataloader,
+    model: Union[BartWithRegressionHead, FalconLoraWithRegressionHead],
+    optimizer,
+    scheduler,
+    criterion,
 ):
     """Adapted from: https://huggingface.co/docs/transformers/v4.26.1/training#training-loop"""
     total_loss = 0
@@ -64,7 +70,11 @@ def train_epoch(
     return total_loss / len(dataloader)
 
 
-def eval_epoch(dataloader, model: BartWithRegressionHead, criterion):
+def eval_epoch(
+    dataloader,
+    model: Union[BartWithRegressionHead, FalconLoraWithRegressionHead],
+    criterion,
+):
     total_loss = 0
 
     for data in tqdm(dataloader):
@@ -81,16 +91,24 @@ def eval_epoch(dataloader, model: BartWithRegressionHead, criterion):
 
 def train_model(
     train_dataloader,
-    model,
+    model: Union[FalconLoraWithRegressionHead, BartWithRegressionHead],
     print_every=1,
     eval_dataloader=None,
     early_stopper: Optional[EarlyStopper] = None,
+    use_8bit_optimizer=False,
 ):
     config = Config.get()
 
     print_loss_total = 0  # Reset every print_every
 
-    optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
+    if use_8bit_optimizer:
+        optimizer = bnb.optim.AdamW(
+            model.parameters(), lr=config.learning_rate, optim_bits=8
+        )
+    else:
+        optimizer = optim.AdamW(model.parameters(), lr=config.learning_rate)
+
+    print(model.parameters())
     criterion = nn.MSELoss()
 
     scheduler = optim.lr_scheduler.StepLR(
@@ -110,6 +128,8 @@ def train_model(
     should_stop = False
 
     for epoch in range(1, config.num_train_epochs + 1):
+        model.train()
+
         logger.info("Starting epoch: %d", epoch)
         loss = train_epoch(train_dataloader, model, optimizer, scheduler, criterion)
         print_loss_total += loss

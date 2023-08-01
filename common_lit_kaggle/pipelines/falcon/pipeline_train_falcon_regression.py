@@ -2,11 +2,11 @@ import json
 
 from common_lit_kaggle.framework import Pipeline
 from common_lit_kaggle.settings.config import Config
-from common_lit_kaggle.tasks import bart, basic_ml, data_split
+from common_lit_kaggle.tasks import bart, data_split, falcon
 from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 
-class TrainBartRegressionPipeline(Pipeline):
+class TrainFalconRegressionPipeline(Pipeline):
     def __init__(self) -> None:
         config = Config.get()
         mlflow.set_tags({"name": config.model})
@@ -21,11 +21,12 @@ class TrainBartRegressionPipeline(Pipeline):
                 "test_prompts": json.dumps(config.test_prompts),
                 "virtual_batch_size": config.batch_size
                 * config.gradient_accumulation_steps,
+                "model": config.model,
             }
         )
 
         super().__init__(
-            "train_bart_regression",
+            "train_falcon_regression",
             [
                 # Load training data
                 data_split.ReadTrainDataTask(),
@@ -43,6 +44,6 @@ class TrainBartRegressionPipeline(Pipeline):
                     output_text_data_key="tensor_eval_data",
                 ),
                 # Train
-                bart.TrainBartTask(),
+                falcon.TrainFalconTask(),
             ],
         )

@@ -26,17 +26,22 @@ class Config:
         eval_prompts=None,
         used_features=None,
         # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
-        bart_model="facebook/bart-base",
-        tokenizer="facebook/bart-base",
+        # model="facebook/bart-base",
+        # tokenizer="facebook/bart-base",
         # bart_model="facebook/bart-large-cnn",
         # tokenizer="facebook/bart-large-cnn",
         # bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
         run_with_small_sample=False,
         num_train_epochs=10,
-        batch_size=8,
+        batch_size=1,
+        # bart_model="facebook/bart-base",
+        # tokenizer="facebook/bart-base",
+        # bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
+        model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
+        tokenizer="tiiuae/falcon-rw-1b",
         save_checkpoints=True,
-        learning_rate=0.00001,
-        regression_dropout=0.1,
+        learning_rate=0.000001,
+        regression_dropout=0.0,
         gradient_accumulation_steps=16,
     ):
         if cls._config is None:
@@ -52,7 +57,7 @@ class Config:
                 eval_prompts,
                 used_features,
                 tokenizer,
-                bart_model,
+                model,
                 run_with_small_sample,
                 num_train_epochs,
                 batch_size,
@@ -77,7 +82,7 @@ class Config:
         eval_prompts,
         used_features,
         tokenizer,
-        bart_model,
+        model,
         run_with_small_sample,
         num_train_epochs,
         batch_size,
@@ -104,9 +109,7 @@ class Config:
         self.models_root_dir = pathlib.Path(self.data_root_dir / "models")
         self.checkpoints_dir = pathlib.Path(self.data_root_dir / "checkpoints")
 
-        self.model_custom_config_dir = pathlib.Path(
-            self.model_config_root_dir / bart_model
-        )
+        self.model_custom_config_dir = pathlib.Path(self.model_config_root_dir / model)
 
         # Used to backtest a training with test split
         self.existing_run_id = "325a3949cc90415c810ddad14d18f680"
@@ -116,22 +119,29 @@ class Config:
 
         # Step Linear Rate Scheduler config
         self.step_lr_step_size = 1  # Triggered every epoch
-        self.step_lr_gamma = 0.7  # Multiplicative factor
+        self.step_lr_gamma = 0.9  # Multiplicative factor
 
         # Early stop
         self.early_stop_patience = 3
         self.early_stop_min_delta = 0.1
 
+        self.tokenizer = tokenizer
         # Bart Base
         self.batch_size = batch_size
-        self.bart_model = bart_model
+        self.model = model
 
-        if "bart-base" in bart_model:
+        if "bart-base" in model:
             self.string_truncation_length = (
                 1500  # value set on trial and error, until it stopped issuing warnings
             )
             self.model_context_length = 768
-        elif "bart-large" in bart_model:
+        elif "bart-large" in model:
+            # Large bart
+            self.model_context_length = 1024
+            self.string_truncation_length = (
+                2700  # value set on trial and error, until it stopped issuing warnings
+            )
+        elif "falcon" in model:
             # Large bart
             self.model_context_length = 1024
             self.string_truncation_length = (
@@ -139,7 +149,7 @@ class Config:
             )
         else:
             raise ValueError(
-                f"Unknown model: '{bart_model}'. Could not set preprocessing parameters."
+                f"Unknown model: '{model}'. Could not set preprocessing parameters."
             )
 
         # Shared bart parameters

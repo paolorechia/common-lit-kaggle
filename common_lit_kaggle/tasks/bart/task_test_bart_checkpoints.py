@@ -41,7 +41,7 @@ class TestBartCheckpointsTask(Task):
                 print("Testing epoch: ", epoch)
 
                 checkpoint_path = get_checkpoint_path(
-                    passed_model_name=config.bart_model,
+                    passed_model_name=config.model,
                     existing_run_id=existing_run_id,
                     epoch=epoch,
                 )

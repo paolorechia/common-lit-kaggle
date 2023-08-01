@@ -32,7 +32,7 @@ class PredictBertTask(Task):
         if config.run_with_small_sample:
             prediction_data = prediction_data.limit(config.small_sample_size)
 
-        bart_path = config.bart_model
+        bart_path = config.model
         bart_model = BartWithRegressionHead.from_pretrained(bart_path)
         # Make sure model is in GPU
         bart_model.to(config.device)

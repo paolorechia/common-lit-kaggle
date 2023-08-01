@@ -13,4 +13,5 @@ from .basic_ml import (
     SentenceTransformersPredictRandomForestPipeline,
 )
 from .data_split import ExploreDataPipeline, SplitTrainTestPipeline
+from .falcon import TrainFalconRegressionPipeline
 from .zero_shot import ZeroShotRandomForestPipeline
