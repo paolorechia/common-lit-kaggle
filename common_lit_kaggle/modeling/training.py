@@ -1,7 +1,11 @@
 import logging
 from typing import Optional, Union
 
-import bitsandbytes as bnb
+try:
+    import bitsandbytes as bnb
+except ImportError:
+    print("Could not import bitsandbytes! This is currently expected in Kaggle")
+
 import numpy as np
 from torch import nn, optim
 from tqdm import tqdm

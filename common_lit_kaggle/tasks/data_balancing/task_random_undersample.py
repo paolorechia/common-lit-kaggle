@@ -2,8 +2,8 @@ from typing import Any, Mapping
 
 import polars as pl
 
-from common_lit_kaggle.settings.config import Config
 from common_lit_kaggle.framework.task import Task
+from common_lit_kaggle.settings.config import Config
 
 from .bucket import BucketResult
 

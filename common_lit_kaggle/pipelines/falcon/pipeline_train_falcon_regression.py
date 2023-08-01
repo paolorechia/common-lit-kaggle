@@ -1,3 +1,5 @@
+# type: ignore
+# pylint: disable=no-name-in-module, no-member
 import json
 
 from common_lit_kaggle.framework import Pipeline
@@ -44,6 +46,6 @@ class TrainFalconRegressionPipeline(Pipeline):
                     output_text_data_key="tensor_eval_data",
                 ),
                 # Train
-                falcon.TrainFalconTask(),
+                falcon.TrainFalconTask(),  # Type: ignore
             ],
         )
