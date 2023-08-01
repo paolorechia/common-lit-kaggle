@@ -108,7 +108,7 @@ class Config:
         self.model_custom_config_dir = pathlib.Path(self.model_config_root_dir / model)
 
         # Undersampling settings
-        self.min_count_multiplier = 4
+        self.min_count_multiplier = 8
 
         # Used to backtest a training with test split
         self.existing_run_id = "325a3949cc90415c810ddad14d18f680"
