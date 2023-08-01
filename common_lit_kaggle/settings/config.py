@@ -28,17 +28,13 @@ class Config:
         # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
         # model="facebook/bart-base",
         # tokenizer="facebook/bart-base",
-        # bart_model="facebook/bart-large-cnn",
-        # tokenizer="facebook/bart-large-cnn",
-        # bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
+        model="facebook/bart-large-cnn",
+        tokenizer="facebook/bart-large-cnn",
         run_with_small_sample=False,
         num_train_epochs=10,
         batch_size=1,
-        # bart_model="facebook/bart-base",
-        # tokenizer="facebook/bart-base",
-        # bart_model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_facebook-bart-large-cnn_45",
-        model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
-        tokenizer="tiiuae/falcon-rw-1b",
+        # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
+        # tokenizer="tiiuae/falcon-rw-1b",
         save_checkpoints=True,
         learning_rate=0.000001,
         regression_dropout=0.0,
@@ -196,8 +192,8 @@ class Config:
         ]
 
         # Default configuration locally, uses only one of the prompts for training
-        self.train_prompts = ["3b9047", "39c16e"]
-        self.eval_prompts = ["ebad26"]
+        self.train_prompts = ["3b9047", "39c16e", "ebad26"]
+        self.eval_prompts = ["814d6b"]
         self.test_prompts = [
             "814d6b",
         ]
