@@ -1,2 +1,3 @@
 from .task_bucket_train_data import BucketTrainDataTask
 from .task_random_undersample import UndersampleTrainDataTask
+from .task_word_augmenter import AugmentWord2VecTrainDataTask

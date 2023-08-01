@@ -7,5 +7,6 @@ from .table_students_per_text import StudentsPerTextTable
 from .table_summaries import InputSummariesTable
 from .table_test_split import TestSplitTable
 from .table_texts_per_prompt import TextsPerPromptTable
+from .table_train_augmented import AugmentedWord2VecTrainTable
 from .table_train_split import TrainSplitTable
 from .table_unified_text_data import UnifiedTextDataTable
