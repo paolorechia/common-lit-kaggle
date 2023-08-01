@@ -18,7 +18,7 @@ from transformers import AutoConfig, AutoModel, FalconConfig
 from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.modeling import (
     EarlyStopper,
-    FalconWithRegressionHead,
+    FalconLoraWithRegressionHead,
     train_model,
 )
 from common_lit_kaggle.settings.config import Config
@@ -77,7 +77,7 @@ class TrainFalconTask(Task):
         falcon_model = get_peft_model(falcon_model, peft_config)
         falcon_model.print_trainable_parameters()
 
-        falcon_model = FalconWithRegressionHead(
+        falcon_model = FalconLoraWithRegressionHead(
             config=falcon_config,
             falcon_model=falcon_model,
         )
@@ -101,7 +101,7 @@ class TrainFalconTask(Task):
             falcon_model,
             eval_dataloader=eval_dataloader,
             early_stopper=early_stopper,
-            use_8bit_optimizer=True,
+            use_8bit_optimizer=False,
         )
 
         model_name = config.model.replace("/", "-")

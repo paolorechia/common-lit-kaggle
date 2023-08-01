@@ -4,41 +4,18 @@ import torch
 from torch import nn
 from transformers import FalconConfig, FalconModel
 
+from common_lit_kaggle.modeling.base_regression import LinearHead
 from common_lit_kaggle.settings.config import Config
-
-# pylint: disable=no-member,too-many-ancestors
-# pylint: disable=invalid-name,consider-using-f-string
 
 logger = logging.getLogger(__name__)
 
+# pylint: disable=no-member
 
-class LinearHead(nn.Module):
-    """Head for text regression task. This code comes from transformers source code."""
 
-    def __init__(
-        self,
-        input_dim: int,
-        inner_dim: int,
-        num_classes: int,
-        pooler_dropout: float,
-    ):
+class FalconLoraWithRegressionHead(nn.Module):
+    def __init__(self, config: FalconConfig, falcon_model: FalconModel):
         super().__init__()
 
-        self.dense = nn.Linear(input_dim, inner_dim)
-        self.dropout = nn.Dropout(p=pooler_dropout)
-        self.out_proj = nn.Linear(inner_dim, num_classes)
-
-    def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:
-        hidden_states = self.dropout(hidden_states)
-        hidden_states = self.dense(hidden_states)
-        hidden_states = torch.tanh(hidden_states)
-        hidden_states = self.dropout(hidden_states)
-        hidden_states = self.out_proj(hidden_states)
-        return hidden_states
-
-
-class FalconWithRegressionHead:
-    def __init__(self, config: FalconConfig, falcon_model: FalconModel):
         project_config = Config.get()
         self.falcon_model = falcon_model
         self.config = config
@@ -46,9 +23,13 @@ class FalconWithRegressionHead:
             input_dim=config.hidden_size,
             inner_dim=config.hidden_size,
             num_classes=project_config.num_of_labels,
-            pooler_dropout=project_config.dropout,
+            dropout=project_config.dropout,
         )
         self.regression_head.to(project_config.device)
+
+    def save_pretrained(self, checkpoint_path):
+        self.falcon_model.save_pretrained(checkpoint_path)
+        torch.save(self.regression_head, checkpoint_path / "regression_head.pt")
 
     def forward(self, input_ids: torch.LongTensor, *args, **kwargs):
         """Copied/adapted from the transformers library:
