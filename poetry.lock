@@ -1,29 +1,4 @@
 [[package]]
-name = "accelerate"
-version = "0.21.0"
-description = "Accelerate"
-category = "dev"
-optional = false
-python-versions = ">=3.8.0"
-
-[package.dependencies]
-numpy = ">=1.17"
-packaging = ">=20.0"
-psutil = "*"
-pyyaml = "*"
-torch = ">=1.10.0"
-
-[package.extras]
-dev = ["black (>=23.1,<24.0)", "ruff (>=0.0.241)", "hf-doc-builder (>=0.3.0)", "urllib3 (<2.0.0)", "pytest", "pytest-xdist", "pytest-subtests", "parameterized", "datasets", "evaluate", "transformers", "scipy", "scikit-learn", "deepspeed", "tqdm", "rich"]
-quality = ["black (>=23.1,<24.0)", "ruff (>=0.0.241)", "hf-doc-builder (>=0.3.0)", "urllib3 (<2.0.0)"]
-rich = ["rich"]
-sagemaker = ["sagemaker"]
-test_dev = ["datasets", "evaluate", "transformers", "scipy", "scikit-learn", "deepspeed", "tqdm"]
-test_prod = ["pytest", "pytest-xdist", "pytest-subtests", "parameterized"]
-test_trackers = ["wandb", "comet-ml", "tensorboard"]
-testing = ["pytest", "pytest-xdist", "pytest-subtests", "parameterized", "datasets", "evaluate", "transformers", "scipy", "scikit-learn", "deepspeed", "tqdm"]
-
-[[package]]
 name = "aiohttp"
 version = "3.8.5"
 description = "Async http client/server framework (asyncio)"
@@ -108,6 +83,21 @@ dev = ["attrs", "pre-commit"]
 docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-towncrier", "towncrier", "zope-interface"]
 tests = ["attrs", "zope-interface"]
 tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=1.1.1)", "pympler", "pytest-mypy-plugins", "pytest-xdist", "pytest (>=4.3.0)"]
+
+[[package]]
+name = "beautifulsoup4"
+version = "4.12.2"
+description = "Screen-scraping library"
+category = "dev"
+optional = false
+python-versions = ">=3.6.0"
+
+[package.dependencies]
+soupsieve = ">1.2"
+
+[package.extras]
+html5lib = ["html5lib"]
+lxml = ["lxml"]
 
 [[package]]
 name = "black"
@@ -416,6 +406,40 @@ sftp = ["paramiko"]
 smb = ["smbprotocol"]
 ssh = ["paramiko"]
 tqdm = ["tqdm"]
+
+[[package]]
+name = "gdown"
+version = "4.7.1"
+description = "Google Drive direct download of big files."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+beautifulsoup4 = "*"
+filelock = "*"
+requests = {version = "*", extras = ["socks"]}
+six = "*"
+tqdm = "*"
+
+[[package]]
+name = "gensim"
+version = "4.3.1"
+description = "Python framework for fast Vector Space Modelling"
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+numpy = ">=1.18.5"
+scipy = ">=1.7.0"
+smart-open = ">=1.8.1"
+
+[package.extras]
+distributed = ["Pyro4 (>=4.27)"]
+docs = ["pytest", "pytest-cov", "mock", "cython", "testfixtures", "pot", "Pyro4 (>=4.27)", "visdom (>0.1.8.7)", "sphinx (==5.1.1)", "sphinx-gallery (==0.11.1)", "sphinxcontrib.programoutput (==0.17)", "sphinxcontrib-napoleon (==0.7)", "matplotlib", "memory-profiler", "annoy", "pyro4", "nltk", "statsmodels", "pandas"]
+test = ["pytest", "pytest-cov", "mock", "cython", "testfixtures", "pot", "visdom (>0.1.8.7)"]
+test-win = ["pytest", "pytest-cov", "mock", "cython", "testfixtures", "pot"]
 
 [[package]]
 name = "gitdb"
@@ -746,20 +770,6 @@ gateway = ["pydantic (>=1.0,<2)", "fastapi (<1)", "uvicorn[standard] (<1)", "wat
 sqlserver = ["mlflow-dbstore"]
 
 [[package]]
-name = "mpmath"
-version = "1.3.0"
-description = "Python library for arbitrary-precision floating-point arithmetic"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.extras]
-develop = ["pytest (>=4.6)", "pycodestyle", "pytest-cov", "codecov", "wheel"]
-docs = ["sphinx"]
-gmpy = ["gmpy2 (>=2.1.0a4)"]
-tests = ["pytest (>=4.6)"]
-
-[[package]]
 name = "msal"
 version = "1.23.0"
 description = "The Microsoft Authentication Library (MSAL) for Python library enables your app to access the Microsoft Cloud by supporting authentication of users with Microsoft Azure Active Directory accounts (AAD) and Microsoft Accounts (MSA) using industry standard OAuth2 and OpenID Connect."
@@ -819,19 +829,40 @@ optional = false
 python-versions = ">=3.5"
 
 [[package]]
-name = "networkx"
-version = "3.1"
-description = "Python package for creating and manipulating graphs and networks"
+name = "nlpaug"
+version = "1.1.11"
+description = "Natural language processing augmentation library for deep neural networks"
 category = "dev"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.7"
+
+[package.dependencies]
+gdown = ">=4.0.0"
+numpy = ">=1.16.2"
+pandas = ">=1.2.0"
+requests = ">=2.22.0"
+
+[[package]]
+name = "nltk"
+version = "3.8.1"
+description = "Natural Language Toolkit"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+click = "*"
+joblib = "*"
+regex = ">=2021.8.3"
+tqdm = "*"
 
 [package.extras]
-default = ["numpy (>=1.20)", "scipy (>=1.8)", "matplotlib (>=3.4)", "pandas (>=1.3)"]
-developer = ["pre-commit (>=3.2)", "mypy (>=1.1)"]
-doc = ["sphinx (>=6.1)", "pydata-sphinx-theme (>=0.13)", "sphinx-gallery (>=0.12)", "numpydoc (>=1.5)", "pillow (>=9.4)", "nb2plots (>=0.6)", "texext (>=0.6.7)"]
-extra = ["lxml (>=4.6)", "pygraphviz (>=1.10)", "pydot (>=1.4.2)", "sympy (>=1.10)"]
-test = ["pytest (>=7.2)", "pytest-cov (>=4.0)", "codecov (>=2.1)"]
+all = ["scikit-learn", "python-crfsuite", "requests", "numpy", "pyparsing", "twython", "scipy", "matplotlib"]
+corenlp = ["requests"]
+machine_learning = ["numpy", "python-crfsuite", "scikit-learn", "scipy"]
+plot = ["matplotlib"]
+tgrep = ["pyparsing"]
+twitter = ["twython"]
 
 [[package]]
 name = "numpy"
@@ -987,17 +1018,6 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
-name = "psutil"
-version = "5.9.5"
-description = "Cross-platform lib for process and system monitoring in Python."
-category = "dev"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-
-[package.extras]
-test = ["ipaddress", "mock", "enum34", "pywin32", "wmi"]
-
-[[package]]
 name = "pyarrow"
 version = "12.0.1"
 description = "Python library for Apache Arrow"
@@ -1076,6 +1096,14 @@ python-versions = ">=3.6.8"
 
 [package.extras]
 diagrams = ["railroad-diagrams", "jinja2"]
+
+[[package]]
+name = "pysocks"
+version = "1.7.1"
+description = "A Python SOCKS client module. See https://github.com/Anorov/PySocks for more information."
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "python-dateutil"
@@ -1157,6 +1185,7 @@ python-versions = ">=3.7"
 certifi = ">=2017.4.17"
 charset-normalizer = ">=2,<4"
 idna = ">=2.5,<4"
+PySocks = {version = ">=1.5.6,<1.5.7 || >1.5.7", optional = true, markers = "extra == \"socks\""}
 urllib3 = ">=1.21.1,<3"
 
 [package.extras]
@@ -1225,12 +1254,38 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
+name = "smart-open"
+version = "6.3.0"
+description = "Utils for streaming large files (S3, HDFS, GCS, Azure Blob Storage, gzip, bz2...)"
+category = "dev"
+optional = false
+python-versions = ">=3.6,<4.0"
+
+[package.extras]
+all = ["boto3", "google-cloud-storage (>=2.6.0)", "azure-storage-blob", "azure-common", "azure-core", "requests", "paramiko"]
+azure = ["azure-storage-blob", "azure-common", "azure-core"]
+gcs = ["google-cloud-storage (>=2.6.0)"]
+http = ["requests"]
+s3 = ["boto3"]
+ssh = ["paramiko"]
+test = ["boto3", "google-cloud-storage (>=2.6.0)", "azure-storage-blob", "azure-common", "azure-core", "requests", "paramiko", "moto", "responses", "pytest", "pytest-rerunfailures"]
+webhdfs = ["requests"]
+
+[[package]]
 name = "smmap"
 version = "5.0.0"
 description = "A pure Python implementation of a sliding window memory map manager"
 category = "dev"
 optional = false
 python-versions = ">=3.6"
+
+[[package]]
+name = "soupsieve"
+version = "2.4.1"
+description = "A modern CSS selector implementation for Beautiful Soup."
+category = "dev"
+optional = false
+python-versions = ">=3.7"
 
 [[package]]
 name = "sqlalchemy"
@@ -1280,17 +1335,6 @@ python-versions = ">=3.5"
 dev = ["flake8", "build"]
 doc = ["sphinx"]
 test = ["pytest", "pytest-cov"]
-
-[[package]]
-name = "sympy"
-version = "1.12"
-description = "Computer algebra system (CAS) in Python"
-category = "dev"
-optional = false
-python-versions = ">=3.8"
-
-[package.dependencies]
-mpmath = ">=0.19"
 
 [[package]]
 name = "tabulate"
@@ -1349,24 +1393,6 @@ description = "Style preserving TOML library"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
-
-[[package]]
-name = "torch"
-version = "2.0.1"
-description = "Tensors and Dynamic neural networks in Python with strong GPU acceleration"
-category = "dev"
-optional = false
-python-versions = ">=3.8.0"
-
-[package.dependencies]
-filelock = "*"
-jinja2 = "*"
-networkx = "*"
-sympy = "*"
-typing-extensions = "*"
-
-[package.extras]
-opt-einsum = ["opt-einsum (>=3.3)"]
 
 [[package]]
 name = "tqdm"
@@ -1497,16 +1523,16 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-ena
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "b285a3ae5340aaeeac90b6dbe87606371d6f20eb962d810fc2e9f2fba0a8fcd7"
+content-hash = "b032a967fddf9bd59311b85d4db46803e07dbcfdbeef99d6d97e0f2b4edee0c4"
 
 [metadata.files]
-accelerate = []
 aiohttp = []
 aiosignal = []
 alembic = []
 astroid = []
 async-timeout = []
 attrs = []
+beautifulsoup4 = []
 black = []
 bleach = []
 blinker = []
@@ -1530,6 +1556,8 @@ flask = []
 fonttools = []
 frozenlist = []
 fsspec = []
+gdown = []
+gensim = []
 gitdb = []
 gitpython = []
 gptcache = []
@@ -1552,13 +1580,13 @@ markupsafe = []
 matplotlib = []
 mccabe = []
 mlflow = []
-mpmath = []
 msal = []
 multidict = []
 mypy = []
 mypy-extensions = []
 nest-asyncio = []
-networkx = []
+nlpaug = []
+nltk = []
 numpy = []
 oauthlib = []
 openai = []
@@ -1569,13 +1597,13 @@ pillow = []
 platformdirs = []
 polars = []
 protobuf = []
-psutil = []
 pyarrow = []
 pycparser = []
 pygtrie = []
 pyjwt = []
 pylint = []
 pyparsing = []
+pysocks = []
 python-dateutil = []
 python-slugify = []
 pytz = []
@@ -1588,17 +1616,17 @@ scikit-learn = []
 scipy = []
 setuptools-scm = []
 six = []
+smart-open = []
 smmap = []
+soupsieve = []
 sqlalchemy = []
 sqlparse = []
-sympy = []
 tabulate = []
 text-unidecode = []
 threadpoolctl = []
 tiktoken = []
 tomli = []
 tomlkit = []
-torch = []
 tqdm = []
 typing-extensions = []
 tzdata = []

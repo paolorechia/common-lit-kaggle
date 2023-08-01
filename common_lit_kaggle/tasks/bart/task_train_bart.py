@@ -40,7 +40,7 @@ class TrainBartTask(Task):
         logger.info("Loaded the following config: %s", bart_config)
 
         for key in dir(bart_config):
-            if "dropout" in key:
+            if "drop" in key:
                 mlflow.log_param(f"bart_{key}", getattr(bart_config, key))
 
         bart_model = BartWithRegressionHead.from_pretrained(
