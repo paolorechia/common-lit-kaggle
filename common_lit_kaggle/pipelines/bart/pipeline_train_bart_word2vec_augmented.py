@@ -2,11 +2,11 @@ import json
 
 from common_lit_kaggle.framework import Pipeline
 from common_lit_kaggle.settings.config import Config
-from common_lit_kaggle.tasks import bart, data_balancing, data_split
+from common_lit_kaggle.tasks import bart, data_split
 from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 
-class TrainBartWithUndersamplingPipeline(Pipeline):
+class TrainBartWithWord2VecAugmentationPipeline(Pipeline):
     def __init__(self) -> None:
         config = Config.get()
         mlflow.set_tags(
