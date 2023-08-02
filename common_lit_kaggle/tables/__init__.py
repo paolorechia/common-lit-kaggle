@@ -7,6 +7,11 @@ from .table_students_per_text import StudentsPerTextTable
 from .table_summaries import InputSummariesTable
 from .table_test_split import TestSplitTable
 from .table_texts_per_prompt import TextsPerPromptTable
-from .table_train_augmented import AugmentedWord2VecTrainTable
+from .table_train_bert_augmented import AugmentedBertTrainTable
+from .table_train_gpt2_augmented import AugmentedGPT2TrainTable
+from .table_train_ppdb_augmented import AugmentedPPDBTrainTable
 from .table_train_split import TrainSplitTable
+from .table_train_t5_augmented import AugmentedT5TrainTable
+from .table_train_wmt19_augmented import AugmentedWmt19TrainTable
+from .table_train_word2vec_augmented import AugmentedWord2VecTrainTable
 from .table_unified_text_data import UnifiedTextDataTable
