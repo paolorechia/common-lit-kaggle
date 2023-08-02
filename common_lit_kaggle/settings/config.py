@@ -31,7 +31,7 @@ class Config:
         # model="facebook/bart-large-cnn",
         # tokenizer="facebook/bart-large-cnn",
         run_with_small_sample=False,
-        num_train_epochs=20,
+        num_train_epochs=10,
         batch_size=8,
         # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         # tokenizer="tiiuae/falcon-rw-1b",
