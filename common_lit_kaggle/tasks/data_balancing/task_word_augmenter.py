@@ -30,14 +30,17 @@ class AugmentWord2VecTrainDataTask(Task):
             action="substitute",
             aug_p=0.1,
         )
+        progress_bar = tqdm(total=1)
 
         def augment_text(text):
             augmented = aug.augment(text, n=1)[0]
+            progress_bar.update(1)
             return augmented
+
+        samples: list[pl.DataFrame] = []
 
         # Process category
         for attr in ["content", "wording"]:
-            samples: list[pl.DataFrame] = []
             if attr == "content":
                 histogram = bucket_result.content_histogram
                 max_count = bucket_result.content_max_label_size
@@ -46,7 +49,7 @@ class AugmentWord2VecTrainDataTask(Task):
                 # histogram = bucket_result.wording_histogram
                 # min_count = bucket_result.wording_min_label_size
 
-            for category in tqdm(histogram.select("category").to_numpy()):
+            for category in histogram.select("category").to_numpy():
                 tuple_string = category[0]
                 tuple_string = tuple_string.replace("(", "").replace("]", "")
                 tuple_ = tuple_string.split(",")
@@ -56,20 +59,24 @@ class AugmentWord2VecTrainDataTask(Task):
                     pl.col(attr) < max_
                 )
                 data_points_to_generate = max_count - len(bucket)
-                logger.info(
-                    "Will generate '%s' for bucket '%s' of label '%s'",
-                    data_points_to_generate,
-                    tuple_string,
-                    attr,
-                )
-                to_augment = bucket.sample(
-                    data_points_to_generate, with_replacement=True
-                )
-                to_augment.with_columns(
-                    pl.col("text").apply(augment_text).alias("augmented_text")
-                )
+                if data_points_to_generate > 0:
+                    logger.info(
+                        "Will generate '%s' for bucket '%s' of label '%s'",
+                        data_points_to_generate,
+                        tuple_string,
+                        attr,
+                    )
+                    progress_bar = tqdm(total=data_points_to_generate)
+                    to_augment = bucket.sample(
+                        data_points_to_generate, with_replacement=True
+                    )
+                    augmented = to_augment.with_columns(
+                        pl.col("text").apply(augment_text).alias("augmented_text")
+                    )
+                    samples.append(augmented)
 
         augmented_samples = pl.concat(samples)
+        print(augmented_samples.columns, augmented_samples)
         table_io.write_table(augmented_samples, AugmentedWord2VecTrainTable())
 
         # Replace train data in pipeline with undersampled

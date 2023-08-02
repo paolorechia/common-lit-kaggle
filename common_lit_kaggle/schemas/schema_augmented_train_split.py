@@ -13,4 +13,4 @@ class AugmentedTrainSplit(Schema):
     prompt_question = pl.Utf8
     prompt_title = pl.Utf8
     prompt_text = pl.Utf8
-    augmented_text: pl.Utf8
+    augmented_text = pl.Utf8
