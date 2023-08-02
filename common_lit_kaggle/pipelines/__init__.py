@@ -5,6 +5,11 @@ from .bart import (
     TrainBartRegressionPipeline,
     TrainBartWithUndersamplingPipeline,
     TrainBartWithWord2VecAugmentationPipeline,
+    TrainBartWithWMT19AugmentationPipeline,
+    TrainBartWithT5AugmentationPipeline,
+    TrainBartWithBertAugmentationPipeline,
+    TrainBartWithGPT2AugmentationPipeline,
+    TrainBartWithPPDBAugmentationPipeline
 )
 from .basic_ml import (
     BasicLinearRegressorPipeline,
