@@ -200,8 +200,8 @@ class AugmentWMT19TrainDataTask(Task):
             logger.warning("Table not found, running augmentation")
 
         aug = naw.BackTranslationAug(
-            from_model_name=str(config.models_root_dir / "facebook/wmt19-en-de"),
-            to_model_name=str(config.models_root_dir / "facebook/wmt19-de-en"),
+            from_model_name=str(config.models_root_dir / "wmt19-en-de"),
+            to_model_name=str(config.models_root_dir / "wmt19-de-en"),
             device="cuda",
         )
 

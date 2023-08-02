@@ -1,16 +1,53 @@
-from typing import Any, Mapping, Optional
+from typing import Any, Mapping
 
 import polars as pl
 
 from common_lit_kaggle.framework import table_io
 from common_lit_kaggle.framework.task import Task
-from common_lit_kaggle.tables import AugmentedWord2VecTrainTable
+from common_lit_kaggle.tables import (
+    AugmentedBertTrainTable,
+    AugmentedGPT2TrainTable,
+    AugmentedPPDBTrainTable,
+    AugmentedT5TrainTable,
+    AugmentedWmt19TrainTable,
+    AugmentedWord2VecTrainTable,
+)
 
 
 class ReadWord2VecTrainTask(Task):
     def run(self, _: Mapping[str, Any]) -> Mapping[str, Any]:
         input_data = table_io.read_table(AugmentedWord2VecTrainTable())
         return {"word2vec_augmented_train_data": input_data}
+
+
+class ReadGPT2TrainTask(Task):
+    def run(self, _: Mapping[str, Any]) -> Mapping[str, Any]:
+        input_data = table_io.read_table(AugmentedGPT2TrainTable())
+        return {"gpt2_augmented_train_data": input_data}
+
+
+class ReadWMT19TrainTask(Task):
+    def run(self, _: Mapping[str, Any]) -> Mapping[str, Any]:
+        input_data = table_io.read_table(AugmentedWmt19TrainTable())
+        return {"wmt19_augmented_train_data": input_data}
+
+
+class ReadT5TrainTask(Task):
+    def run(self, _: Mapping[str, Any]) -> Mapping[str, Any]:
+        input_data = table_io.read_table(AugmentedT5TrainTable())
+        return {"t5_augmented_train_data": input_data}
+
+
+class ReadPPDBTrainTask(Task):
+    def run(self, _: Mapping[str, Any]) -> Mapping[str, Any]:
+        input_data = table_io.read_table(AugmentedPPDBTrainTable())
+        return {"ppdb_augmented_train_data": input_data}
+
+
+class ReadBertTrainTask(Task):
+    def run(self, _: Mapping[str, Any]) -> Mapping[str, Any]:
+        input_data = table_io.read_table(AugmentedBertTrainTable())
+        return {"bert_augmented_train_data": input_data}
 
 
 class MergeAugmentedSourcesTask(Task):
