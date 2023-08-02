@@ -3,13 +3,13 @@ from .bart import (
     TestBartCheckpoints,
     TestBartFullData,
     TrainBartRegressionPipeline,
-    TrainBartWithUndersamplingPipeline,
-    TrainBartWithWord2VecAugmentationPipeline,
-    TrainBartWithWMT19AugmentationPipeline,
-    TrainBartWithT5AugmentationPipeline,
     TrainBartWithBertAugmentationPipeline,
     TrainBartWithGPT2AugmentationPipeline,
-    TrainBartWithPPDBAugmentationPipeline
+    TrainBartWithPPDBAugmentationPipeline,
+    TrainBartWithT5AugmentationPipeline,
+    TrainBartWithUndersamplingPipeline,
+    TrainBartWithWMT19AugmentationPipeline,
+    TrainBartWithWord2VecAugmentationPipeline,
 )
 from .basic_ml import (
     BasicLinearRegressorPipeline,
