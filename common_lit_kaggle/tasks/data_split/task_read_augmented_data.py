@@ -26,4 +26,11 @@ class MergeAugmentedSourcesTask(Task):
             augmented_data = augmented_data.drop("text")
             augmented_data = augmented_data.rename({"augmented_text": "text"})
 
-        return {"train_data": pl.concat([input_data, augmented_data])}
+        return {
+            "train_data": pl.concat(
+                [
+                    input_data.select(sorted(input_data.columns)),
+                    augmented_data.select(sorted(augmented_data.columns)),
+                ]
+            )
+        }

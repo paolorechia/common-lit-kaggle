@@ -4,6 +4,7 @@ from .bart import (
     TestBartFullData,
     TrainBartRegressionPipeline,
     TrainBartWithUndersamplingPipeline,
+    TrainBartWithWord2VecAugmentationPipeline,
 )
 from .basic_ml import (
     BasicLinearRegressorPipeline,

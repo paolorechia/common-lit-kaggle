@@ -10,7 +10,7 @@ class AugmentWord2VecTrainDataPipeline(Pipeline):
         config = Config.get()
 
         super().__init__(
-            "augment_word2vec",
+            "augment_data",
             [
                 # Load training data
                 data_split.ReadTrainDataTask(),

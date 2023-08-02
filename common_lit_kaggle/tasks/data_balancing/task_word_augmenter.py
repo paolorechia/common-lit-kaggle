@@ -118,8 +118,9 @@ class AugmentT5TrainDataTask(Task):
             logger.warning("Table not found, running augmentation")
 
         aug = nas.AbstSummAug(
-            model_path=config.models_root_dir / "t5-base", device="gpu"
+            model_path=str(config.models_root_dir / "t5-base"), device="cuda"
         )
+
         augmented_samples = apply_augmenter(context, aug)
         table_io.write_table(augmented_samples, AugmentedT5TrainTable())
 
@@ -137,9 +138,9 @@ class AugmentBertTrainDataTask(Task):
             logger.warning("Table not found, running augmentation")
 
         aug = naw.ContextualWordEmbsAug(
-            model_path=config.models_root_dir / "bert-base-uncased",
+            model_path=str(config.models_root_dir / "bert-base-uncased"),
             action="substitute",
-            device="gpu",
+            device="cuda",
         )
 
         augmented_samples = apply_augmenter(context, aug)
@@ -160,7 +161,7 @@ class AugmentPPDBTrainDataTask(Task):
 
         aug = naw.SynonymAug(
             aug_src="ppdb",
-            model_path=config.models_root_dir / "ppdb" / "ppdb-2.0-s-all",
+            model_path=config.models_root_dir / "ppdb" / "ppdb-2.0-tldr",
         )
         augmented_samples = apply_augmenter(context, aug)
         table_io.write_table(augmented_samples, AugmentedPPDBTrainTable())
@@ -179,8 +180,8 @@ class AugmentGPT2VecTrainDataTask(Task):
             logger.warning("Table not found, running augmentation")
 
         aug = nas.ContextualWordEmbsForSentenceAug(
-            model_path=config.models_root_dir / "gpt2",
-            device="gpu",
+            model_path=str(config.models_root_dir / "gpt2"),
+            device="cuda",
         )
         augmented_samples = apply_augmenter(context, aug)
         table_io.write_table(augmented_samples, AugmentedGPT2TrainTable())
@@ -199,9 +200,9 @@ class AugmentWMT19TrainDataTask(Task):
             logger.warning("Table not found, running augmentation")
 
         aug = naw.BackTranslationAug(
-            from_model_name=config.models_root_dir / "facebook/wmt19-en-de",
-            to_model_name=config.models_root_dir / "facebook/wmt19-de-en",
-            device="gpu",
+            from_model_name=str(config.models_root_dir / "facebook/wmt19-en-de"),
+            to_model_name=str(config.models_root_dir / "facebook/wmt19-de-en"),
+            device="cuda",
         )
 
         augmented_samples = apply_augmenter(context, aug)
