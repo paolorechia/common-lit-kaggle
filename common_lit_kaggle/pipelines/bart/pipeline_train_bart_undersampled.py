@@ -12,6 +12,7 @@ class TrainBartWithUndersamplingPipeline(Pipeline):
         mlflow.set_tags({"name": config.model, "preprocessing": "naive_undersampling"})
         mlflow.log_params(
             {
+                "regression_dropout": config.dropout,
                 "batch_size": config.batch_size,
                 "learning_rate": config.learning_rate,
                 "truncation_length": config.string_truncation_length,

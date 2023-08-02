@@ -80,9 +80,18 @@ def apply_augmenter(context, augmenter: Augmenter) -> pl.DataFrame:
     return augmented_samples
 
 
+# pylint: disable=broad-exception-caught
+
+
 class AugmentWord2VecTrainDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         config = Config.get()
+
+        try:
+            table = table_io.read_table(AugmentedWord2VecTrainTable())
+            return {"augmented_train": table}
+        except Exception:
+            logger.warning("Table not found, running augmentation")
 
         aug = naw.WordEmbsAug(
             model_type="word2vec",
@@ -102,6 +111,11 @@ class AugmentWord2VecTrainDataTask(Task):
 class AugmentT5TrainDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         config = Config.get()
+        try:
+            table = table_io.read_table(AugmentedT5TrainTable())
+            return {"augmented_train": table}
+        except Exception:
+            logger.warning("Table not found, running augmentation")
 
         aug = nas.AbstSummAug(
             model_path=config.models_root_dir / "t5-base", device="gpu"
@@ -116,6 +130,11 @@ class AugmentT5TrainDataTask(Task):
 class AugmentBertTrainDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         config = Config.get()
+        try:
+            table = table_io.read_table(AugmentedBertTrainTable())
+            return {"augmented_train": table}
+        except Exception:
+            logger.warning("Table not found, running augmentation")
 
         aug = naw.ContextualWordEmbsAug(
             model_path=config.models_root_dir / "bert-base-uncased",
@@ -133,6 +152,11 @@ class AugmentBertTrainDataTask(Task):
 class AugmentPPDBTrainDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         config = Config.get()
+        try:
+            table = table_io.read_table(AugmentedPPDBTrainTable())
+            return {"augmented_train": table}
+        except Exception:
+            logger.warning("Table not found, running augmentation")
 
         aug = naw.SynonymAug(
             aug_src="ppdb",
@@ -148,6 +172,11 @@ class AugmentPPDBTrainDataTask(Task):
 class AugmentGPT2VecTrainDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         config = Config.get()
+        try:
+            table = table_io.read_table(AugmentedGPT2TrainTable())
+            return {"augmented_train": table}
+        except Exception:
+            logger.warning("Table not found, running augmentation")
 
         aug = nas.ContextualWordEmbsForSentenceAug(
             model_path=config.models_root_dir / "gpt2",
@@ -163,6 +192,11 @@ class AugmentGPT2VecTrainDataTask(Task):
 class AugmentWMT19TrainDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         config = Config.get()
+        try:
+            table = table_io.read_table(AugmentedWmt19TrainTable())
+            return {"augmented_train": table}
+        except Exception:
+            logger.warning("Table not found, running augmentation")
 
         aug = naw.BackTranslationAug(
             from_model_name=config.models_root_dir / "facebook/wmt19-en-de",

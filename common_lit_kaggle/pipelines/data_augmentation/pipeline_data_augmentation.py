@@ -16,5 +16,10 @@ class AugmentWord2VecTrainDataPipeline(Pipeline):
                 data_split.ReadTrainDataTask(),
                 data_balancing.BucketTrainDataTask(),
                 data_balancing.AugmentWord2VecTrainDataTask(),
+                data_balancing.AugmentPPDBTrainDataTask(),
+                data_balancing.AugmentBertTrainDataTask(),
+                data_balancing.AugmentGPT2VecTrainDataTask(),
+                data_balancing.AugmentWMT19TrainDataTask(),
+                data_balancing.AugmentT5TrainDataTask(),
             ],
         )
