@@ -88,7 +88,7 @@ class ExploreInputDataTask(Task):
             fig, axis = plt.subplots()
             axis.set_ylabel("frequency")
             axis.set_xlabel(attribute)
-            axis.hist(attr_numpy, bins=50)
+            axis.hist(attr_numpy, bins=8)
             plot_path = config.plots_dir / (
                 f"{attribute}_distribution_" + normalized_prompt + ".jpg"
             )
