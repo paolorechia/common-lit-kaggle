@@ -1,11 +1,10 @@
 """Train code adapted from PyTorch tutorial:
 https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html
+
 """
 import logging
 from typing import Any, Mapping, Optional
-
-import torch 
-from torch import Tensor
+import torch
 from torch.utils.data import DataLoader, RandomSampler
 from transformers import AutoConfig, BartConfig
 
@@ -16,12 +15,8 @@ from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 logger = logging.getLogger(__name__)
 
-
-def compute_instance_weights(targets: Tensor, threshold: float = 1.0) -> Tensor:
-    """Compute instance weights for cost-sensitive learning."""
-    weights = (targets < threshold).float()  # 1 for minority class, 0 for majority class
-    weights = weights * 4 + 1  # 5 for minority class, 1 for majority class
-    return weights.to(targets.device)
+# pylint: disable=no-member,too-many-ancestors
+# pylint: disable=invalid-name,consider-using-f-string
 
 
 class TrainBartTask(Task):
@@ -74,8 +69,7 @@ class TrainBartTask(Task):
             train_dataloader,
             bart_model,
             eval_dataloader=eval_dataloader,
-)
-
+        )
 
         model_name = config.model.replace("/", "-")
         bart_model.save_pretrained(f"trained_{model_name}")
