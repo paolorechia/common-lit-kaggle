@@ -12,10 +12,10 @@ class Config:
     def get(
         cls,
         root_dir=os.getenv(
-            "KAGGLE_DATA_DIR", "/home/paolo/kaggle/common-lit-kaggle/data"
+            "KAGGLE_DATA_DIR", "/home/karajan/labzone/kaggle/common-lit-kaggle/data"
         ),
         model_config_root_dir=os.getenv(
-            "MODEL_CONFIG_DIR", "/home/paolo/kaggle/common-lit-kaggle/model_config"
+            "MODEL_CONFIG_DIR", "/home/karajan/labzone/kaggle/common-lit-kaggle/model_config"
         ),
         input_dir=None,
         output_dir=None,

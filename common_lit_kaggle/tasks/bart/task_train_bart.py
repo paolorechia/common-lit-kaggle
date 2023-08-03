@@ -1,10 +1,11 @@
 """Train code adapted from PyTorch tutorial:
 https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html
-
 """
 import logging
 from typing import Any, Mapping, Optional
 
+import torch 
+from torch import Tensor
 from torch.utils.data import DataLoader, RandomSampler
 from transformers import AutoConfig, BartConfig
 
@@ -15,8 +16,12 @@ from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 logger = logging.getLogger(__name__)
 
-# pylint: disable=no-member,too-many-ancestors
-# pylint: disable=invalid-name,consider-using-f-string
+
+def compute_instance_weights(targets: Tensor, threshold: float = 1.0) -> Tensor:
+    """Compute instance weights for cost-sensitive learning."""
+    weights = (targets < threshold).float()  # 1 for minority class, 0 for majority class
+    weights = weights * 4 + 1  # 5 for minority class, 1 for majority class
+    return weights.to(targets.device)
 
 
 class TrainBartTask(Task):
@@ -60,15 +65,17 @@ class TrainBartTask(Task):
         eval_dataloader = DataLoader(
             eval_data, sampler=eval_sampler, batch_size=batch_size
         )
+
         early_stopper = EarlyStopper(
             patience=config.early_stop_patience, min_delta=config.early_stop_min_delta
         )
 
         train_model(
-            train_dataloader,
-            bart_model,
-            eval_dataloader=eval_dataloader,
-            # early_stopper=early_stopper,
+        train_dataloader,
+        bart_model,
+        eval_dataloader=eval_dataloader,
+        # instance_weights argument removed
+        # early_stopper=early_stopper,
         )
 
         model_name = config.model.replace("/", "-")

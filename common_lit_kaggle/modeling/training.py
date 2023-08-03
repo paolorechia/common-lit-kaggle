@@ -42,14 +42,13 @@ class EarlyStopper:
             if self.counter >= self.patience:
                 return True
         return False
-
-
 def train_epoch(
     dataloader,
     model: BartWithRegressionHead,
     optimizer,
     scheduler,
     criterion,
+    weights=None,  
 ):
     """Adapted from: https://huggingface.co/docs/transformers/v4.26.1/training#training-loop"""
     total_loss = 0
@@ -60,8 +59,16 @@ def train_epoch(
         input_tensor, target_tensor = data
         logits = model.forward(input_tensor)
 
+        # Compute weights for the current batch of data
+        if weights is not None:
+            weights_batch = compute_instance_weights(target_tensor)  
+
         # Compute loss here
-        loss = criterion(logits, target_tensor) / config.gradient_accumulation_steps
+        if weights is not None:
+            loss = (weights_batch * (logits - target_tensor) ** 2).mean() / config.gradient_accumulation_steps
+        else:
+            loss = criterion(logits, target_tensor) / config.gradient_accumulation_steps
+
         loss.backward()
 
         if idx % config.gradient_accumulation_steps == 0:
@@ -74,11 +81,11 @@ def train_epoch(
     scheduler.step()
     return total_loss / len(dataloader)
 
-
 def eval_epoch(
     dataloader,
     model: Union[BartWithRegressionHead],
     criterion,
+    weights=None,  
 ):
     total_loss = 0
 
@@ -86,9 +93,16 @@ def eval_epoch(
         input_tensor, target_tensor = data
         logits = model.forward(input_tensor)
 
+        # Compute weights for the current batch of data
+        if weights is not None:
+            weights_batch = compute_instance_weights(target_tensor)  
+
         # Compute loss here
-        loss = criterion(logits, target_tensor)
-        # lr_scheduler.step()
+        if weights is not None:
+            loss = (weights_batch * (logits - target_tensor) ** 2).mean()
+        else:
+            loss = criterion(logits, target_tensor)
+
         total_loss += loss.item()
 
     return total_loss / len(dataloader)
@@ -101,10 +115,11 @@ def train_model(
     eval_dataloader=None,
     early_stopper: Optional[EarlyStopper] = None,
     use_8bit_optimizer=False,
+    instance_weights=None, 
 ):
     config = Config.get()
 
-    print_loss_total = 0  # Reset every print_every
+    print_loss_total = 0  
 
     if use_8bit_optimizer:
         optimizer = bnb.optim.AdamW(
@@ -136,8 +151,10 @@ def train_model(
         model.train()
 
         logger.info("Starting epoch: %d", epoch)
-        loss = train_epoch(train_dataloader, model, optimizer, scheduler, criterion)
+        # Pass the instance weights to the train_epoch function
+        loss = train_epoch(train_dataloader, model, optimizer, scheduler, criterion, instance_weights)
         print_loss_total += loss
+
 
         if epoch % print_every == 0:
             print_loss_avg = print_loss_total / print_every
@@ -153,12 +170,9 @@ def train_model(
         if eval_dataloader:
             logger.info("Evaluating on validation dataset")
             model.eval()
-            # Validate model
-            eval_loss = eval_epoch(eval_dataloader, model, criterion)
+            # Pass the instance weights to the eval_epoch function
+            eval_loss = eval_epoch(eval_dataloader, model, criterion, instance_weights)
             logger.info("EVAL LOSS: %.4f", eval_loss)
-
-            mlflow.log_metric("eval_loss", eval_loss, epoch)
-            model.train()
 
         if early_stopper:
             assert eval_loss, "Cannot use early stopper without eval loss!"
