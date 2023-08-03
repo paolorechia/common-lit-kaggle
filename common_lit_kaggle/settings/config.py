@@ -31,13 +31,13 @@ class Config:
         # model="facebook/bart-large-cnn",
         # tokenizer="facebook/bart-large-cnn",
         run_with_small_sample=False,
-        num_train_epochs=20,
+        num_train_epochs=10,
         batch_size=8,
         # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         # tokenizer="tiiuae/falcon-rw-1b",
         save_checkpoints=True,
         learning_rate=0.00001,
-        regression_dropout=0.0,
+        regression_dropout=0.1,
         gradient_accumulation_steps=1,
     ):
         if cls._config is None:
@@ -108,7 +108,7 @@ class Config:
         self.model_custom_config_dir = pathlib.Path(self.model_config_root_dir / model)
 
         # Undersampling settings
-        self.min_count_multiplier = 8
+        self.min_count_multiplier = 3
 
         # Used to backtest a training with test split
         self.existing_run_id = "325a3949cc90415c810ddad14d18f680"

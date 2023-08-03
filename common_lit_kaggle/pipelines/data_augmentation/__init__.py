@@ -1,0 +1,2 @@
+from .pipeline_data_augmentation import AugmentWord2VecTrainDataPipeline
+from .pipeline_plot_histogram import PlotAugmentedPipeline

@@ -5,3 +5,8 @@ torch
 torchvision
 torchaudio
 transformers
+bitsandbytes==0.41.0
+accelerate==0.21.0
+sentencepiece
+simpletransformers>=0.61.10
+sacremoses

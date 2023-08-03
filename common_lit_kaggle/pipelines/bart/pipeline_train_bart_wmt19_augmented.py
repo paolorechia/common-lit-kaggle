@@ -2,14 +2,14 @@ import json
 
 from common_lit_kaggle.framework import Pipeline
 from common_lit_kaggle.settings.config import Config
-from common_lit_kaggle.tasks import bart, basic_ml, data_split
+from common_lit_kaggle.tasks import bart, data_split
 from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 
-class TrainBartRegressionPipeline(Pipeline):
+class TrainBartWithWMT19AugmentationPipeline(Pipeline):
     def __init__(self) -> None:
         config = Config.get()
-        mlflow.set_tags({"name": config.model})
+        mlflow.set_tags({"name": config.model, "preprocessing": "wmt19_augmentation"})
         mlflow.log_params(
             {
                 "regression_dropout": config.dropout,
@@ -22,14 +22,19 @@ class TrainBartRegressionPipeline(Pipeline):
                 "test_prompts": json.dumps(config.test_prompts),
                 "virtual_batch_size": config.batch_size
                 * config.gradient_accumulation_steps,
+                "undersampling_multiplier": config.min_count_multiplier,
             }
         )
 
         super().__init__(
-            "train_bart_regression",
+            "train_bart_wmt19",
             [
                 # Load training data
                 data_split.ReadTrainDataTask(),
+                data_split.ReadWMT19TrainTask(),
+                data_split.MergeAugmentedSourcesTask(
+                    data_sources=["wmt19_augmented_train_data"]
+                ),
                 bart.CreateUnifiedTextTrainDataTask(),
                 bart.ExploreUnifiedInputDataTask(),
                 bart.PrepareTensorTrainDataTask(

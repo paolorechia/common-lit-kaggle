@@ -1,3 +1,4 @@
+from .schema_augmented_train_split import AugmentedTrainSplit
 from .schema_input_prompts import InputPromptSchema
 from .schema_input_summary import InputSummarySchema
 from .schema_output_prediction import OutputPredictionSchema
