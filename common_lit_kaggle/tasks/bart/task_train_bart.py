@@ -36,9 +36,9 @@ class TrainBartTask(Task):
         # Optimizer for the BART model
         optimizer = torch.optim.AdamW(bart_model.parameters(), lr=config.learning_rate)
 
-        # Learning rate scheduler with Step decay
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
-
+        # Learning rate scheduler with step decay
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=config.num_train_epochs//10, gamma=0.1)
+        
         # Mean Squared Error loss function
         criterion = nn.MSELoss()
         
@@ -61,21 +61,22 @@ class TrainBartTask(Task):
                 loss.backward()
 
                 if (step + 1) % gradient_accumulation_steps == 0:
-                    # Optimizer and scheduler steps are performed after gradient accumulation
+                    # Optimizer step is performed after gradient accumulation
                     optimizer.step()
                     bart_model.zero_grad()
-
-                    # Scheduler step should be after optimizer.step() and zero_grad()
-                    scheduler.step()
 
                 # Updating the running loss
                 running_loss += loss.item() * inputs.size(0)
                 progress_bar.set_postfix({"loss": loss.item()})
 
-            # Update current learning rate
+            # Scheduler step is performed after each epoch
+            scheduler.step()
+
+            # Fetching the learning rate after scheduler step for the current epoch
             current_lr = optimizer.param_groups[0]['lr']
 
             # Logging the loss and learning rate for visualization in TensorBoard
+            writer.add_scalar("Loss/train", running_loss / len(train_dataloader.dataset), epoch)
             writer.add_scalar("LearningRate/train", current_lr, epoch)
 
             # Computing the epoch loss
