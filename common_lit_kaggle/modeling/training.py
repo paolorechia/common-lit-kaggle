@@ -7,7 +7,8 @@ except ImportError:
     print("Could not import bitsandbytes! This is currently expected in Kaggle")
 
 import numpy as np
-from torch import nn, optim
+from torch import nn, optim, Tensor
+
 from tqdm import tqdm
 
 from common_lit_kaggle.settings.config import Config
@@ -42,13 +43,20 @@ class EarlyStopper:
             if self.counter >= self.patience:
                 return True
         return False
+    
+
+def compute_instance_weights(targets: Tensor, threshold: float = 1.0) -> Tensor:
+    """Compute instance weights for cost-sensitive learning."""
+    weights = (targets < threshold).float()  # 1 for minority class, 0 for majority class
+    weights = weights * 4 + 1  # 5 for minority class, 1 for majority class
+    return weights.to(targets.device)
+
 def train_epoch(
     dataloader,
     model: BartWithRegressionHead,
     optimizer,
     scheduler,
     criterion,
-    weights=None,  
 ):
     """Adapted from: https://huggingface.co/docs/transformers/v4.26.1/training#training-loop"""
     total_loss = 0
@@ -60,14 +68,10 @@ def train_epoch(
         logits = model.forward(input_tensor)
 
         # Compute weights for the current batch of data
-        if weights is not None:
-            weights_batch = compute_instance_weights(target_tensor)  
+        weights_batch = compute_instance_weights(target_tensor)
 
         # Compute loss here
-        if weights is not None:
-            loss = (weights_batch * (logits - target_tensor) ** 2).mean() / config.gradient_accumulation_steps
-        else:
-            loss = criterion(logits, target_tensor) / config.gradient_accumulation_steps
+        loss = (weights_batch * (logits - target_tensor) ** 2).mean() / config.gradient_accumulation_steps
 
         loss.backward()
 
@@ -85,7 +89,6 @@ def eval_epoch(
     dataloader,
     model: Union[BartWithRegressionHead],
     criterion,
-    weights=None,  
 ):
     total_loss = 0
 
@@ -94,14 +97,10 @@ def eval_epoch(
         logits = model.forward(input_tensor)
 
         # Compute weights for the current batch of data
-        if weights is not None:
-            weights_batch = compute_instance_weights(target_tensor)  
+        weights_batch = compute_instance_weights(target_tensor)
 
         # Compute loss here
-        if weights is not None:
-            loss = (weights_batch * (logits - target_tensor) ** 2).mean()
-        else:
-            loss = criterion(logits, target_tensor)
+        loss = (weights_batch * (logits - target_tensor) ** 2).mean()
 
         total_loss += loss.item()
 
@@ -115,8 +114,8 @@ def train_model(
     eval_dataloader=None,
     early_stopper: Optional[EarlyStopper] = None,
     use_8bit_optimizer=False,
-    instance_weights=None, 
 ):
+
     config = Config.get()
 
     print_loss_total = 0  
@@ -152,7 +151,8 @@ def train_model(
 
         logger.info("Starting epoch: %d", epoch)
         # Pass the instance weights to the train_epoch function
-        loss = train_epoch(train_dataloader, model, optimizer, scheduler, criterion, instance_weights)
+        loss = train_epoch(train_dataloader, model, optimizer, scheduler, criterion)
+
         print_loss_total += loss
 
 
@@ -171,7 +171,8 @@ def train_model(
             logger.info("Evaluating on validation dataset")
             model.eval()
             # Pass the instance weights to the eval_epoch function
-            eval_loss = eval_epoch(eval_dataloader, model, criterion, instance_weights)
+            eval_loss = eval_epoch(eval_dataloader, model, criterion)
+
             logger.info("EVAL LOSS: %.4f", eval_loss)
 
         if early_stopper:

@@ -71,12 +71,11 @@ class TrainBartTask(Task):
         )
 
         train_model(
-        train_dataloader,
-        bart_model,
-        eval_dataloader=eval_dataloader,
-        # instance_weights argument removed
-        # early_stopper=early_stopper,
-        )
+            train_dataloader,
+            bart_model,
+            eval_dataloader=eval_dataloader,
+)
+
 
         model_name = config.model.replace("/", "-")
         bart_model.save_pretrained(f"trained_{model_name}")
