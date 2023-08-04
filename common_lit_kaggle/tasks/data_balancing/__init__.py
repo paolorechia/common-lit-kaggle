@@ -1,3 +1,4 @@
+from .task_brickets import BricketsTask
 from .task_bucket_train_data import BucketTrainDataTask
 from .task_cutlass import CutlassTask
 from .task_plot_augmented import TaskPlotAugmented

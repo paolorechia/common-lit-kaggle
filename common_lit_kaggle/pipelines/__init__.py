@@ -21,6 +21,7 @@ from .basic_ml import (
 )
 from .data_augmentation import (
     AugmentWord2VecTrainDataPipeline,
+    BricketsTestPipeline,
     CutlassTestPipeline,
     PlotAugmentedPipeline,
 )
