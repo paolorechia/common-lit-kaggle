@@ -24,6 +24,7 @@ from .data_augmentation import (
     BricketsTestPipeline,
     CutlassTestPipeline,
     PlotAugmentedPipeline,
+    PlotBricketsTestPipeline,
 )
 from .data_split import ExploreDataPipeline, SplitTrainTestPipeline
 
