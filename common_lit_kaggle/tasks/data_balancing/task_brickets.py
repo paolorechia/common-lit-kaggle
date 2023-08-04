@@ -83,16 +83,16 @@ class BricketsTask(Task):
         sampling = input_data.with_columns(pl.lit(True).alias("enabled"))
         result = None
 
-        number_to_sample = 10
-        target_statistic = 5.0
-        sampling_attempts = 1
+        sampling_batch_size = 5
+        target_statistic = 0.5
+        sampling_attempts = 1000
 
         max_iter = int(len(input_data) * 0.8)
         for _ in range(max_iter):
             # pylint: disable=singleton-comparison
             num_data_points = len(sampling)
             print("Remaining number of data points: ", num_data_points)
-            if num_data_points < number_to_sample:
+            if num_data_points < sampling_batch_size:
                 print("Finished sampling!")
                 break
             if result is not None:
@@ -102,7 +102,7 @@ class BricketsTask(Task):
 
             for _ in range(sampling_attempts):
                 idx_to_flag_as_taken, taken_sample = sample_n(
-                    sampling, number_to_sample
+                    sampling, sampling_batch_size
                 )
 
                 if result is None:
