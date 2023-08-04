@@ -69,6 +69,10 @@ def train_epoch(
             optimizer.zero_grad()
 
         total_loss += loss.item() * config.gradient_accumulation_steps
+
+        mlflow.log_param("running_loss", total_loss / idx)
+        mlflow.log_param("steps", idx)
+
         idx += 1
 
     scheduler.step()

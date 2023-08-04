@@ -67,6 +67,12 @@ def sample_n(data: pl.DataFrame, number_samples=10):
 
 
 class BricketsTask(Task):
+    """Brickets, because it is built from small brickets (samples).
+
+    Each bricket is added one at a time at the outcome population.
+    It's a silly name, I know.
+    """
+
     def __init__(
         self, augmented_table: TableReference, name: str | None = None
     ) -> None:
