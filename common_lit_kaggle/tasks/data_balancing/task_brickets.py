@@ -12,12 +12,15 @@ from common_lit_kaggle.settings.config import Config
 from common_lit_kaggle.tables import BricketsTestTable, TrainSplitTable
 
 
-def compute_anderson_test(data: pl.DataFrame, label="content"):
+def compute_anderson_test(
+    data: pl.DataFrame, reference_data: pl.DataFrame, label="content"
+):
     content_labels = data.select(label).to_numpy().reshape(-1)
+    reference_labels = reference_data.select(label).to_numpy().reshape(-1)
     content_desired_uniform = np.array(
         [
-            np.random.uniform(content_labels.min(), content_labels.max())
-            for _ in range(len(content_labels))
+            np.random.uniform(reference_labels.min(), reference_labels.max())
+            for _ in range(len(reference_labels))
         ]
     )
 
@@ -84,10 +87,10 @@ class BricketsTask(Task):
         result = None
 
         sampling_batch_size = 5
-        target_statistic = 0.5
-        sampling_attempts = 1000
+        target_statistic = 1.0
+        sampling_attempts_per_batch = 1000
 
-        max_iter = int(len(input_data) * 0.8)
+        max_iter = 1000
         for _ in range(max_iter):
             # pylint: disable=singleton-comparison
             num_data_points = len(sampling)
@@ -96,50 +99,55 @@ class BricketsTask(Task):
                 print("Finished sampling!")
                 break
             if result is not None:
-                content_test = compute_anderson_test(result, "content")
+                print("Sampled datapoints: ", len(result))
+                content_test = compute_anderson_test(result, sampling, "content")
                 print("Anderson test: ")
                 print(content_test.statistic)
 
-            for _ in range(sampling_attempts):
+            did_sample = False
+            for _ in range(sampling_attempts_per_batch):
                 idx_to_flag_as_taken, taken_sample = sample_n(
                     sampling, sampling_batch_size
                 )
 
                 if result is None:
-                    taken_test = compute_anderson_test(taken_sample)
+                    taken_test = compute_anderson_test(taken_sample, sampling)
                     if taken_test.statistic < target_statistic:
                         result = taken_sample
                         print("Took result: ", taken_test)
+                        did_sample = True
                         break
+
                 else:
                     candidate_result = pl.concat([result, taken_sample])
-                    candidate_test = compute_anderson_test(candidate_result)
+                    candidate_test = compute_anderson_test(candidate_result, sampling)
                     if candidate_test.statistic < target_statistic:
                         print("Sampled test: ", candidate_test)
                         result = candidate_result
+                        did_sample = True
                         break
 
-            assert result is not None
-            print("Sampled datapoints: ", len(result))
-            new_sampling = sampling
-            for idx in idx_to_flag_as_taken:
-                new_sampling = (
-                    new_sampling.drop("enabled")
-                    .with_row_count("row_nr")
-                    .select(
-                        "*",
-                        pl.when(pl.col("row_nr") == idx)
-                        .then(False)
-                        .otherwise(pl.lit(True))
-                        .alias("enabled"),
+            if did_sample:
+                assert result is not None
+                new_sampling = sampling
+                for idx in idx_to_flag_as_taken:
+                    new_sampling = (
+                        new_sampling.drop("enabled")
+                        .with_row_count("row_nr")
+                        .select(
+                            "*",
+                            pl.when(pl.col("row_nr") == idx)
+                            .then(False)
+                            .otherwise(pl.lit(True))
+                            .alias("enabled"),
+                        )
+                        .drop("row_nr")
+                        .filter(pl.col("enabled") == True)
                     )
-                    .drop("row_nr")
-                    .filter(pl.col("enabled") == True)
-                )
-            assert len(new_sampling) < len(
-                sampling
-            ), f"{len(new_sampling)}, {len(sampling)}"
-            sampling = new_sampling
+                assert len(new_sampling) < len(
+                    sampling
+                ), f"{len(new_sampling)}, {len(sampling)}"
+                sampling = new_sampling
 
         table_io.write_table(taken_sample.drop("row_nr"), BricketsTestTable())
 
