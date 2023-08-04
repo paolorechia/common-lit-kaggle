@@ -2,6 +2,7 @@ from .bart import (
     BartPredictionRegressionPipeline,
     TestBartCheckpoints,
     TestBartFullData,
+    TrainBartBricketsPipeline,
     TrainBartRegressionPipeline,
     TrainBartWithBertAugmentationPipeline,
     TrainBartWithGPT2AugmentationPipeline,
