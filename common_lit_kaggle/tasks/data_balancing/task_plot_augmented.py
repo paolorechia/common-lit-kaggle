@@ -1,9 +1,9 @@
 from typing import Any, List, Mapping
 
 import matplotlib.pyplot as plt
-import scipy
 import numpy as np
 import polars as pl
+import scipy
 
 from common_lit_kaggle.framework import table_io
 from common_lit_kaggle.framework.table import TableReference
@@ -25,11 +25,11 @@ class TaskPlotAugmented(Task):
         augmented_data = augmented_data.rename({"augmented_text": "text"})
 
         concat_data = pl.concat(
-                [
-                    input_data.select(sorted(input_data.columns)),
-                    augmented_data.select(sorted(augmented_data.columns)),
-                ]
-            )
+            [
+                input_data.select(sorted(input_data.columns)),
+                augmented_data.select(sorted(augmented_data.columns)),
+            ]
+        )
         self.generate_histogram_of_label(
             concat_data, self.augmented_table.name, ["content", "wording"]
         )
@@ -38,21 +38,34 @@ class TaskPlotAugmented(Task):
         wording_labels = augmented_data.select("wording").to_numpy().reshape(-1)
         print("content shape", content_labels.shape)
 
-        content_desired_uniform = np.array([np.random.uniform(content_labels.min(),content_labels.max()) for _ in range(len(content_labels))])
+        content_desired_uniform = np.array(
+            [
+                np.random.uniform(content_labels.min(), content_labels.max())
+                for _ in range(len(content_labels))
+            ]
+        )
 
         print("desired shape", content_desired_uniform.shape)
         print("Content check")
-        content_test = scipy.stats.anderson_ksamp([content_labels, content_desired_uniform])
+        content_test = scipy.stats.anderson_ksamp(
+            [content_labels, content_desired_uniform]
+        )
         print(content_test.statistic, content_test.significance_level)
         print(content_test.critical_values)
 
-        wording_desired_uniform = np.array([np.random.uniform(wording_labels.min(),wording_labels.max()) for _ in range(len(wording_labels))])
+        wording_desired_uniform = np.array(
+            [
+                np.random.uniform(wording_labels.min(), wording_labels.max())
+                for _ in range(len(wording_labels))
+            ]
+        )
 
         print("Wording check")
-        wording_test = scipy.stats.anderson_ksamp([wording_labels, wording_desired_uniform])
+        wording_test = scipy.stats.anderson_ksamp(
+            [wording_labels, wording_desired_uniform]
+        )
         print(wording_test.statistic, wording_test.significance_level)
         print(wording_test.critical_values)
-
 
         return {}
 
