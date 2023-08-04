@@ -9,3 +9,4 @@ from .task_word_augmenter import (
     AugmentWMT19TrainDataTask,
     AugmentWord2VecTrainDataTask,
 )
+from .task_cutlass import CutlassTask
