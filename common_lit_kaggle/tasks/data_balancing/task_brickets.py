@@ -4,6 +4,7 @@ from typing import Any, Mapping
 import numpy as np
 import polars as pl
 import scipy
+from tqdm import tqdm
 
 from common_lit_kaggle.framework import table_io
 from common_lit_kaggle.framework.table import TableReference
@@ -86,12 +87,15 @@ class BricketsTask(Task):
         sampling = input_data.with_columns(pl.lit(True).alias("enabled"))
         result = None
 
-        sampling_batch_size = 5
-        target_statistic = 1.0
-        sampling_attempts_per_batch = 1000
+        sampling_batch_size = 8
+        target_statistic = 100.0
+        sampling_attempts_per_batch = 1
 
-        max_iter = 1000
-        for _ in range(max_iter):
+        # TODO: add bootstrap dataset to samples
+        # So it contains examples of the edges too
+
+        max_iter = 4000
+        for _ in tqdm(range(max_iter)):
             # pylint: disable=singleton-comparison
             num_data_points = len(sampling)
             print("Remaining number of data points: ", num_data_points)
@@ -104,7 +108,6 @@ class BricketsTask(Task):
                 print("Anderson test: ")
                 print(content_test.statistic)
 
-            did_sample = False
             for _ in range(sampling_attempts_per_batch):
                 idx_to_flag_as_taken, taken_sample = sample_n(
                     sampling, sampling_batch_size
@@ -115,7 +118,6 @@ class BricketsTask(Task):
                     if taken_test.statistic < target_statistic:
                         result = taken_sample
                         print("Took result: ", taken_test)
-                        did_sample = True
                         break
 
                 else:
@@ -124,30 +126,28 @@ class BricketsTask(Task):
                     if candidate_test.statistic < target_statistic:
                         print("Sampled test: ", candidate_test)
                         result = candidate_result
-                        did_sample = True
                         break
 
-            if did_sample:
-                assert result is not None
-                new_sampling = sampling
-                for idx in idx_to_flag_as_taken:
-                    new_sampling = (
-                        new_sampling.drop("enabled")
-                        .with_row_count("row_nr")
-                        .select(
-                            "*",
-                            pl.when(pl.col("row_nr") == idx)
-                            .then(False)
-                            .otherwise(pl.lit(True))
-                            .alias("enabled"),
-                        )
-                        .drop("row_nr")
-                        .filter(pl.col("enabled") == True)
+            assert result is not None
+            new_sampling = sampling
+            for idx in idx_to_flag_as_taken:
+                new_sampling = (
+                    new_sampling.drop("enabled")
+                    .with_row_count("row_nr")
+                    .select(
+                        "*",
+                        pl.when(pl.col("row_nr") == idx)
+                        .then(False)
+                        .otherwise(pl.lit(True))
+                        .alias("enabled"),
                     )
-                assert len(new_sampling) < len(
-                    sampling
-                ), f"{len(new_sampling)}, {len(sampling)}"
-                sampling = new_sampling
+                    .drop("row_nr")
+                    .filter(pl.col("enabled") == True)
+                )
+            assert len(new_sampling) < len(
+                sampling
+            ), f"{len(new_sampling)}, {len(sampling)}"
+            sampling = new_sampling
 
         table_io.write_table(taken_sample.drop("row_nr"), BricketsTestTable())
 
