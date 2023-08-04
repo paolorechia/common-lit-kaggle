@@ -11,6 +11,7 @@ from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.settings.config import Config
 from common_lit_kaggle.tables import TrainSplitTable
 
+
 class TaskPlotAugmented(Task):
     def __init__(
         self, augmented_table: TableReference, name: str | None = None

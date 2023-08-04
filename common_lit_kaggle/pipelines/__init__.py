@@ -19,7 +19,11 @@ from .basic_ml import (
     SentenceTransformerRandomForestPipeline,
     SentenceTransformersPredictRandomForestPipeline,
 )
-from .data_augmentation import AugmentWord2VecTrainDataPipeline, PlotAugmentedPipeline
+from .data_augmentation import (
+    AugmentWord2VecTrainDataPipeline,
+    CutlassTestPipeline,
+    PlotAugmentedPipeline,
+)
 from .data_split import ExploreDataPipeline, SplitTrainTestPipeline
 
 # from .falcon import TrainFalconRegressionPipeline

@@ -1,14 +1,27 @@
+import random
 from typing import Any, Mapping
 
 import numpy as np
 import polars as pl
-import random
 import scipy
 
-from common_lit_kaggle.framework.table import TableReference
 from common_lit_kaggle.framework import table_io
+from common_lit_kaggle.framework.table import TableReference
 from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.settings.config import Config
+
+
+def compute_anderson_test(data: pl.DataFrame, label="content"):
+    content_labels = data.select(label).to_numpy().reshape(-1)
+    content_desired_uniform = np.array(
+        [
+            np.random.uniform(content_labels.min(), content_labels.max())
+            for _ in range(len(content_labels))
+        ]
+    )
+
+    content_test = scipy.stats.anderson_ksamp([content_labels, content_desired_uniform])
+    return content_test
 
 
 class CutlassTask(Task):
@@ -24,68 +37,51 @@ class CutlassTask(Task):
         augmented_data = augmented_data.drop("text")
         augmented_data = augmented_data.rename({"augmented_text": "text"})
 
+        sampling = augmented_data.with_columns(pl.lit(True).alias("enabled"))
 
-        print("desired shape", content_desired_uniform.shape)
-        print("Content check")
-
-        sampling = augmented_data.with_columns(
-            pl.lit(True).alias("enabled")
-        )
-
-        target_significance = 5.0 
-        max_iter = 10
+        target_statistic = 5.0
+        max_iter = int(len(augmented_data) * 0.8)
         for _ in range(max_iter):
-            sampling = sampling.filter(
-                pl.col("enabled") == True
-            )
+            # pylint: disable=singleton-comparison
+
+            sampling = sampling.filter(pl.col("enabled") == True)
             num_data_points = len(sampling)
             print("Number of data points: ", num_data_points)
-            content_labels = sampling.select("content").to_numpy().reshape(-1)
-            content_desired_uniform = np.array(
-                [
-                    np.random.uniform(content_labels.min(), content_labels.max())
-                    for _ in range(len(content_labels))
-                ]
-            )
-
-
-            content_test = scipy.stats.anderson_ksamp(
-                [content_labels, content_desired_uniform]
-            )
+            content_test = compute_anderson_test(sampling, "content")
             print("Anderson test: ")
-            print(content_test.statistic, content_test.significance_level)
-            print(content_test.critical_values)
-            if content_test.significance_level < target_significance:
+            print(content_test.statistic)
+
+            if content_test.statistic < target_statistic:
                 print("Target significance reached")
                 break
 
-            mean = content_labels.mean()
-            max = content_labels.max()
-            min = content_labels.min()
+            candidate_statistic = 100000
+            for _ in range(max_iter):
+                to_remove = random.randint(0, num_data_points)
 
-            dist_to_left = mean - min
-            dist_to_right = max - mean
+                candidate = (
+                    sampling.drop("enabled")
+                    .with_row_count("row_nr")
+                    .select(
+                        "*",
+                        pl.when(pl.col("row_nr") == to_remove)
+                        .then(False)
+                        .otherwise(pl.lit(True))
+                        .alias("enabled"),
+                    )
+                    .drop("row_nr")
+                    .filter(pl.col("enabled") == True)
+                )
+                assert len(candidate) < len(sampling)
 
-                
-            print("Dataset mean: ", mean)
-            print("Dataset dist to left: ", mean)
-            print("Dataset dist to right: ", mean)
-            if dist_to_left > dist_to_right:
-                right = num_data_points // 2
-                left = 0
-            else:
-                right = num_data_points
-                left = num_data_points // 2
-            to_remove = random.randint(left, right)
-
-            sampling = sampling.to_frame().with_row_count("row_nr").select(
-                "*",
-                pl.when(pl.col("row_nr") == to_remove)
-                .then(False)
-                .otherwise(pl.lit(True))
-                .alias("enabled")
-            )
-
+                candidate_test = compute_anderson_test(candidate, "content")
+                candidate_statistic = candidate_test.statistic
+                if candidate_statistic < (content_test.statistic * 0.95):
+                    # If we found an improvement, pick it
+                    print("Found candidate!", candidate_statistic)
+                    print("Number of data points of candidate: ", len(candidate))
+                    sampling = candidate
+                    break
         print(sampling)
         # Replace train data in pipeline with undersampled
         return {"train_data": sampling}
