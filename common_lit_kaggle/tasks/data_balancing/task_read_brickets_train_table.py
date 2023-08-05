@@ -1,9 +1,7 @@
 from typing import Any, Mapping
 
 from common_lit_kaggle.framework import table_io
-from common_lit_kaggle.framework.table import TableReference
 from common_lit_kaggle.framework.task import Task
-from common_lit_kaggle.settings.config import Config
 from common_lit_kaggle.tables import BricketsTestTable
 
 

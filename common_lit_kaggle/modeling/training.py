@@ -61,7 +61,14 @@ def train_epoch(
         logits = model.forward(input_tensor)
 
         # Compute loss here
+
         loss = criterion(logits, target_tensor) / config.gradient_accumulation_steps
+
+        if config.cost_sensitive_learning:
+            label_0_cost = (target_tensor[:, 0] + 2) ** 3
+            label_1_cost = (target_tensor[:, 1] + 2) ** 3
+            loss = loss * label_0_cost.mean() * label_1_cost.mean()
+
         loss.backward()
 
         if idx % config.gradient_accumulation_steps == 0:
@@ -70,8 +77,8 @@ def train_epoch(
 
         total_loss += loss.item() * config.gradient_accumulation_steps
 
-        mlflow.log_param("running_loss", total_loss / idx)
-        mlflow.log_param("steps", idx)
+        mlflow.log_metric("running_loss", total_loss / idx)
+        mlflow.log_metric("steps", idx)
 
         idx += 1
 

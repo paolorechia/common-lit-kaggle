@@ -93,9 +93,9 @@ class BricketsTask(Task):
         sampling = input_data.with_columns(pl.lit(True).alias("enabled"))
         result = None
 
-        sampling_batch_size = 8
-        target_statistic = 100.0
-        sampling_attempts_per_batch = 1
+        sampling_batch_size = 2
+        target_statistic = 0.01
+        sampling_attempts_per_batch = 100
 
         # TODO: add bootstrap dataset to samples
         # So it contains examples of the edges too
@@ -135,6 +135,9 @@ class BricketsTask(Task):
                         break
 
             assert result is not None
+            candidate_test = compute_anderson_test(result, result)
+            print("Sample anderson test: ", candidate_test.statistic)
+
             new_sampling = sampling
             for idx in idx_to_flag_as_taken:
                 new_sampling = (
@@ -155,8 +158,8 @@ class BricketsTask(Task):
             ), f"{len(new_sampling)}, {len(sampling)}"
             sampling = new_sampling
 
-        table_io.write_table(taken_sample.drop("row_nr"), BricketsTestTable())
+        assert result
+        table_io.write_table(result.drop("row_nr"), BricketsTestTable())
 
-        print(taken_sample)
         # Replace train data in pipeline with undersampled
         return {"train_data": taken_sample}

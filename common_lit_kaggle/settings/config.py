@@ -31,7 +31,7 @@ class Config:
         # model="facebook/bart-large-cnn",
         # tokenizer="facebook/bart-large-cnn",
         run_with_small_sample=False,
-        num_train_epochs=10,
+        num_train_epochs=20,
         batch_size=8,
         # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         # tokenizer="tiiuae/falcon-rw-1b",
@@ -105,6 +105,7 @@ class Config:
         self.models_root_dir = pathlib.Path(self.data_root_dir / "models")
         self.checkpoints_dir = pathlib.Path(self.data_root_dir / "checkpoints")
 
+        self.cost_sensitive_learning = True
         self.model_custom_config_dir = pathlib.Path(self.model_config_root_dir / model)
 
         # Undersampling settings
