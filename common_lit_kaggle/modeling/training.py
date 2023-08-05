@@ -65,8 +65,12 @@ def train_epoch(
         loss = criterion(logits, target_tensor) / config.gradient_accumulation_steps
 
         if config.cost_sensitive_learning:
-            label_0_cost = (target_tensor[:, 0] + 2)
-            label_1_cost = (target_tensor[:, 1] + 2)
+            label_0_cost = (
+                target_tensor[:, 0] + config.cost_sensitive_sum_operand
+            ) ** config.cost_sensitive_exponent
+            label_1_cost = (
+                target_tensor[:, 1] + config.cost_sensitive_sum_operand
+            ) ** config.cost_sensitive_exponent
             loss = loss * label_0_cost.mean() * label_1_cost.mean()
 
         loss.backward()
