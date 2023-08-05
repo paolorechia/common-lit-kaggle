@@ -1,2 +1,5 @@
 from .pipeline_data_augmentation import AugmentWord2VecTrainDataPipeline
+from .pipeline_plot_brickets_test import PlotBricketsTestPipeline
 from .pipeline_plot_histogram import PlotAugmentedPipeline
+from .pipeline_test_brickets import BricketsTestPipeline
+from .pipeline_test_cutlass import CutlassTestPipeline

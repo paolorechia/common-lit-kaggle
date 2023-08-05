@@ -9,11 +9,11 @@ class PlotAugmentedPipeline(Pipeline):
         super().__init__(
             "plot_augmented",
             [
-                data_balancing.TaskPlotAugmented(tables.AugmentedBertTrainTable()),
-                data_balancing.TaskPlotAugmented(tables.AugmentedGPT2TrainTable()),
-                data_balancing.TaskPlotAugmented(tables.AugmentedPPDBTrainTable()),
-                data_balancing.TaskPlotAugmented(tables.AugmentedT5TrainTable()),
-                data_balancing.TaskPlotAugmented(tables.AugmentedWmt19TrainTable()),
-                data_balancing.TaskPlotAugmented(tables.AugmentedWord2VecTrainTable()),
+                data_balancing.PlotAugmentedTask(tables.AugmentedBertTrainTable()),
+                data_balancing.PlotAugmentedTask(tables.AugmentedGPT2TrainTable()),
+                data_balancing.PlotAugmentedTask(tables.AugmentedPPDBTrainTable()),
+                data_balancing.PlotAugmentedTask(tables.AugmentedT5TrainTable()),
+                data_balancing.PlotAugmentedTask(tables.AugmentedWmt19TrainTable()),
+                data_balancing.PlotAugmentedTask(tables.AugmentedWord2VecTrainTable()),
             ],
         )

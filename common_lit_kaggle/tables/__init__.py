@@ -1,3 +1,4 @@
+from .table_brickets_test import BricketsTestTable
 from .table_eval_split import EvalSplitTable
 from .table_prediction_input_prompts import InputPredictionPromptsTable
 from .table_prediction_input_summaries import InputPredictionSummariesTable

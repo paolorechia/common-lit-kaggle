@@ -2,6 +2,7 @@ from .bart import (
     BartPredictionRegressionPipeline,
     TestBartCheckpoints,
     TestBartFullData,
+    TrainBartBricketsPipeline,
     TrainBartRegressionPipeline,
     TrainBartWithBertAugmentationPipeline,
     TrainBartWithGPT2AugmentationPipeline,
@@ -19,7 +20,13 @@ from .basic_ml import (
     SentenceTransformerRandomForestPipeline,
     SentenceTransformersPredictRandomForestPipeline,
 )
-from .data_augmentation import AugmentWord2VecTrainDataPipeline, PlotAugmentedPipeline
+from .data_augmentation import (
+    AugmentWord2VecTrainDataPipeline,
+    BricketsTestPipeline,
+    CutlassTestPipeline,
+    PlotAugmentedPipeline,
+    PlotBricketsTestPipeline,
+)
 from .data_split import ExploreDataPipeline, SplitTrainTestPipeline
 
 # from .falcon import TrainFalconRegressionPipeline
