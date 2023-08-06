@@ -39,6 +39,13 @@ class LlamaAugmenterTask(Task):
         new_data_points = []
         # Consume generator so we know how many blocks we have for tqdm
 
+        old_augmented = None
+        try:
+            old_augmented = table_io.read_table(AugmentedLlamaTrainTable())
+        # pylint: disable=broad-exception-caught
+        except Exception:
+            pass
+
         blocks = list(data_blocks_generator(train_data))
         for data_block in tqdm(blocks):
             sample = data_block.sample(
@@ -48,13 +55,11 @@ class LlamaAugmenterTask(Task):
             sample_wording_mean = sample["wording"].mean()
             prompt = self._samples_to_prompt(sample)
 
-            print("Input prompt: ", prompt)
             input_ids = tokenizer(prompt, return_tensors="pt").to(model.device)
             output_ids = model.generate(**input_ids, max_new_tokens=1024)
             output = tokenizer.decode(output_ids[0])
 
             parsed_output = self._output_parser(prompt, output)
-            print("Generated text:", parsed_output)
             assert len(parsed_output) > 0
 
             new_data_points.append(
@@ -67,8 +72,14 @@ class LlamaAugmenterTask(Task):
                     "unified_labels": "NOT_PROVIDED",
                 }
             )
-            augmented = pl.DataFrame(new_data_points)
-            table_io.write_table(augmented, AugmentedLlamaTrainTable())
+            new_data_points = pl.DataFrame(new_data_points)  # type: ignore
+
+            if old_augmented:
+                augmented = pl.concat([old_augmented, new_data_points])  # type: ignore
+            else:
+                augmented = new_data_points
+
+            table_io.write_table(augmented, AugmentedLlamaTrainTable())  # type: ignore
 
         return {"llama_augmented": augmented}
 
