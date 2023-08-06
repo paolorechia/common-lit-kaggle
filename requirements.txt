@@ -10,3 +10,4 @@ accelerate==0.21.0
 sentencepiece
 simpletransformers>=0.61.10
 sacremoses
+exllama_lib @ git+https://github.com/paolorechia/exllama@packageable

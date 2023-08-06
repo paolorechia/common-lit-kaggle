@@ -21,6 +21,7 @@ from .basic_ml import (
     SentenceTransformersPredictRandomForestPipeline,
 )
 from .data_augmentation import (
+    AugmentLlamaTrainDataPipeline,
     AugmentWord2VecTrainDataPipeline,
     BricketsTestPipeline,
     CutlassTestPipeline,
