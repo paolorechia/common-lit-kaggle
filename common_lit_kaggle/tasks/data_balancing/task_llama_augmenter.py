@@ -1,6 +1,7 @@
 import random
 from typing import Any, Mapping
 
+import guidance
 import polars as pl
 from tqdm import tqdm
 
@@ -34,59 +35,73 @@ class LlamaAugmenterTask(Task):
         config = Config.get()
 
         tokenizer, model = self._load_llama(config.llama_path)
-        number_of_few_shot_examples = 4
+        llama = guidance.llms.transformers.Vicuna(model=model, tokenizer=tokenizer)
+        number_of_few_shot_examples = 1
 
         new_data_points = []
         # Consume generator so we know how many blocks we have for tqdm
 
         old_augmented = None
+        augmented = None
         try:
             old_augmented = table_io.read_table(AugmentedLlamaTrainTable())
         # pylint: disable=broad-exception-caught
         except Exception:
             pass
-
+        program = guidance(
+            """{{#system~}}{{prompt}}{{~/system}}
+{{#assistant~}}TOPIC TITLE: {{gen 'topic_title' stop='\n' max_tokens=10}}
+REFERENCE TEXT: {{gen 'reference_text' max_tokens=400}}
+QUESTION: {{gen 'question' stop='\n' max_tokens=40}}{{~/assistant}}
+{{#user~}}STUDENT ANSWER: {{gen 'student_answer' max_tokens=400}}{{~/user}}
+"""
+        )
         blocks = list(data_blocks_generator(train_data))
+        number_of_samples_per_block = 10
         for data_block in tqdm(blocks):
-            sample = data_block.sample(
-                max(number_of_few_shot_examples, len(data_block))
-            )
-            sample_content_mean = sample["content"].mean()
-            sample_wording_mean = sample["wording"].mean()
-            prompt = self._samples_to_prompt(sample)
+            for _ in tqdm(range(number_of_samples_per_block)):
+                sample = data_block.sample(
+                    min(number_of_few_shot_examples, len(data_block))
+                )
+                if len(sample) < 1:
+                    continue
 
-            input_ids = tokenizer(prompt, return_tensors="pt").to(model.device)
-            output_ids = model.generate(**input_ids, max_new_tokens=1024)
-            output = tokenizer.decode(output_ids[0])
+                sample_content_mean = sample["content"].mean()
+                sample_wording_mean = sample["wording"].mean()
+                prompt = self._samples_to_guidance_prompt(sample)
 
-            parsed_output = self._output_parser(prompt, output)
-            assert len(parsed_output) > 0
+                output = program(prompt=prompt, llm=llama)
+                topic_title = output["topic_title"]
+                reference_text = output["reference_text"]
+                question = output["question"]
+                student_answer = output["student_answer"]
 
-            new_data_points.append(
-                {
-                    "student_id": f"SYNTHETIC_DATA_{random.randint(0, 999999999)}",
-                    "prompt_id": f"SYNTHETIC_DATA_{random.randint(0, 999999999)}",
-                    "content": sample_content_mean,
-                    "wording": sample_wording_mean,
-                    "unified_text": parsed_output,
-                    "unified_labels": "NOT_PROVIDED",
-                }
-            )
-            new_data_points = pl.DataFrame(new_data_points)  # type: ignore
+                # pylint: disable=line-too-long
+                output = f"TOPIC TITLE: {topic_title}\nREFERENCE TEXT: {reference_text}\nQUESTION: {question}\nSTUDENT ANSWER: {student_answer}"
+                print("Generated datapoint:", topic_title, "\n", student_answer)
 
-            if old_augmented:
-                augmented = pl.concat([old_augmented, new_data_points])  # type: ignore
-            else:
-                augmented = new_data_points
+                new_data_points.append(
+                    {
+                        "student_id": f"SYNTHETIC_DATA_{random.randint(0, 999999999)}",
+                        "prompt_id": f"SYNTHETIC_DATA_{random.randint(0, 999999999)}",
+                        "content": sample_content_mean,
+                        "wording": sample_wording_mean,
+                        "unified_text": output,
+                        "unified_labels": "NOT_PROVIDED",
+                    }
+                )
+                new_data_points_df = pl.DataFrame(new_data_points)  # type: ignore
 
-            table_io.write_table(augmented, AugmentedLlamaTrainTable())  # type: ignore
+                if old_augmented is not None:
+                    augmented = pl.concat([old_augmented, new_data_points_df])  # type: ignore
+                else:
+                    augmented = new_data_points_df
+
+                table_io.write_table(augmented, AugmentedLlamaTrainTable())  # type: ignore
 
         return {"llama_augmented": augmented}
 
-    def _output_parser(self, _: str, output: str):
-        return output
-
-    def _samples_to_prompt(self, sample: pl.DataFrame) -> str:
+    def _samples_to_guidance_prompt(self, sample: pl.DataFrame) -> str:
         # Available columns to use in prompt
         # student_id = pl.Utf8
         # prompt_id = pl.Utf8
@@ -98,14 +113,20 @@ class LlamaAugmenterTask(Task):
         unified_text_list = sample.select("unified_text").to_numpy().tolist()
         # Flatten list
         unified_text_list = [text[0] for text in unified_text_list]
-        print(len(unified_text_list))
         prompt = "\n".join(unified_text_list)
-        return prompt
+
+        return (
+            "You are an advanced Artificial Intelligence simulating student summarizing essays. "
+            + "Here's an example of what you do.\n"
+            + prompt
+            + "\nYour turn. Create some new questions answers following the template. "
+            + "\nDo your best to follow the previous student style and writing skills."
+        )
 
     def _load_llama(self, model_directory):
         config = Config.get()
         model = AutoGPTQForCausalLM.from_quantized(
-            model_directory, device=config.device, use_safetensors=True
+            model_directory, device=config.device, use_safetensors=True, use_triton=True
         )
         tokenizer = AutoTokenizer.from_pretrained(model_directory, use_fast=True)
         return tokenizer, model

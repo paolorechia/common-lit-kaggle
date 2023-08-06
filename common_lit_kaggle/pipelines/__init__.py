@@ -6,6 +6,7 @@ from .bart import (
     TrainBartRegressionPipeline,
     TrainBartWithBertAugmentationPipeline,
     TrainBartWithGPT2AugmentationPipeline,
+    TrainBartWithLlamaAugmentationPipeline,
     TrainBartWithPPDBAugmentationPipeline,
     TrainBartWithT5AugmentationPipeline,
     TrainBartWithUndersamplingPipeline,

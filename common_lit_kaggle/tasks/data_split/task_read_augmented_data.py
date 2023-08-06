@@ -7,11 +7,32 @@ from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.tables import (
     AugmentedBertTrainTable,
     AugmentedGPT2TrainTable,
+    AugmentedLlamaTrainTable,
     AugmentedPPDBTrainTable,
     AugmentedT5TrainTable,
     AugmentedWmt19TrainTable,
     AugmentedWord2VecTrainTable,
 )
+
+
+class ReadLlamaUnifiedTrainDataTask(Task):
+    def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
+        input_data = context["train_unified_text_data"]
+        llama_data = table_io.read_table(AugmentedLlamaTrainTable())
+        print(len(input_data))
+        print(len(llama_data))
+        concated = pl.concat(
+            [
+                input_data.drop("text")
+                .drop("prompt_question")
+                .drop("prompt_title")
+                .drop("prompt_text"),
+                llama_data.drop("unified_labels"),
+            ]
+        )
+        print(len(concated))
+        # Merge augmetned with original train data
+        return {"train_unified_text_data": concated}
 
 
 class ReadWord2VecTrainTask(Task):

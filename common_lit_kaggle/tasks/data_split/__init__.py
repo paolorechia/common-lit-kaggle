@@ -3,6 +3,7 @@ from .task_read_augmented_data import (
     MergeAugmentedSourcesTask,
     ReadBertTrainTask,
     ReadGPT2TrainTask,
+    ReadLlamaUnifiedTrainDataTask,
     ReadPPDBTrainTask,
     ReadT5TrainTask,
     ReadWMT19TrainTask,
