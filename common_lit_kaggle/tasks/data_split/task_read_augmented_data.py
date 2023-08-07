@@ -15,24 +15,11 @@ from common_lit_kaggle.tables import (
 )
 
 
-class ReadLlamaUnifiedTrainDataTask(Task):
+class ReadLlamaTrainDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
-        input_data = context["train_unified_text_data"]
         llama_data = table_io.read_table(AugmentedLlamaTrainTable())
-        print(len(input_data))
-        print(len(llama_data))
-        concated = pl.concat(
-            [
-                input_data.drop("text")
-                .drop("prompt_question")
-                .drop("prompt_title")
-                .drop("prompt_text"),
-                llama_data.drop("unified_labels"),
-            ]
-        )
-        print(len(concated))
-        # Merge augmetned with original train data
-        return {"train_unified_text_data": concated}
+        llama_data = llama_data.with_columns(pl.col("text").alias("augmented_text"))
+        return {"llama_augmented_train_data": llama_data}
 
 
 class ReadWord2VecTrainTask(Task):

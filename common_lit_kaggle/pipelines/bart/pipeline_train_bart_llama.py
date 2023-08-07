@@ -31,9 +31,12 @@ class TrainBartWithLlamaAugmentationPipeline(Pipeline):
             [
                 # Load training data
                 data_split.ReadTrainDataTask(),
+                data_split.ReadLlamaTrainDataTask(),
+                data_split.MergeAugmentedSourcesTask(
+                    data_sources=["llama_augmented_train_data"]
+                ),
                 bart.CreateUnifiedTextTrainDataTask(),
                 bart.ExploreUnifiedInputDataTask(),
-                data_split.ReadLlamaUnifiedTrainDataTask(),
                 bart.PrepareTensorTrainDataTask(
                     truncation_length=config.string_truncation_length
                 ),

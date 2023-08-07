@@ -36,7 +36,7 @@ class LlamaAugmenterTask(Task):
 
         tokenizer, model = self._load_llama(config.llama_path)
         llama = guidance.llms.transformers.Vicuna(model=model, tokenizer=tokenizer)
-        number_of_few_shot_examples = 1
+        number_of_few_shot_examples = 2
 
         new_data_points = []
         # Consume generator so we know how many blocks we have for tqdm
@@ -53,11 +53,11 @@ class LlamaAugmenterTask(Task):
 {{#assistant~}}TOPIC TITLE: {{gen 'topic_title' stop='\n' max_tokens=10}}
 REFERENCE TEXT: {{gen 'reference_text' max_tokens=400}}
 QUESTION: {{gen 'question' stop='\n' max_tokens=40}}{{~/assistant}}
-{{#user~}}STUDENT ANSWER: {{gen 'student_answer' max_tokens=400}}{{~/user}}
+{{#user~}}STUDENT ANSWER: {{gen 'student_answer' max_tokens=400 stop='Q'}}{{~/user}}
 """
         )
         blocks = list(data_blocks_generator(train_data))
-        number_of_samples_per_block = 10
+        number_of_samples_per_block = 100
         for data_block in tqdm(blocks):
             for _ in tqdm(range(number_of_samples_per_block)):
                 sample = data_block.sample(
@@ -79,17 +79,19 @@ QUESTION: {{gen 'question' stop='\n' max_tokens=40}}{{~/assistant}}
                 # pylint: disable=line-too-long
                 output = f"TOPIC TITLE: {topic_title}\nREFERENCE TEXT: {reference_text}\nQUESTION: {question}\nSTUDENT ANSWER: {student_answer}"
                 print("Generated datapoint:", topic_title, "\n", student_answer)
-
                 new_data_points.append(
                     {
                         "student_id": f"SYNTHETIC_DATA_{random.randint(0, 999999999)}",
-                        "prompt_id": f"SYNTHETIC_DATA_{random.randint(0, 999999999)}",
                         "content": sample_content_mean,
                         "wording": sample_wording_mean,
-                        "unified_text": output,
-                        "unified_labels": "NOT_PROVIDED",
+                        "text": student_answer,
+                        "prompt_id": f"SYNTHETIC_DATA_{random.randint(0, 999999999)}",
+                        "prompt_title": topic_title,
+                        "prompt_question": question,
+                        "prompt_text": reference_text,
                     }
                 )
+
                 new_data_points_df = pl.DataFrame(new_data_points)  # type: ignore
 
                 if old_augmented is not None:
