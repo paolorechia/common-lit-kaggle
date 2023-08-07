@@ -6,6 +6,7 @@ from .bart import (
     TrainBartRegressionPipeline,
     TrainBartWithBertAugmentationPipeline,
     TrainBartWithGPT2AugmentationPipeline,
+    TrainBartWithLlamaAugmentationPipeline,
     TrainBartWithPPDBAugmentationPipeline,
     TrainBartWithT5AugmentationPipeline,
     TrainBartWithUndersamplingPipeline,
@@ -21,6 +22,7 @@ from .basic_ml import (
     SentenceTransformersPredictRandomForestPipeline,
 )
 from .data_augmentation import (
+    AugmentLlamaTrainDataPipeline,
     AugmentWord2VecTrainDataPipeline,
     BricketsTestPipeline,
     CutlassTestPipeline,

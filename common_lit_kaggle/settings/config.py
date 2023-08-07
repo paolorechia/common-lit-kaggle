@@ -31,7 +31,7 @@ class Config:
         # model="facebook/bart-large-cnn",
         # tokenizer="facebook/bart-large-cnn",
         run_with_small_sample=False,
-        num_train_epochs=10,
+        num_train_epochs=5,
         batch_size=8,
         # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         # tokenizer="tiiuae/falcon-rw-1b",
@@ -104,6 +104,9 @@ class Config:
         self.plots_dir = pathlib.Path(self.data_root_dir / "plots")
         self.models_root_dir = pathlib.Path(self.data_root_dir / "models")
         self.checkpoints_dir = pathlib.Path(self.data_root_dir / "checkpoints")
+        self.llama_path = pathlib.Path(
+            self.models_root_dir / "vicuna-13B-v1.5-16K-GPTQ"
+        )
 
         self.cost_sensitive_learning = False
         self.cost_sensitive_exponent = 1

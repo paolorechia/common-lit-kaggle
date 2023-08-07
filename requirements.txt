@@ -10,3 +10,4 @@ accelerate==0.21.0
 sentencepiece
 simpletransformers>=0.61.10
 sacremoses
+auto-gptq[triton] @ https://github.com/PanQiWei/AutoGPTQ/releases/download/v0.3.0/auto_gptq-0.3.0+cu118-cp310-cp310-linux_x86_64.whl

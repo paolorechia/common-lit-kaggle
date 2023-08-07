@@ -7,11 +7,19 @@ from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.tables import (
     AugmentedBertTrainTable,
     AugmentedGPT2TrainTable,
+    AugmentedLlamaTrainTable,
     AugmentedPPDBTrainTable,
     AugmentedT5TrainTable,
     AugmentedWmt19TrainTable,
     AugmentedWord2VecTrainTable,
 )
+
+
+class ReadLlamaTrainDataTask(Task):
+    def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
+        llama_data = table_io.read_table(AugmentedLlamaTrainTable())
+        llama_data = llama_data.with_columns(pl.col("text").alias("augmented_text"))
+        return {"llama_augmented_train_data": llama_data}
 
 
 class ReadWord2VecTrainTask(Task):

@@ -10,6 +10,7 @@ from .table_test_split import TestSplitTable
 from .table_texts_per_prompt import TextsPerPromptTable
 from .table_train_bert_augmented import AugmentedBertTrainTable
 from .table_train_gpt2_augmented import AugmentedGPT2TrainTable
+from .table_train_llama_augmented import AugmentedLlamaTrainTable
 from .table_train_ppdb_augmented import AugmentedPPDBTrainTable
 from .table_train_split import TrainSplitTable
 from .table_train_t5_augmented import AugmentedT5TrainTable
