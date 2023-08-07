@@ -15,10 +15,24 @@ from common_lit_kaggle.tables import (
 )
 
 
+def trim_artifacts(text: str):
+    return (
+        text.replace("TOPIC TITLE:", "")
+        .replace("REFERENCE TEXT:", "")
+        .replace("QUESTION:", "")
+        .replace("ANSWER:", "")
+        .replace("STUDENT ANSWER: ", "")
+        .strip("\n ")
+    )
+
+
 class ReadLlamaTrainDataTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         llama_data = table_io.read_table(AugmentedLlamaTrainTable())
         llama_data = llama_data.with_columns(pl.col("text").alias("augmented_text"))
+        llama_data = llama_data.with_columns(
+            pl.col("augmented_text").apply(trim_artifacts)
+        )
         return {"llama_augmented_train_data": llama_data}
 
 
@@ -59,7 +73,7 @@ class ReadBertTrainTask(Task):
 
 
 class MergeAugmentedSourcesTask(Task):
-    def __init__(self, data_sources: list[str], name: str = "") -> None:
+    def __init__(self, data_sources: list[dict[str, Any]], name: str = "") -> None:
         super().__init__(name)
         self.data_sources = data_sources
 
@@ -67,9 +81,19 @@ class MergeAugmentedSourcesTask(Task):
         input_data: pl.DataFrame = context["train_data"]
 
         for data_source in self.data_sources:
-            augmented_data: pl.DataFrame = context[data_source]
+            data_source_table = data_source["source"]
+            content_offset = data_source["content_offset"]
+            wording_offset = data_source["wording_offset"]
+
+            augmented_data: pl.DataFrame = context[data_source_table]
             augmented_data = augmented_data.drop("text")
             augmented_data = augmented_data.rename({"augmented_text": "text"})
+            augmented_data = augmented_data.with_columns(
+                pl.col("content").apply(content_offset)
+            )
+            augmented_data = augmented_data.with_columns(
+                pl.col("wording").apply(wording_offset)
+            )
 
         return {
             "train_data": pl.concat(

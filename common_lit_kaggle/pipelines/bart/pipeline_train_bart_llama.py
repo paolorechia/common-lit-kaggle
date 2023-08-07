@@ -25,7 +25,6 @@ class TrainBartWithLlamaAugmentationPipeline(Pipeline):
                 "undersampling_multiplier": config.min_count_multiplier,
             }
         )
-
         super().__init__(
             "train_bart_llama",
             [
@@ -33,7 +32,13 @@ class TrainBartWithLlamaAugmentationPipeline(Pipeline):
                 data_split.ReadTrainDataTask(),
                 data_split.ReadLlamaTrainDataTask(),
                 data_split.MergeAugmentedSourcesTask(
-                    data_sources=["llama_augmented_train_data"]
+                    data_sources=[
+                        {
+                            "souce": "llama_augmented_train_data",
+                            "content_offset": 1,
+                            "wording_offset": 1,
+                        }
+                    ]
                 ),
                 bart.CreateUnifiedTextTrainDataTask(),
                 bart.ExploreUnifiedInputDataTask(),

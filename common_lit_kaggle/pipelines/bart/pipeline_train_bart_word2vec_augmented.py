@@ -28,6 +28,12 @@ class TrainBartWithWord2VecAugmentationPipeline(Pipeline):
             }
         )
 
+        def word2vec_content_offset(content):
+            return content - 0.25
+
+        def word2vec_wording_offset(wording):
+            return wording - 1
+
         super().__init__(
             "train_bart_word2vec",
             [
@@ -35,7 +41,13 @@ class TrainBartWithWord2VecAugmentationPipeline(Pipeline):
                 data_split.ReadTrainDataTask(),
                 data_split.ReadWord2VecTrainTask(),
                 data_split.MergeAugmentedSourcesTask(
-                    data_sources=["word2vec_augmented_train_data"]
+                    data_sources=[
+                        {
+                            "source": "word2vec_augmented_train_data",
+                            "content_offset": word2vec_content_offset,
+                            "wording_offset": word2vec_wording_offset,
+                        }
+                    ]
                 ),
                 bart.CreateUnifiedTextTrainDataTask(),
                 bart.ExploreUnifiedInputDataTask(),

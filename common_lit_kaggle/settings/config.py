@@ -2,7 +2,7 @@
 import os
 import pathlib
 
-# pylint: disable=too-many-statements
+# pylint: disable=too-many-statements, too-many-branches
 
 
 class Config:
@@ -26,12 +26,16 @@ class Config:
         eval_prompts=None,
         used_features=None,
         # zero_shot_model="/home/paolo/kaggle/common-lit-kaggle/data/models/Llama-2-7b-chat-hf",
-        model="facebook/bart-base",
-        tokenizer="facebook/bart-base",
+        # model="facebook/bart-base",
+        # tokenizer="facebook/bart-base",
+        # model="facebook/bart-large",
+        # tokenizer="facebook/bart-large",
         # model="facebook/bart-large-cnn",
         # tokenizer="facebook/bart-large-cnn",
+        model="microsoft/deberta-v3-xsmall",
+        tokenizer="microsoft/deberta-v3-xsmall",
         run_with_small_sample=False,
-        num_train_epochs=5,
+        num_train_epochs=10,
         batch_size=8,
         # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         # tokenizer="tiiuae/falcon-rw-1b",
@@ -108,6 +112,10 @@ class Config:
             self.models_root_dir / "vicuna-13B-v1.5-16K-GPTQ"
         )
 
+        self.quadratic_transform = True
+
+        self.log_transform = False
+
         self.cost_sensitive_learning = False
         self.cost_sensitive_exponent = 1
         self.cost_sensitive_sum_operand = 2
@@ -153,6 +161,9 @@ class Config:
             self.string_truncation_length = (
                 2700  # value set on trial and error, until it stopped issuing warnings
             )
+        elif "deberta" in model:
+            self.model_context_length = 512
+            self.string_truncation_length = 1350
         else:
             raise ValueError(
                 f"Unknown model: '{model}'. Could not set preprocessing parameters."

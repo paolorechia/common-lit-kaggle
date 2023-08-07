@@ -33,7 +33,13 @@ class TrainBartWithPPDBAugmentationPipeline(Pipeline):
                 data_split.ReadTrainDataTask(),
                 data_split.ReadPPDBTrainTask(),
                 data_split.MergeAugmentedSourcesTask(
-                    data_sources=["ppdb_augmented_train_data"]
+                    data_sources=[
+                        {
+                            "source": "ppdb_augmented_train_data",
+                            "content_offset": 1,
+                            "wording_offset": 1,
+                        }
+                    ]
                 ),
                 bart.CreateUnifiedTextTrainDataTask(),
                 bart.ExploreUnifiedInputDataTask(),

@@ -33,7 +33,13 @@ class TrainBartWithGPT2AugmentationPipeline(Pipeline):
                 data_split.ReadTrainDataTask(),
                 data_split.ReadGPT2TrainTask(),
                 data_split.MergeAugmentedSourcesTask(
-                    data_sources=["gpt2_augmented_train_data"]
+                    data_sources=[
+                        {
+                            "souce": "gpt2_augmented_train_data",
+                            "content_offset": 1,
+                            "wording_offset": 1,
+                        }
+                    ]
                 ),
                 bart.CreateUnifiedTextTrainDataTask(),
                 bart.ExploreUnifiedInputDataTask(),

@@ -33,7 +33,13 @@ class TrainBartWithT5AugmentationPipeline(Pipeline):
                 data_split.ReadTrainDataTask(),
                 data_split.ReadT5TrainTask(),
                 data_split.MergeAugmentedSourcesTask(
-                    data_sources=["t5_augmented_train_data"]
+                    data_sources=[
+                        {
+                            "source": "t5_augmented_train_data",
+                            "content_offset": 1,
+                            "wording_offset": 1,
+                        }
+                    ]
                 ),
                 bart.CreateUnifiedTextTrainDataTask(),
                 bart.ExploreUnifiedInputDataTask(),

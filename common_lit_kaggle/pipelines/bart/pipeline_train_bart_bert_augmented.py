@@ -26,6 +26,12 @@ class TrainBartWithBertAugmentationPipeline(Pipeline):
             }
         )
 
+        def content_offset(content):
+            return content - 0.05
+
+        def wording_offset(wording):
+            return wording - 0.1
+
         super().__init__(
             "train_bart_bert",
             [
@@ -33,7 +39,13 @@ class TrainBartWithBertAugmentationPipeline(Pipeline):
                 data_split.ReadTrainDataTask(),
                 data_split.ReadBertTrainTask(),
                 data_split.MergeAugmentedSourcesTask(
-                    data_sources=["bert_augmented_train_data"]
+                    [
+                        {
+                            "source": "bert_augmented_train_data",
+                            "content_offset": content_offset,
+                            "wording_offset": wording_offset,
+                        }
+                    ]
                 ),
                 bart.CreateUnifiedTextTrainDataTask(),
                 bart.ExploreUnifiedInputDataTask(),
