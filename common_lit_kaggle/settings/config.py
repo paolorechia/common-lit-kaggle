@@ -32,11 +32,13 @@ class Config:
         # tokenizer="facebook/bart-large",
         # model="facebook/bart-large-cnn",
         # tokenizer="facebook/bart-large-cnn",
-        model="microsoft/deberta-v3-xsmall",
-        tokenizer="microsoft/deberta-v3-xsmall",
+        # model="microsoft/deberta-v3-xsmall",
+        # tokenizer="microsoft/deberta-v3-xsmall",
+        model="google/pegasus-x-base",
+        tokenizer="google/pegasus-x-base",
         run_with_small_sample=False,
         num_train_epochs=10,
-        batch_size=8,
+        batch_size=1,
         # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         # tokenizer="tiiuae/falcon-rw-1b",
         save_checkpoints=True,
@@ -164,6 +166,11 @@ class Config:
         elif "deberta" in model:
             self.model_context_length = 512
             self.string_truncation_length = 1350
+
+        elif "pegasus" in model:
+            self.model_context_length = 2048
+            self.string_truncation_length = 4000
+
         else:
             raise ValueError(
                 f"Unknown model: '{model}'. Could not set preprocessing parameters."

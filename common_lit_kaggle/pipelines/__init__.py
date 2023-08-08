@@ -31,6 +31,7 @@ from .data_augmentation import (
 )
 from .data_split import ExploreDataPipeline, SplitTrainTestPipeline
 from .deberta import TrainDebertaRegressionPipeline
+from .pegasus_x import TrainPegasusXRegressionPipeline
 
 # from .falcon import TrainFalconRegressionPipeline
 from .zero_shot import ZeroShotRandomForestPipeline
