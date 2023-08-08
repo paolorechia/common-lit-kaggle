@@ -26,6 +26,12 @@ class TrainBartWithWMT19AugmentationPipeline(Pipeline):
             }
         )
 
+        def content_offset(content):
+            return content - 0.05
+
+        def wording_offset(wording):
+            return wording - 0.1
+
         super().__init__(
             "train_bart_wmt19",
             [
@@ -33,7 +39,13 @@ class TrainBartWithWMT19AugmentationPipeline(Pipeline):
                 data_split.ReadTrainDataTask(),
                 data_split.ReadWMT19TrainTask(),
                 data_split.MergeAugmentedSourcesTask(
-                    data_sources=["wmt19_augmented_train_data"]
+                    data_sources=[
+                        {
+                            "source": "wmt19_augmented_train_data",
+                            "content_offset": content_offset,
+                            "wording_offset": wording_offset,
+                        }
+                    ]
                 ),
                 bart.CreateUnifiedTextTrainDataTask(),
                 bart.ExploreUnifiedInputDataTask(),

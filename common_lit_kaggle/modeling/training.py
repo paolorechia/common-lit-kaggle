@@ -1,6 +1,8 @@
 import logging
 from typing import Optional, Union
 
+import torch
+
 try:
     import bitsandbytes as bnb
 except ImportError:
@@ -60,6 +62,12 @@ def train_epoch(
         input_tensor, target_tensor = data
         logits = model.forward(input_tensor)
 
+        if config.quadratic_transform:
+            target_tensor = (target_tensor + 2) ** 2
+
+        if config.log_transform:
+            target_tensor = torch.log(target_tensor + 2)
+
         # Compute loss here
 
         loss = criterion(logits, target_tensor) / config.gradient_accumulation_steps
@@ -96,10 +104,18 @@ def eval_epoch(
     criterion,
 ):
     total_loss = 0
+    config = Config.get()
 
     for data in tqdm(dataloader):
         input_tensor, target_tensor = data
+
         logits = model.forward(input_tensor)
+
+        if config.quadratic_transform:
+            logits = torch.sqrt(logits) - 2
+
+        if config.log_transform:
+            logits = torch.exp(logits) - 2
 
         # Compute loss here
         loss = criterion(logits, target_tensor)

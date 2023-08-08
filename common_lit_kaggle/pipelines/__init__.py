@@ -30,6 +30,7 @@ from .data_augmentation import (
     PlotBricketsTestPipeline,
 )
 from .data_split import ExploreDataPipeline, SplitTrainTestPipeline
+from .deberta import TrainDebertaRegressionPipeline
 
 # from .falcon import TrainFalconRegressionPipeline
 from .zero_shot import ZeroShotRandomForestPipeline

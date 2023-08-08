@@ -19,7 +19,7 @@ def plot_labels_x_predictions(name, labels, predictions):
     axis.set_ylabel("error")
     errors = labels[0:100] - predictions[0:100]
 
-    axis.plot(errors)
+    axis.scatter(errors)
 
     plot_path = config.plots_dir / f"{name}_labels_x_predictions.jpg"
     fig.savefig(plot_path)
