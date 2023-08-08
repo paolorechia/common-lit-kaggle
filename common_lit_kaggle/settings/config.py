@@ -112,7 +112,7 @@ class Config:
             self.models_root_dir / "vicuna-13B-v1.5-16K-GPTQ"
         )
 
-        self.quadratic_transform = True
+        self.quadratic_transform = False
 
         self.log_transform = False
 
