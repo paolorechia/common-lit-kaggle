@@ -45,15 +45,12 @@ class BartStackWithRegressionHead(nn.Module):
 
     def _forward_bart(self, bart, input_ids: torch.Tensor):
         outputs = bart(input_ids)
-        print("output shape", outputs[0].shape)
         hidden_states = outputs[0]  # last hidden state
 
         # Black magic from Transformers library source code
         eos_mask = input_ids.eq(self._bart_config.eos_token_id).to(hidden_states.device)
         if len(torch.unique_consecutive(eos_mask.sum(1))) > 1:
             raise ValueError("All examples must have the same number of <eos> tokens.")
-
-        print("mask shape", eos_mask.shape)
 
         # TODO: need to fix this block for the stack
         # Problem: eos tokens only exist for one of the bart models
@@ -71,17 +68,14 @@ class BartStackWithRegressionHead(nn.Module):
         except Exception:
             # No valid eos mask, just take last state
             sentence_representation = hidden_states[:, -1, :]
-        print("sentence repr shape", sentence_representation.shape)
         return sentence_representation
 
     def forward(self, input_ids: torch.LongTensor):
         splits = torch.split(input_ids, self._bart_config.d_model, dim=1)
-        print(" splits ", len(splits))
         sentences = []
         for idx, split in enumerate(splits):
-            print("Split shape", split.shape)
             sentence = self._forward_bart(self.barts[idx], split)
             sentences.append(sentence)
-        logits = self.regression_head(torch.cat(sentences))
+        logits = self.regression_head(torch.cat(sentences, dim=1))
 
         return logits
