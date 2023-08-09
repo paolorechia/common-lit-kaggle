@@ -54,9 +54,23 @@ class BartStackWithRegressionHead(nn.Module):
             raise ValueError("All examples must have the same number of <eos> tokens.")
 
         print("mask shape", eos_mask.shape)
-        sentence_representation = hidden_states[eos_mask, :].view(
-            hidden_states.size(0), -1, hidden_states.size(-1)
-        )[:, -1, :]
+
+        # TODO: need to fix this block for the stack
+        # Problem: eos tokens only exist for one of the bart models
+        #
+        # How do we create a mask when there is no eos token
+        # Do create an arbitrary mask?
+        # Do we just take the last row of the hidden_states?
+
+        # TODO: check if taking just last hidden state row works
+        # pylint: disable=broad-exception-caught
+        try:
+            sentence_representation = hidden_states[eos_mask, :].view(
+                hidden_states.size(0), -1, hidden_states.size(-1)
+            )[:, -1, :]
+        except Exception:
+            # No valid eos mask, just take last state
+            sentence_representation = hidden_states[:, -1, :]
         print("sentence repr shape", sentence_representation.shape)
         return sentence_representation
 
