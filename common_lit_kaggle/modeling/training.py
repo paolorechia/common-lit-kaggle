@@ -17,6 +17,7 @@ from common_lit_kaggle.utils.checkpoint import get_checkpoint_path
 from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 from .bart import BartWithRegressionHead
+from .bart_stack import BartStackWithRegressionHead
 
 # from .falcon import FalconLoraWithRegressionHead
 
@@ -48,7 +49,7 @@ class EarlyStopper:
 
 def train_epoch(
     dataloader,
-    model: BartWithRegressionHead,
+    model: Union[BartWithRegressionHead, BartStackWithRegressionHead],
     optimizer,
     scheduler,
     criterion,
@@ -100,7 +101,7 @@ def train_epoch(
 
 def eval_epoch(
     dataloader,
-    model: Union[BartWithRegressionHead],
+    model: Union[BartWithRegressionHead, BartStackWithRegressionHead],
     criterion,
 ):
     total_loss = 0
@@ -127,7 +128,7 @@ def eval_epoch(
 
 def train_model(
     train_dataloader,
-    model: BartWithRegressionHead,
+    model: Union[BartWithRegressionHead, BartStackWithRegressionHead],
     print_every=1,
     eval_dataloader=None,
     early_stopper: Optional[EarlyStopper] = None,
