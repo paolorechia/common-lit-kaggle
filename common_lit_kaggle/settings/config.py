@@ -176,6 +176,12 @@ class Config:
                 f"Unknown model: '{model}'. Could not set preprocessing parameters."
             )
 
+        self.using_stack = False
+        self.number_of_models_in_stack = 2
+        if self.using_stack:
+            self.model_context_length *= self.number_of_models_in_stack
+            self.string_truncation_length *= self.number_of_models_in_stack
+
         # Shared bart parameters
         self.save_checkpoints = save_checkpoints
         self.num_train_epochs = num_train_epochs

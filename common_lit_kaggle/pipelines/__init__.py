@@ -13,6 +13,7 @@ from .bart import (
     TrainBartWithWMT19AugmentationPipeline,
     TrainBartWithWord2VecAugmentationPipeline,
 )
+from .bart_stack import TrainBartStackRegressionPipeline
 from .basic_ml import (
     BasicLinearRegressorPipeline,
     BasicPredictRandomForestPipeline,
