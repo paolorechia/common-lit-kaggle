@@ -30,6 +30,7 @@ from .data_augmentation import (
     PlotAugmentedPipeline,
     PlotBricketsTestPipeline,
 )
+from .data_augmentation.pipeline_gpt2_rl import AugmentGPT2RL
 from .data_split import ExploreDataPipeline, SplitTrainTestPipeline
 from .deberta import TrainDebertaRegressionPipeline
 from .pegasus_x import TrainPegasusXRegressionPipeline

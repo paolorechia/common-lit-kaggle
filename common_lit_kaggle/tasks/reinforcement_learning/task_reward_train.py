@@ -1,7 +1,6 @@
 from typing import Any, Mapping
 
 import polars as pl
-from datasets import load_dataset
 
 from common_lit_kaggle.framework.task import Task
 from trlx import trlx
@@ -25,15 +24,8 @@ class RLGPT2Task(Task):
             .tolist()
         ]
 
-        imdb = load_dataset("imdb", split="train+test")
-
         print("Kaggle ", samples[0])
         print("Kaggle label", rewards[0])
-
-        # samples=imdb["text"]
-        # rewards=imdb["label"]
-        # print("IMDB ", samples[0])
-        # print("IMDB Label ", rewards[0])
 
         config = TRLConfig.update(default_ilql_config().to_dict(), hparams)
 
@@ -49,9 +41,10 @@ class RLGPT2Task(Task):
         # # use an additional Q-head (specific for ILQL)
         # config.method.two_qs = False
 
+        base_model = "gpt2"
         trainer = trlx.train(
-            "gpt2", prompts=prompts, samples=samples, rewards=rewards, config=config
+            base_model, prompts=prompts, samples=samples, rewards=rewards, config=config
         )
 
-        trainer.save_pretrained("gpt2_ilql_trained")
+        trainer.save_pretrained(f"{base_model}_ilql_trained")
         return {}
