@@ -39,18 +39,13 @@ class BartStackWithRegressionHead(nn.Module):
         except FileExistsError:
             pass
 
-        for idx, bart in self.barts:
+        for idx, bart in enumerate(self.barts):
             bart.save_pretrained(checkpoint_path / f"_idx_{idx}")
         torch.save(self.regression_head, checkpoint_path / "regression_head.pt")
 
     def _forward_bart(self, bart, input_ids: torch.Tensor):
         outputs = bart(input_ids)
         hidden_states = outputs[0]  # last hidden state
-
-        # Black magic from Transformers library source code
-        eos_mask = input_ids.eq(self._bart_config.eos_token_id).to(hidden_states.device)
-        if len(torch.unique_consecutive(eos_mask.sum(1))) > 1:
-            raise ValueError("All examples must have the same number of <eos> tokens.")
 
         # TODO: need to fix this block for the stack
         # Problem: eos tokens only exist for one of the bart models
@@ -62,6 +57,15 @@ class BartStackWithRegressionHead(nn.Module):
         # TODO: check if taking just last hidden state row works
         # pylint: disable=broad-exception-caught
         try:
+            # Black magic from Transformers library source code
+            eos_mask = input_ids.eq(self._bart_config.eos_token_id).to(
+                hidden_states.device
+            )
+            if len(torch.unique_consecutive(eos_mask.sum(1))) > 1:
+                raise ValueError(
+                    "All examples must have the same number of <eos> tokens."
+                )
+
             sentence_representation = hidden_states[eos_mask, :].view(
                 hidden_states.size(0), -1, hidden_states.size(-1)
             )[:, -1, :]

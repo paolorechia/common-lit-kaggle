@@ -24,21 +24,20 @@ def add_unified_data(train_data: pl.DataFrame) -> pl.DataFrame:
         ).alias("unified_text")
     )
 
-    # I think for now we should disable this block altogether
-    #     # If we want to train a GPT-like model, we can include the labels as part of the text
-    #     # Have the string ready, so later we can just concatenate together with the unified_text
-    #     unified_text_data = unified_text_data.with_columns(
-    #         pl.concat_str(
-    #             [
-    #                 pl.lit("\n\nGRADING SECTION"),
-    #                 pl.lit("\nWORDING: "),
-    #                 pl.col("wording"),
-    #                 pl.lit("\nCONTENT: "),
-    #                 pl.col("content"),
-    #                 pl.lit("\nEND_OF_TEXT\n"),
-    #             ]
-    #         ).alias("unified_labels")
-    #     )
+    # If we want to train a GPT-like model, we can include the labels as part of the text
+    # Have the string ready, so later we can just concatenate together with the unified_text
+    # unified_text_data = unified_text_data.with_columns(
+    #     pl.concat_str(
+    #         [
+    #             pl.lit("\n\nGRADING SECTION"),
+    #             pl.lit("\nWORDING: "),
+    #             pl.col("wording"),
+    #             pl.lit("\nCONTENT: "),
+    #             pl.col("content"),
+    #             pl.lit("\nEND_OF_TEXT\n"),
+    #         ]
+    #     ).alias("unified_labels")
+    # )
     return unified_text_data
 
 

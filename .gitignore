@@ -4,3 +4,5 @@ mlruns
 data
 dist/
 AutoGPTQ
+trlx/
+wandb/

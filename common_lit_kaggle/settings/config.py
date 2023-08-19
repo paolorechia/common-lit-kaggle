@@ -38,11 +38,11 @@ class Config:
         # tokenizer="google/pegasus-x-base",
         run_with_small_sample=False,
         num_train_epochs=10,
-        batch_size=4,
+        batch_size=2,
         # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         # tokenizer="tiiuae/falcon-rw-1b",
         save_checkpoints=True,
-        learning_rate=0.00001,
+        learning_rate=0.0001,
         regression_dropout=0.1,
         gradient_accumulation_steps=1,
     ):
