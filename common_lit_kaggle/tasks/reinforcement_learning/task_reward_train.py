@@ -12,8 +12,17 @@ class RLGPT2Task(Task):
         train_data: pl.DataFrame = context["train_data"]
 
         hparams = {}  # type: ignore
-        samples = [l[0] for l in train_data.select("text").to_numpy().tolist()]
-        prompts = [p[0] for p in train_data.select("prompt_text").to_numpy().tolist()]
+        texts = [l[0] for l in train_data.select("text").to_numpy().tolist()]
+        prompt_texts = [
+            p[0] for p in train_data.select("prompt_text").to_numpy().tolist()
+        ]
+        prompt_titles = [
+            p[0] for p in train_data.select("prompt_title").to_numpy().tolist()
+        ]
+        prompt_questions = [
+            p[0] for p in train_data.select("prompt_question").to_numpy().tolist()
+        ]
+
         rewards = [
             r[0]
             for r in train_data.with_columns(
@@ -23,6 +32,18 @@ class RLGPT2Task(Task):
             .to_numpy()
             .tolist()
         ]
+
+        samples = []
+        for idx, text in enumerate(texts):
+            # Build unified text like we do in bart pipeline
+            samples.append(
+                f"""TOPIC TITLE: {prompt_titles[idx]}
+REFERENCE TEXT: {prompt_texts[idx]}"
+QUESTION: 
+{prompt_questions[idx]}
+STUDENT ANSWER:             
+{text}"""
+            )
 
         print("Kaggle ", samples[0])
         print("Kaggle label", rewards[0])
@@ -42,8 +63,9 @@ class RLGPT2Task(Task):
         # config.method.two_qs = False
 
         base_model = "gpt2"
+        # base_model = "./data/models/Llama-2-7b-chat-hf"
         trainer = trlx.train(
-            base_model, prompts=prompts, samples=samples, rewards=rewards, config=config
+            base_model, samples=samples, rewards=rewards, config=config
         )
 
         trainer.save_pretrained(f"{base_model}_ilql_trained")
