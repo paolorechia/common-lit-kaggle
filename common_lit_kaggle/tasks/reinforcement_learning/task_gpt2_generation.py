@@ -7,7 +7,11 @@ from transformers import GPT2Tokenizer
 from common_lit_kaggle.framework import table_io
 from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.tables import RLGPT2SyntheticData
-from trlx.trlx.models.modeling_ilql import AutoModelForCausalLMWithILQLHeads
+
+try:
+    from trlx.trlx.models.modeling_ilql import AutoModelForCausalLMWithILQLHeads
+except ImportError:
+    print("Could not import trlx. This is OK in Kaggle!")
 
 
 class GPT2Generation(Task):
