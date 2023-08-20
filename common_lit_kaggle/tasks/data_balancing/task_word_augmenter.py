@@ -1,8 +1,11 @@
 import logging
 from typing import Any, Mapping
 
-import nlpaug.augmenter.sentence as nas
-import nlpaug.augmenter.word as naw
+try:
+    import nlpaug.augmenter.sentence as nas
+    import nlpaug.augmenter.word as naw
+except ImportError:
+    print("Could not import nlpaug! This is OK in Kaggle.")
 import polars as pl
 from tqdm import tqdm
 
