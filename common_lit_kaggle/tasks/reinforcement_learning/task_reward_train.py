@@ -33,17 +33,22 @@ class RLGPT2Task(Task):
             .tolist()
         ]
 
+        unified = False
+
         samples = []
         for idx, text in enumerate(texts):
-            # Build unified text like we do in bart pipeline
-            samples.append(
-                f"""TOPIC TITLE: {prompt_titles[idx]}
-REFERENCE TEXT: {prompt_texts[idx]}"
-QUESTION: 
-{prompt_questions[idx]}
-STUDENT ANSWER:             
-{text}"""
-            )
+            if unified:
+                # Build unified text like we do in bart pipeline
+                samples.append(
+                    f"""TOPIC TITLE: {prompt_titles[idx]}
+    REFERENCE TEXT: {prompt_texts[idx]}"
+    QUESTION: 
+    {prompt_questions[idx]}
+    STUDENT ANSWER:             
+    {text}"""
+                )
+            else:
+                samples.append(text)
 
         print("Kaggle ", samples[0])
         print("Kaggle label", rewards[0])

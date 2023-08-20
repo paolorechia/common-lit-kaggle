@@ -16,19 +16,19 @@ class GPT2Generation(Task):
             "./bak_gpt2_ilql_trained"
         ).to("cuda")
         tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-        prompts = ["Aristotle", "Egypt"]
-        min_length = 512
+        prompts = [" "]
+        min_length = 2048
         generated_texts = []
         samples_to_generate = 256
         for prompt in prompts:
-            print("Starting prompt: ", prompt)
+            print("Starting prompt: ", prompt, len(prompt))
             for _ in tqdm(range(samples_to_generate)):
                 text_output = ""
                 used_prompt = prompt
                 while len(text_output) < min_length:
                     output = model.generate(
                         **tokenizer([used_prompt], return_tensors="pt").to("cuda"),
-                        max_length=1024,
+                        max_length=2048,
                         temperature=2.0,
                     )
                     text_output = tokenizer.decode(output[0], skip_special_tokens=True)

@@ -116,6 +116,8 @@ class Config:
 
         self.quadratic_transform = False
 
+        self.use_unified_text = False
+
         self.log_transform = False
 
         self.cost_sensitive_learning = False

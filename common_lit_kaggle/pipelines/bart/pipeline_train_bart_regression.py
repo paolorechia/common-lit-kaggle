@@ -12,6 +12,7 @@ class TrainBartRegressionPipeline(Pipeline):
         mlflow.set_tags({"name": config.model})
         mlflow.log_params(
             {
+                "uses_unified_text": config.use_unified_text,
                 "cost_sensitive_learning": config.cost_sensitive_learning,
                 "cost_sensitive_multiplier": config.cost_sensitive_exponent,
                 "cost_sensitive_sum_operand": config.cost_sensitive_sum_operand,
