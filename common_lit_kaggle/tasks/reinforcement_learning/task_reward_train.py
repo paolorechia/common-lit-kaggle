@@ -3,8 +3,12 @@ from typing import Any, Mapping
 import polars as pl
 
 from common_lit_kaggle.framework.task import Task
-from trlx import trlx
-from trlx.trlx.data.default_configs import TRLConfig, default_ilql_config
+
+try:
+    from trlx import trlx
+    from trlx.trlx.data.default_configs import TRLConfig, default_ilql_config
+except ImportError:
+    print("Could not import trlx. This is OK in Kaggle!")
 
 
 class RLGPT2Task(Task):
