@@ -32,7 +32,7 @@ from .data_augmentation import (
 )
 from .data_augmentation.pipeline_gpt2_rl import AugmentGPT2RL
 from .data_split import ExploreDataPipeline, SplitTrainTestPipeline
-from .deberta import TrainDebertaRegressionPipeline
+from .deberta import TrainDebertaRegressionPipeline, TrainDebertaWithGPT2RLAugPipeline
 from .pegasus_x import TrainPegasusXRegressionPipeline
 from .reinforcement_learning import RLGPT2
 

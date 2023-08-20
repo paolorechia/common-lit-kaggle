@@ -19,7 +19,7 @@ class GPT2Generation(Task):
         prompts = [" "]
         min_length = 2048
         generated_texts = []
-        samples_to_generate = 256
+        samples_to_generate = 4096
         for prompt in prompts:
             print("Starting prompt: ", prompt, len(prompt))
             for _ in tqdm(range(samples_to_generate)):
