@@ -2,17 +2,16 @@ import json
 
 from common_lit_kaggle.framework import Pipeline
 from common_lit_kaggle.settings.config import Config
-from common_lit_kaggle.tasks import bart, basic_ml, data_split
+from common_lit_kaggle.tasks import data_split, reinforcement_learning
 from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 
-class TrainBartRegressionPipeline(Pipeline):
+class RLGPT2(Pipeline):
     def __init__(self) -> None:
         config = Config.get()
         mlflow.set_tags({"name": config.model})
         mlflow.log_params(
             {
-                "uses_unified_text": config.use_unified_text,
                 "cost_sensitive_learning": config.cost_sensitive_learning,
                 "cost_sensitive_multiplier": config.cost_sensitive_exponent,
                 "cost_sensitive_sum_operand": config.cost_sensitive_sum_operand,
@@ -30,24 +29,10 @@ class TrainBartRegressionPipeline(Pipeline):
         )
 
         super().__init__(
-            "train_bart_regression",
+            "rl_gpt2",
             [
                 # Load training data
                 data_split.ReadTrainDataTask(),
-                bart.CreateUnifiedTextTrainDataTask(),
-                bart.ExploreUnifiedInputDataTask(),
-                bart.PrepareTensorTrainDataTask(
-                    truncation_length=config.string_truncation_length
-                ),
-                # Load eval data
-                data_split.ReadEvalDataTask(),
-                bart.CreateUnifiedTextEvalDataTask(),
-                bart.PrepareTensorTrainDataTask(
-                    truncation_length=config.string_truncation_length,
-                    unified_text_data_key="eval_unified_text_data",
-                    output_text_data_key="tensor_eval_data",
-                ),
-                # Train
-                bart.TrainBartTask(),
+                reinforcement_learning.RLGPT2Task(),
             ],
         )

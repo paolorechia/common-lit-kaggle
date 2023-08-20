@@ -12,6 +12,7 @@ from .table_train_bert_augmented import AugmentedBertTrainTable
 from .table_train_gpt2_augmented import AugmentedGPT2TrainTable
 from .table_train_llama_augmented import AugmentedLlamaTrainTable
 from .table_train_ppdb_augmented import AugmentedPPDBTrainTable
+from .table_train_rl_gpt2_synthetic import RLGPT2SyntheticData
 from .table_train_split import TrainSplitTable
 from .table_train_t5_augmented import AugmentedT5TrainTable
 from .table_train_wmt19_augmented import AugmentedWmt19TrainTable

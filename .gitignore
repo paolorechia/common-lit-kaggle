@@ -4,3 +4,8 @@ mlruns
 data
 dist/
 AutoGPTQ
+trlx/
+wandb/
+bak_gpt2_ilql_trained
+gpt2_ilql_trained
+trained_microsoft-deberta-v3-base
