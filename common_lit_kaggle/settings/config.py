@@ -38,7 +38,7 @@ class Config:
         # tokenizer="google/pegasus-x-base",
         run_with_small_sample=False,
         num_train_epochs=10,
-        batch_size=2,
+        batch_size=8,
         # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         # tokenizer="tiiuae/falcon-rw-1b",
         save_checkpoints=True,
@@ -178,7 +178,7 @@ class Config:
                 f"Unknown model: '{model}'. Could not set preprocessing parameters."
             )
 
-        self.using_stack = True
+        self.using_stack = False
         self.number_of_models_in_stack = 2
         if self.using_stack:
             self.model_context_length *= self.number_of_models_in_stack

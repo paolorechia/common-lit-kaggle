@@ -28,8 +28,7 @@ def add_unified_data(train_data: pl.DataFrame) -> pl.DataFrame:
         )
     else:
         unified_text_data = train_data.with_columns(
-            pl.col("text").alias("unified_text"),
-            pl.col("text").len().alias("len_text")
+            pl.col("text").alias("unified_text"), pl.col("text").len().alias("len_text")
         )
 
     print(unified_text_data)
