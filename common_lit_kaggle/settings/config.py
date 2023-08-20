@@ -33,6 +33,7 @@ class Config:
         # model="facebook/bart-large-cnn",
         # tokenizer="facebook/bart-large-cnn",
         model="microsoft/deberta-v3-xsmall",
+        # model="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_microsoft-deberta-v3-xsmall_59d6cc208bce4af7936b427963b7141e_6",
         tokenizer="microsoft/deberta-v3-xsmall",
         # model="microsoft/deberta-v3-base",
         # tokenizer="microsoft/deberta-v3-base",
@@ -167,7 +168,7 @@ class Config:
             self.string_truncation_length = (
                 2700  # value set on trial and error, until it stopped issuing warnings
             )
-        elif "deberta" in model:
+        elif "deberta" in model or "xsmall" in model:
             self.model_context_length = 512
             self.string_truncation_length = 1350
 
