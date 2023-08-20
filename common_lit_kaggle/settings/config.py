@@ -42,7 +42,7 @@ class Config:
         # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         # tokenizer="tiiuae/falcon-rw-1b",
         save_checkpoints=True,
-        learning_rate=0.0001,
+        learning_rate=0.00001,
         regression_dropout=0.1,
         gradient_accumulation_steps=1,
     ):
