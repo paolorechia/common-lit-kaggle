@@ -1,7 +1,10 @@
 import random
 from typing import Any, Mapping
 
-import guidance
+try:
+    import guidance
+except ImportError:
+    print("Could not import guidance. This is OK unless using LLamaAugmenter.")
 import polars as pl
 from tqdm import tqdm
 
