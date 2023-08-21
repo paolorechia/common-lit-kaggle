@@ -19,6 +19,7 @@ from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 from .bart import BartWithRegressionHead
 from .bart_stack import BartStackWithRegressionHead
 from .bart_twins import BartTwinsWithRegressionHead
+from .deberta_twins import DebertaTwinsWithRegressionHead
 
 # from .falcon import FalconLoraWithRegressionHead
 
@@ -51,7 +52,10 @@ class EarlyStopper:
 def train_epoch(
     dataloader,
     model: Union[
-        BartWithRegressionHead, BartStackWithRegressionHead, BartTwinsWithRegressionHead
+        BartWithRegressionHead,
+        BartStackWithRegressionHead,
+        BartTwinsWithRegressionHead,
+        DebertaTwinsWithRegressionHead,
     ],
     optimizer,
     scheduler,
@@ -63,7 +67,9 @@ def train_epoch(
 
     idx = 1
     for data in tqdm(dataloader):
-        if isinstance(model, BartTwinsWithRegressionHead):
+        if isinstance(
+            model, (BartTwinsWithRegressionHead, DebertaTwinsWithRegressionHead)
+        ):
             prompt_tensor, answer_tensor, target_tensor = data
             logits = model.forward(prompt_tensor, answer_tensor)  # type: ignore
         else:
@@ -109,7 +115,10 @@ def train_epoch(
 def eval_epoch(
     dataloader,
     model: Union[
-        BartWithRegressionHead, BartStackWithRegressionHead, BartTwinsWithRegressionHead
+        BartWithRegressionHead,
+        BartStackWithRegressionHead,
+        BartTwinsWithRegressionHead,
+        DebertaTwinsWithRegressionHead,
     ],
     criterion,
 ):
@@ -117,7 +126,9 @@ def eval_epoch(
     config = Config.get()
 
     for data in tqdm(dataloader):
-        if isinstance(model, BartTwinsWithRegressionHead):
+        if isinstance(
+            model, (BartTwinsWithRegressionHead, DebertaTwinsWithRegressionHead)
+        ):
             prompt_tensor, answer_tensor, target_tensor = data
             logits = model.forward(prompt_tensor, answer_tensor)  # type: ignore
 
@@ -142,7 +153,10 @@ def eval_epoch(
 def train_model(
     train_dataloader,
     model: Union[
-        BartWithRegressionHead, BartStackWithRegressionHead, BartTwinsWithRegressionHead
+        BartWithRegressionHead,
+        BartStackWithRegressionHead,
+        BartTwinsWithRegressionHead,
+        DebertaTwinsWithRegressionHead,
     ],
     print_every=1,
     eval_dataloader=None,

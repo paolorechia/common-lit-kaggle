@@ -38,6 +38,7 @@ from .deberta import (
     TrainDebertaRegressionPipeline,
     TrainDebertaWithGPT2RLAugPipeline,
 )
+from .deberta_twins import TrainDebertaTwinsRegressionPipeline
 from .pegasus_x import TrainPegasusXRegressionPipeline
 from .reinforcement_learning import RLGPT2
 
