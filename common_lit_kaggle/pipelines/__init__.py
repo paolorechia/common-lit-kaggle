@@ -14,6 +14,7 @@ from .bart import (
     TrainBartWithWord2VecAugmentationPipeline,
 )
 from .bart_stack import TrainBartStackRegressionPipeline
+from .bart_twins import TrainBartTwinsRegressionPipeline
 from .basic_ml import (
     BasicLinearRegressorPipeline,
     BasicPredictRandomForestPipeline,

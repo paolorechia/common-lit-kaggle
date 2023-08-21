@@ -18,6 +18,7 @@ from common_lit_kaggle.utils.mlflow_wrapper import mlflow
 
 from .bart import BartWithRegressionHead
 from .bart_stack import BartStackWithRegressionHead
+from .bart_twins import BartTwinsWithRegressionHead
 
 # from .falcon import FalconLoraWithRegressionHead
 
@@ -49,7 +50,9 @@ class EarlyStopper:
 
 def train_epoch(
     dataloader,
-    model: Union[BartWithRegressionHead, BartStackWithRegressionHead],
+    model: Union[
+        BartWithRegressionHead, BartStackWithRegressionHead, BartTwinsWithRegressionHead
+    ],
     optimizer,
     scheduler,
     criterion,
@@ -60,8 +63,12 @@ def train_epoch(
 
     idx = 1
     for data in tqdm(dataloader):
-        input_tensor, target_tensor = data
-        logits = model.forward(input_tensor)
+        if isinstance(model, BartTwinsWithRegressionHead):
+            prompt_tensor, answer_tensor, target_tensor = data
+            logits = model.forward(prompt_tensor, answer_tensor)  # type: ignore
+        else:
+            input_tensor, target_tensor = data
+            logits = model.forward(input_tensor)
 
         if config.quadratic_transform:
             target_tensor = (target_tensor + 2) ** 2
@@ -101,16 +108,22 @@ def train_epoch(
 
 def eval_epoch(
     dataloader,
-    model: Union[BartWithRegressionHead, BartStackWithRegressionHead],
+    model: Union[
+        BartWithRegressionHead, BartStackWithRegressionHead, BartTwinsWithRegressionHead
+    ],
     criterion,
 ):
     total_loss = 0
     config = Config.get()
 
     for data in tqdm(dataloader):
-        input_tensor, target_tensor = data
+        if isinstance(model, BartTwinsWithRegressionHead):
+            prompt_tensor, answer_tensor, target_tensor = data
+            logits = model.forward(prompt_tensor, answer_tensor)  # type: ignore
 
-        logits = model.forward(input_tensor)
+        else:
+            input_tensor, target_tensor = data
+            logits = model.forward(input_tensor)
 
         if config.quadratic_transform:
             logits = torch.sqrt(logits) - 2
@@ -128,7 +141,9 @@ def eval_epoch(
 
 def train_model(
     train_dataloader,
-    model: Union[BartWithRegressionHead, BartStackWithRegressionHead],
+    model: Union[
+        BartWithRegressionHead, BartStackWithRegressionHead, BartTwinsWithRegressionHead
+    ],
     print_every=1,
     eval_dataloader=None,
     early_stopper: Optional[EarlyStopper] = None,

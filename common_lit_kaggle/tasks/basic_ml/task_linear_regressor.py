@@ -1,7 +1,7 @@
 from typing import Any, Mapping
 
 import polars as pl
-from sklearn.linear_model import LinearRegression
+from sklearn.neural_network import MLPRegressor
 
 from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.settings.config import Config
@@ -31,11 +31,11 @@ class TrainBasicLinearRegressorTask(Task):
         # Get content labels
         y_content = train_data.select("content").to_numpy()
 
-        content_regressor = LinearRegression()
+        content_regressor = MLPRegressor()
 
         content_regressor.fit(x_features, y_content)
 
-        wording_regressor = LinearRegression()
+        wording_regressor = MLPRegressor()
         wording_regressor.fit(x_features, y_wording)
 
         return {
@@ -50,8 +50,8 @@ class TestBasicLinearRegressorTask(Task):
         test_data: pl.DataFrame = context["enriched_test_data"]
         original_test_data: pl.DataFrame = context["test_data"]
 
-        wording_regressor: LinearRegression = context["wording_regressor"]
-        content_regressor: LinearRegression = context["content_regressor"]
+        wording_regressor: MLPRegressor = context["wording_regressor"]
+        content_regressor: MLPRegressor = context["content_regressor"]
 
         used_features = context["features"]
 
