@@ -40,6 +40,7 @@ class GPT2Generation(Task):
 
                 print("Expanded text ", text_output)
                 generated_texts.append(text_output)
-        synthetic_data = pl.from_dict({"text": generated_texts})
-        table_io.write_table(synthetic_data, RLGPT2SyntheticData())
+                synthetic_data = pl.from_dict({"text": generated_texts})
+                table_io.write_table(synthetic_data, RLGPT2SyntheticData())
+
         return {}

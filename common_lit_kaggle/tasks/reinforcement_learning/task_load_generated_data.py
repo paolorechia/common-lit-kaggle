@@ -1,3 +1,4 @@
+import random
 from typing import Any, Mapping
 
 import polars as pl
@@ -29,6 +30,16 @@ class LoadGeneratedDataTask(Task):
                 pl.col("text2").str.lengths().alias("len_text"),
             )
             .drop("text2")
+        )
+
+        random.seed(42)
+
+        def randomize_label(_):
+            return 2.0 + (2 * random.random())
+
+        synthetic_dataframe = synthetic_dataframe.with_columns(
+            pl.col("content").apply(randomize_label).alias("content"),
+            pl.col("wording").apply(randomize_label).alias("wording"),
         )
 
         print(train_data.columns)
