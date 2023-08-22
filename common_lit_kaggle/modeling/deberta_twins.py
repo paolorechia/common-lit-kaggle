@@ -21,6 +21,9 @@ class DebertaTwinsWithRegressionHead(nn.Module):
         deberta_prompt: DebertaV2Model,
         deberta_answer: DebertaV2Model,
         use_distance=False,
+        freeze_prompt=True,
+        freeze_answer=True,
+        freeze_poolers=False,
     ):
         super().__init__()
 
@@ -35,11 +38,20 @@ class DebertaTwinsWithRegressionHead(nn.Module):
         self.pooler_answer = ContextPooler(config)
 
         # Freezes layers
-        for param in self.deberta_prompt.parameters():
-            param.requires_grad = False
+        to_freeze = []
+        if freeze_prompt:
+            to_freeze.append(self.deberta_prompt)
+            if freeze_poolers:
+                to_freeze.append(self.pooler_prompt)
 
-        for param in self.deberta_answer.parameters():
-            param.requires_grad = False
+        if freeze_answer:
+            to_freeze.append(self.deberta_answer)
+            if freeze_poolers:
+                to_freeze.append(self.pooler_answer)
+
+        for frozen in to_freeze:
+            for param in frozen.parameters():
+                param.requires_grad = False
 
         if use_distance:
             self.hidden_size = 2

@@ -74,7 +74,7 @@ class TrainDebertaTwinsTask(Task):
         train_model(
             train_dataloader,
             deberta_twins,
-            # eval_dataloader=eval_dataloader,
+            eval_dataloader=eval_dataloader,
         )
 
         model_name = config.model.replace("/", "-")
