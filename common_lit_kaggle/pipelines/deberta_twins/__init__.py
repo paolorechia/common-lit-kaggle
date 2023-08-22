@@ -1,1 +1,2 @@
-from .pipeline_train_bart_twins import TrainDebertaTwinsRegressionPipeline
+from .pipeline_resume_deberta_twins import ResumeDebertaTwinsRegressionPipeline
+from .pipeline_train_deberta_twins import TrainDebertaTwinsRegressionPipeline

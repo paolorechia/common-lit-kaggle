@@ -40,13 +40,13 @@ class Config:
         # model="google/pegasus-x-base",
         # tokenizer="google/pegasus-x-base",
         run_with_small_sample=False,
-        num_train_epochs=10,
+        num_train_epochs=100,
         batch_size=1,
         # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         # tokenizer="tiiuae/falcon-rw-1b",
         save_checkpoints=True,
         learning_rate=0.001,
-        regression_dropout=0.0,
+        regression_dropout=0.1,
         gradient_accumulation_steps=1,
     ):
         if cls._config is None:
