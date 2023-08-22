@@ -39,14 +39,14 @@ class Config:
         # tokenizer="microsoft/deberta-v3-base",
         # model="google/pegasus-x-base",
         # tokenizer="google/pegasus-x-base",
-        run_with_small_sample=False,
+        run_with_small_sample=True,
         num_train_epochs=10,
-        batch_size=8,
+        batch_size=1,
         # model="/home/paolo/kaggle/common-lit-kaggle/data/models/falcon-rw-1b",
         # tokenizer="tiiuae/falcon-rw-1b",
-        save_checkpoints=True,
-        learning_rate=0.00001,
-        regression_dropout=0.1,
+        save_checkpoints=False,
+        learning_rate=0.001,
+        regression_dropout=0.0,
         gradient_accumulation_steps=1,
     ):
         if cls._config is None:
@@ -139,8 +139,8 @@ class Config:
         self.tokenizer = tokenizer
 
         # Step Linear Rate Scheduler config
-        self.step_lr_step_size = 2  # Triggered every epoch
-        self.step_lr_gamma = 0.9  # Multiplicative factor
+        self.step_lr_step_size = 1  # Triggered every N epochs
+        self.step_lr_gamma = 1  # Multiplicative factor
 
         # Early stop
         self.early_stop_patience = 3
@@ -193,7 +193,7 @@ class Config:
         self.learning_rate = learning_rate
         self.num_of_labels = 2
         self.run_with_small_sample = run_with_small_sample
-        self.small_sample_size = 10
+        self.small_sample_size = 50
         self.gradient_accumulation_steps = gradient_accumulation_steps
 
         if output_dir:

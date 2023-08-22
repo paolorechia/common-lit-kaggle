@@ -51,8 +51,6 @@ class TrainDebertaTwinsTask(Task):
         )
         deberta_model_prompt.to(config.device)
         deberta_model_answer.to(config.device)
-        deberta_model_prompt.train()
-        deberta_model_answer.train()
 
         deberta_twins = DebertaTwinsWithRegressionHead(
             config=deberta_config,
@@ -76,7 +74,7 @@ class TrainDebertaTwinsTask(Task):
         train_model(
             train_dataloader,
             deberta_twins,
-            eval_dataloader=eval_dataloader,
+            # eval_dataloader=eval_dataloader,
         )
 
         model_name = config.model.replace("/", "-")
