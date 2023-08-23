@@ -47,7 +47,7 @@ class ResumeDebertaTwinsRegressionPipeline(Pipeline):
                 ),
                 # Train
                 deberta_twins.TrainDebertaTwinsFromCheckpointTask(
-                    checkpoint_path="data/checkpoints/trained_microsoft-deberta-v3-xsmall_6e420e0b464f490da3a4c8cfc2b4bd2d_40"
+                    checkpoint_path="/home/paolo/kaggle/common-lit-kaggle/data/checkpoints/trained_microsoft-deberta-v3-xsmall_378caa44000b428dbab44ac0b05a492a_10"
                 ),
             ],
         )

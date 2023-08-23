@@ -2,11 +2,12 @@
 https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html
 
 """
+import json
 import logging
 from typing import Any, Mapping, Optional
 
 from torch.utils.data import DataLoader, RandomSampler
-from transformers import AutoConfig, DebertaV2Config, DebertaV2Model
+from transformers import AutoConfig, DebertaV2Config
 
 from common_lit_kaggle.framework.task import Task
 from common_lit_kaggle.modeling import DebertaTwinsWithRegressionHead, train_model
@@ -29,15 +30,18 @@ class TrainDebertaTwinsFromCheckpointTask(Task):
     def run(self, context: Mapping[str, Any]) -> Mapping[str, Any]:
         train_data = context["tensor_train_data"]
         eval_data = context["tensor_eval_data"]
-        checkpoint_model = context["checkpoint_path"]
+        checkpoint_model = self.checkpoint_path
 
         config = Config.get()
 
         # Set specific configuration for resume trial trainig
         # We want a lower learning rate here
-        config.learning_rate = 0.0001
+        config.learning_rate = 0.00001
         config.step_lr_step_size = 1
-        config.step_lr_gamma = 0.9
+        config.step_lr_gamma = 0.95
+        config.num_train_epochs = 10
+        config.cost_sensitive_learning = True
+        config.batch_size = 8
 
         deberta_config: DebertaV2Config = AutoConfig.from_pretrained(
             config.model_custom_config_dir
@@ -47,7 +51,7 @@ class TrainDebertaTwinsFromCheckpointTask(Task):
         deberta_twins = DebertaTwinsWithRegressionHead.from_checkpoint(
             checkpoint_model,
             config=deberta_config,
-            freeze_prompt=True,
+            freeze_prompt=False,
             freeze_answer=False,
             freeze_poolers=False,
         )

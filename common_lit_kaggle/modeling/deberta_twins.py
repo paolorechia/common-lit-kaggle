@@ -71,9 +71,9 @@ class DebertaTwinsWithRegressionHead(nn.Module):
 
         else:
             if use_distance:
-                self.hidden_size = 2
+                self.hidden_size = config.max_position_embeddings
                 self.regression_head = LinearHead(
-                    input_dim=1,
+                    input_dim=self.hidden_size,
                     inner_dim=self.hidden_size,
                     num_classes=project_config.num_of_labels,
                     dropout=project_config.dropout,
@@ -97,7 +97,7 @@ class DebertaTwinsWithRegressionHead(nn.Module):
         pooler_prompt = torch.load(path / "pooler_prompt.pt")
         pooler_answer = torch.load(path / "pooler_answer.pt")
         regression_head = torch.load(path / "regression_head.pt")
-        with open(checkpoint_path / "twins_config.json", "r", encoding="utf-8") as fp:
+        with open(path / "twins_config.json", "r", encoding="utf-8") as fp:
             twins_config = json.load(fp)
 
         deberta_twins = DebertaTwinsWithRegressionHead(
@@ -107,7 +107,8 @@ class DebertaTwinsWithRegressionHead(nn.Module):
             pooler_prompt=pooler_prompt,
             pooler_answer=pooler_answer,
             regression_head=regression_head,
-            use_distance=twins_config["use_distance"] ** kwargs,
+            use_distance=twins_config["use_distance"],
+            **kwargs,
         )
         return deberta_twins
 
@@ -123,7 +124,7 @@ class DebertaTwinsWithRegressionHead(nn.Module):
         torch.save(self.pooler_prompt, path / "pooler_prompt.pt")
         torch.save(self.pooler_answer, path / "pooler_answer.pt")
         torch.save(self.regression_head, path / "regression_head.pt")
-        with open(checkpoint_path / "twins_config.json", "w", encoding="utf-8") as fp:
+        with open(path / "twins_config.json", "w", encoding="utf-8") as fp:
             json.dump({"use_distance": self.use_distance}, fp)
 
     def _forward_deberta(
@@ -138,7 +139,7 @@ class DebertaTwinsWithRegressionHead(nn.Module):
         pooled_output = pooler(encoder_layer)
         return pooled_output
 
-    def forward(
+    def _standard_forward_deberta(
         self, prompt_input_ids: torch.LongTensor, answer_input_ids: torch.LongTensor
     ):
         prompt_representation = self._forward_deberta(
@@ -153,10 +154,30 @@ class DebertaTwinsWithRegressionHead(nn.Module):
         flattened = torch.cat([prompt_representation, answer_representation]).reshape(
             batch_size, -1
         )
-        # Distance implementation:
-        if self.use_distance:
-            dist = torch.cdist(prompt_representation, answer_representation)
-            logits = self.regression_head(dist)
-        else:
-            logits = self.regression_head(flattened)
+        logits = self.regression_head(flattened)
         return logits
+
+    def _distance_forward_deberta(
+        self, prompt_input_ids: torch.LongTensor, answer_input_ids: torch.LongTensor
+    ):
+        batch_size = prompt_input_ids.shape[0]
+        distances = []
+        for idx in range(batch_size):
+            prompt_input = prompt_input_ids[idx].reshape(1, -1)
+            answer_input = answer_input_ids[idx].reshape(1, -1)
+            prompt_outputs = self.deberta_prompt.forward(prompt_input).last_hidden_state
+            answer_outputs = self.deberta_answer.forward(answer_input).last_hidden_state
+            dist = torch.cdist(prompt_outputs, answer_outputs)
+            dist = dist.mean(dim=1)
+            distances.append(dist)
+
+        computed_distances = torch.cat(distances)
+        logits = self.regression_head(computed_distances)
+        return logits
+
+    def forward(
+        self, prompt_input_ids: torch.LongTensor, answer_input_ids: torch.LongTensor
+    ):
+        if not self.use_distance:
+            return self._standard_forward_deberta(prompt_input_ids, answer_input_ids)
+        return self._distance_forward_deberta(prompt_input_ids, answer_input_ids)

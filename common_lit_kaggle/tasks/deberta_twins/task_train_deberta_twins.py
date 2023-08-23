@@ -56,6 +56,9 @@ class TrainDebertaTwinsTask(Task):
             config=deberta_config,
             deberta_prompt=deberta_model_prompt,
             deberta_answer=deberta_model_answer,
+            use_distance=True,
+            freeze_prompt=True,
+            freeze_answer=True,
         )
 
         deberta_twins.to(config.device)
